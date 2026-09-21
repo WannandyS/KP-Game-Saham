@@ -8,6 +8,36 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Home (Dashboard).unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Scenes/Home (Pelajaran).unity
+    guid: 089bcf967126e2042854fd8d3ba5decc
+  - enabled: 1
+    path: Assets/Scenes/Home (Candlestick).unity
+    guid: 72195a61f62219148b595753f96a924f
+  - enabled: 1
+    path: Assets/Scenes/Pusat Berita.unity
+    guid: d550a58ccb20f9a4584559f7180d7059
+  - enabled: 1
+    path: Assets/Scenes/Perusahaan.unity
+    guid: 920774a8e365d1148b070ea253581ccd
+  - enabled: 1
+    path: Assets/Scenes/Detail Perusahaan.unity
+    guid: 46a1400b93890e64f9656a02ba197261
+  - enabled: 1
+    path: Assets/Scenes/Glosarium.unity
+    guid: f4fc4c5c51ccc424b818f2a7b2543a8b
+  - enabled: 1
+    path: Assets/Scenes/GameMode.unity
+    guid: dd754b790da60ee4d92814756c001588
+  - enabled: 1
+    path: Assets/Scenes/GameMode (Market).unity
+    guid: 12eb32c7c2d09754caf16527e6e627b0
+  - enabled: 1
+    path: Assets/Scenes/GameMode (Portofolio).unity
+    guid: 3ff06d106d8fd5a4bae4c019a3795124
+  - enabled: 1
+    path: Assets/Scenes/GameMode (World News).unity
+    guid: 4f34c11115de1784abaae43512797c59
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

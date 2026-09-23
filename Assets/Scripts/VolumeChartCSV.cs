@@ -409,4 +409,8 @@ public class VolumeChartCSV : MonoBehaviour
         value = value.Trim().Trim('"');
         return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result);
     }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

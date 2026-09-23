@@ -393,10 +393,17 @@ public class CandlestickChart : MonoBehaviour
             line.anchorMin = Vector2.zero;
             line.anchorMax = Vector2.zero;
             line.pivot = new Vector2(0f, 0.5f);
+<<<<<<< Updated upstream
             
             line.anchoredPosition = new Vector2(0f, y);
             line.sizeDelta = new Vector2(candleAreaWidth, gridLineWidth);
 
+=======
+
+            line.anchoredPosition = new Vector2(0f, y);
+            line.sizeDelta = new Vector2(candleAreaWidth, gridLineWidth);
+
+>>>>>>> Stashed changes
             CreatePriceLabel(price, y, candleAreaWidth);
         }
     }

@@ -4,12 +4,6 @@ using UnityEngine.EventSystems;
 public class ChartHoverTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private string infoText;
-    private RectTransform targetRect;
-
-    private void Awake()
-    {
-        targetRect = GetComponent<RectTransform>();
-    }
 
     public void Init(string text)
     {
@@ -20,7 +14,7 @@ public class ChartHoverTrigger : MonoBehaviour, IPointerEnterHandler, IPointerEx
     {
         if (ChartTooltip.Instance != null)
         {
-            ChartTooltip.Instance.ShowTooltip(infoText, targetRect);
+            ChartTooltip.Instance.ShowTooltip(infoText);
         }
     }
 

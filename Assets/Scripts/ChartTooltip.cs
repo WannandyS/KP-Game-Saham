@@ -9,12 +9,13 @@ public class ChartTooltip : MonoBehaviour
     public GameObject tooltipPanel;
     public TextMeshProUGUI tooltipText;
 
-    [Tooltip("Offset relative to the top-center of the hovered element.")]
-    public Vector2 offset = new Vector2(0f, 15f);
+    [Header("Cursor Offset")]
+    [Tooltip("Offset relative to the cursor position (X = horizontal, Y = vertical beneath pointer).")]
+    public Vector2 cursorOffset = new Vector2(0f, -25f);
 
     private RectTransform panelRect;
     private Canvas parentCanvas;
-    private RectTransform currentTarget;
+    private bool isShowing = false;
 
     private void Awake()
     {
@@ -35,50 +36,78 @@ public class ChartTooltip : MonoBehaviour
 
     private void Update()
     {
-        if (tooltipPanel != null && tooltipPanel.activeSelf && currentTarget != null)
+        if (isShowing && tooltipPanel != null && tooltipPanel.activeSelf)
         {
-            UpdatePosition();
+            UpdatePositionToCursor();
         }
     }
 
-    private void UpdatePosition()
-    {
-        // Get the world corners of the hovered chart element
-        Vector3[] corners = new Vector3[4];
-        currentTarget.GetWorldCorners(corners);
-
-        // Calculate the top-center position of the element (corners[1] = top-left, corners[2] = top-right)
-        Vector3 topCenterWorld = (corners[1] + corners[2]) * 0.5f;
-
-        Camera cam = (parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : parentCanvas.worldCamera;
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(cam, topCenterWorld);
-
-        Vector2 localPoint;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            (RectTransform)panelRect.parent,
-            screenPoint,
-            cam,
-            out localPoint
-        );
-
-        panelRect.anchoredPosition = localPoint + offset;
-    }
-
-    public void ShowTooltip(string text, RectTransform target)
+    public void ShowTooltip(string text)
     {
         if (tooltipPanel == null || tooltipText == null) return;
 
-        currentTarget = target;
         tooltipText.text = text;
         tooltipPanel.SetActive(true);
-        UpdatePosition();
+        isShowing = true;
+
+        Canvas.ForceUpdateCanvases();
+        UpdatePositionToCursor();
+    }
+
+    private void UpdatePositionToCursor()
+    {
+        Vector2 mousePos = Input.mousePosition;
+
+        if (parentCanvas != null && parentCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                (RectTransform)parentCanvas.transform,
+                mousePos,
+                parentCanvas.worldCamera,
+                out Vector2 localPoint
+            );
+
+            panelRect.anchoredPosition = localPoint + cursorOffset;
+        }
+        else
+        {
+            panelRect.position = (Vector3)mousePos + (Vector3)cursorOffset;
+        }
+
+        ClampToScreen();
+    }
+
+    private void ClampToScreen()
+    {
+        Vector3[] corners = new Vector3[4];
+        panelRect.GetWorldCorners(corners);
+
+        float panelWidth = corners[2].x - corners[0].x;
+        float panelHeight = corners[2].y - corners[0].y;
+
+        Vector3 pos = panelRect.position;
+
+        // Keep tooltip inside screen boundaries
+        if (pos.x - (panelWidth * panelRect.pivot.x) < 0)
+            pos.x = panelWidth * panelRect.pivot.x;
+
+        if (pos.x + (panelWidth * (1f - panelRect.pivot.x)) > Screen.width)
+            pos.x = Screen.width - (panelWidth * (1f - panelRect.pivot.x));
+
+        if (pos.y - (panelHeight * panelRect.pivot.y) < 0)
+            pos.y = panelHeight * panelRect.pivot.y;
+
+        if (pos.y + (panelHeight * (1f - panelRect.pivot.y)) > Screen.height)
+            pos.y = Screen.height - (panelHeight * (1f - panelRect.pivot.y));
+
+        panelRect.position = pos;
     }
 
     public void HideTooltip()
     {
+        isShowing = false;
         if (tooltipPanel != null)
         {
-            currentTarget = null;
             tooltipPanel.SetActive(false);
         }
     }

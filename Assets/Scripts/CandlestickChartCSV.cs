@@ -337,8 +337,7 @@ public class CandlestickChart : MonoBehaviour
         float wickHeight = Mathf.Max(wickTop - wickBottom, 1f);
 
         // Tooltip detail string
-        string tooltipText = $"<b>Day {candle.dayIndex}</b> ({candle.date})\n" +
-                            $"Open: {FormatPrice(candle.open)}\n" +
+        string tooltipText =$"Open: {FormatPrice(candle.open)}\n" +
                             $"High: {FormatPrice(candle.high)}\n" +
                             $"Low: {FormatPrice(candle.low)}\n" +
                             $"Close: {FormatPrice(candle.close)}";

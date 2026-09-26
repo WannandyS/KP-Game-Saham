@@ -337,7 +337,8 @@ public class CandlestickChart : MonoBehaviour
         float wickHeight = Mathf.Max(wickTop - wickBottom, 1f);
 
         // Tooltip detail string
-        string tooltipText =$"Open: {FormatPrice(candle.open)}\n" +
+        string tooltipText = $"<b>Day {candle.dayIndex}</b> ({candle.date})\n" +
+                            $"Open: {FormatPrice(candle.open)}\n" +
                             $"High: {FormatPrice(candle.high)}\n" +
                             $"Low: {FormatPrice(candle.low)}\n" +
                             $"Close: {FormatPrice(candle.close)}";
@@ -392,17 +393,10 @@ public class CandlestickChart : MonoBehaviour
             line.anchorMin = Vector2.zero;
             line.anchorMax = Vector2.zero;
             line.pivot = new Vector2(0f, 0.5f);
-<<<<<<< Updated upstream
             
             line.anchoredPosition = new Vector2(0f, y);
             line.sizeDelta = new Vector2(candleAreaWidth, gridLineWidth);
 
-=======
-
-            line.anchoredPosition = new Vector2(0f, y);
-            line.sizeDelta = new Vector2(candleAreaWidth, gridLineWidth);
-
->>>>>>> Stashed changes
             CreatePriceLabel(price, y, candleAreaWidth);
         }
     }

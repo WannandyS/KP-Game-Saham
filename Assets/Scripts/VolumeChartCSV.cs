@@ -272,7 +272,8 @@ public class VolumeChartCSV : MonoBehaviour
         bar.anchoredPosition = new Vector2(x, footerHeight);
         bar.sizeDelta = new Vector2(width, barHeight);
 
-        string tooltipText = $"Volume: {data.volume:#,##0} ({FormatVolume(data.volume)})";
+        string tooltipText = $"<b>Day {data.dayIndex}</b> ({data.date})\n" +
+                            $"Volume: {data.volume:#,##0} ({FormatVolume(data.volume)})";
 
         ChartHoverTrigger barHover = bar.gameObject.AddComponent<ChartHoverTrigger>();
         barHover.Init(tooltipText);
@@ -408,8 +409,4 @@ public class VolumeChartCSV : MonoBehaviour
         value = value.Trim().Trim('"');
         return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result);
     }
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

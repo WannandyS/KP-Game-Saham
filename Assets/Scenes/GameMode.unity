@@ -4442,7 +4442,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ChartTooltip
   tooltipPanel: {fileID: 1204478129}
   tooltipText: {fileID: 96539828}
-  offset: {x: 15, y: -15}
+  cursorOffset: {x: 0, y: -25}
 --- !u!1 &853521352
 GameObject:
   m_ObjectHideFlags: 0
@@ -10180,7 +10180,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1057764695}
         m_TargetAssemblyTypeName: SceneManagement, Assembly-CSharp
-        m_MethodName: GameNews
+        m_MethodName: GameMarket
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

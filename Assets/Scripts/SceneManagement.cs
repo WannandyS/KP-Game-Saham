@@ -74,4 +74,9 @@ public class SceneManagement : MonoBehaviour
     {
         SceneManager.LoadScene("GameMode (World News)");
     }
+
+    public void GameDetailPerusahaan()
+    {
+        SceneManager.LoadScene("GameMode (Detail Perusahaan)");
+    }
 }

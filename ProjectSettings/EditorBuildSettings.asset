@@ -38,6 +38,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameMode (World News).unity
     guid: 4f34c11115de1784abaae43512797c59
+  - enabled: 1
+    path: Assets/Scenes/GameMode (Detail Perusahaan).unity
+    guid: 834049119fb34504a82df395a25c9e2e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

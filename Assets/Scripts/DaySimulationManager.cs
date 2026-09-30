@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 public class DaySimulationManager : MonoBehaviour
@@ -37,7 +37,14 @@ public class DaySimulationManager : MonoBehaviour
         if (currentDay < totalDays)
         {
             currentDay++;
+
+            Debug.Log("Next Day → Day " + currentDay);
+
             NotifyDayChanged();
+        }
+        else
+        {
+            Debug.Log("Sudah mencapai hari terakhir: Day " + totalDays);
         }
     }
 

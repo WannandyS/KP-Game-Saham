@@ -60,19 +60,36 @@ public class VolumeChartCSV : MonoBehaviour
 
     private void OnEnable()
     {
-        if (DaySimulationManager.Instance != null)
-            DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
+        SubscribeToDayManager();
     }
 
     private void OnDisable()
     {
+        UnsubscribeFromDayManager();
+    }
+
+    private void SubscribeToDayManager()
+    {
         if (DaySimulationManager.Instance != null)
+        {
             DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+            DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
+        }
+    }
+
+    private void UnsubscribeFromDayManager()
+    {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+        }
     }
 
     private void Start()
     {
         LoadCSV();
+        SubscribeToDayManager();
+
         if (DaySimulationManager.Instance != null)
         {
             HandleDayChanged(DaySimulationManager.Instance.currentDay);

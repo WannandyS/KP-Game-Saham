@@ -488,6 +488,52 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4297891337934998374, guid: ce719846e5a3a084899525252243f53f, type: 3}
   m_PrefabInstance: {fileID: 566612723}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &308330689
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 308330691}
+  - component: {fileID: 308330690}
+  m_Layer: 0
+  m_Name: DaySimulationManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &308330690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 308330689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e0b512529ebbe46aaae3371b45193f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DaySimulationManager
+  currentDay: 1
+  totalDays: 236
+--- !u!4 &308330691
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 308330689}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1010.6852, y: 569.2306, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &354084323
 GameObject:
   m_ObjectHideFlags: 0
@@ -587,6 +633,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewsRowUI
   titleText: {fileID: 763491867}
   descriptionText: {fileID: 1761198916}
+--- !u!1 &420246526 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5501657933688935707, guid: 28867395851fc574b80b3d213771db45, type: 3}
+  m_PrefabInstance: {fileID: 1252033494}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &504014898
 GameObject:
   m_ObjectHideFlags: 0
@@ -954,7 +1005,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 979894905}
   - {fileID: 1250641859}
   - {fileID: 354084324}
   - {fileID: 874597323}
@@ -1358,6 +1408,18 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8829193569062131091, guid: 28867395851fc574b80b3d213771db45, type: 3}
   m_PrefabInstance: {fileID: 1252033494}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &874597327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 420246526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e08f1ac7de7c3947810c720bb696650, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NextDayButtonBridge
 --- !u!114 &934930238 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8584539647332713780, guid: ce719846e5a3a084899525252243f53f, type: 3}
@@ -1369,52 +1431,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
---- !u!1 &979894903
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 979894905}
-  - component: {fileID: 979894904}
-  m_Layer: 0
-  m_Name: SimulationManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &979894904
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 979894903}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16e0b512529ebbe46aaae3371b45193f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DaySimulationManager
-  currentDay: 1
-  totalDays: 236
---- !u!4 &979894905
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 979894903}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 236.27173, y: 64.75897, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 543276521}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &991917037
 GameObject:
   m_ObjectHideFlags: 0
@@ -1849,9 +1865,13 @@ PrefabInstance:
     m_TransformParent: {fileID: 543276521}
     m_Modifications:
     - target: {fileID: 2723369332676657705, guid: 28867395851fc574b80b3d213771db45, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2723369332676657705, guid: 28867395851fc574b80b3d213771db45, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 979894904}
+      objectReference: {fileID: 308330690}
     - target: {fileID: 2723369332676657705, guid: 28867395851fc574b80b3d213771db45, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: NextDay
@@ -1943,7 +1963,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5501657933688935707, guid: 28867395851fc574b80b3d213771db45, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 874597327}
   m_SourcePrefab: {fileID: 100100000, guid: 28867395851fc574b80b3d213771db45, type: 3}
 --- !u!114 &1260463901 stripped
 MonoBehaviour:
@@ -3271,3 +3294,4 @@ SceneRoots:
   - {fileID: 543276521}
   - {fileID: 1947537656}
   - {fileID: 1763150493}
+  - {fileID: 308330691}

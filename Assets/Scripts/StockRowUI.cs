@@ -16,6 +16,29 @@ public class StockRowUI : MonoBehaviour
     [Header("Action Controls")]
     public Button detailsButton;
 
+    private void Start()
+    {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged += OnDayUpdated;
+            // Load data corresponding to the persistent current day
+            OnDayUpdated(DaySimulationManager.Instance.currentDay);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= OnDayUpdated;
+        }
+    }
+
+    private void OnDayUpdated(int dayIndex)
+    {
+        // Update stock prices, candle charts, or portfolio values for 'dayIndex'
+    }
+
     public void SetupRow(StockRowData data, Action<StockRowData> onDetailsClicked)
     {
         stockText.text = data.stockSymbol;

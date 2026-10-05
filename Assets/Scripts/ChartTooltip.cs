@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem; // Added for New Input System
 using TMPro;
 
 public class ChartTooltip : MonoBehaviour
@@ -56,7 +57,12 @@ public class ChartTooltip : MonoBehaviour
 
     private void UpdatePositionToCursor()
     {
-        Vector2 mousePos = Input.mousePosition;
+        // Read mouse position using New Input System
+        Vector2 mousePos = Vector2.zero;
+        if (Mouse.current != null)
+        {
+            mousePos = Mouse.current.position.ReadValue();
+        }
 
         if (parentCanvas != null && parentCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
         {

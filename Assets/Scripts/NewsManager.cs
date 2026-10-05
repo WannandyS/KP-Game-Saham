@@ -34,20 +34,19 @@ public class NewsManager : MonoBehaviour
     private int currentNewsPageIndex = 0;
 
     private void Start()
-    {
-        ParsePriceDataset();
-        ParseNewsDataset();
+{
+    ParsePriceDataset();
+    ParseNewsDataset();
 
-        if (DaySimulationManager.Instance != null)
-        {
-            DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
-            HandleDayChanged(DaySimulationManager.Instance.currentDay);
-        }
-        else
-        {
-            Debug.LogError("DaySimulationManager Instance not found in scene!");
-        }
+    if (DaySimulationManager.Instance != null)
+    {
+        // Register listener for day change events
+        DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
+
+        // Sync immediately with current persisted day state
+        HandleDayChanged(DaySimulationManager.Instance.currentDay);
     }
+}
 
     private void OnDestroy()
     {

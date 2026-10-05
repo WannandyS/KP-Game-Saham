@@ -16,12 +16,15 @@ public class DaySimulationManager : MonoBehaviour
 
     private void Awake()
     {
+        // Enforce a Single Persistent Singleton across scene loads
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
+        DontDestroyOnLoad(gameObject); // Keeps this manager alive when loading new scenes
     }
 
     private void Start()
@@ -30,32 +33,31 @@ public class DaySimulationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Call this method from your "Next Day" UI Button OnClick() event.
+    /// Call this method from any "Next Day" UI Button OnClick() event in any scene.
     /// </summary>
     public void NextDay()
     {
         if (currentDay < totalDays)
         {
             currentDay++;
-
-            Debug.Log("Next Day → Day " + currentDay);
-
+            Debug.Log($"[DaySimulationManager] Day Advanced → Day {currentDay}");
             NotifyDayChanged();
         }
         else
         {
-            Debug.Log("Sudah mencapai hari terakhir: Day " + totalDays);
+            Debug.Log($"[DaySimulationManager] Already at final day: Day {totalDays}");
         }
     }
 
     /// <summary>
-    /// Call this method from your "Previous Day" UI Button OnClick() event if needed.
+    /// Call this method from any "Previous Day" UI Button OnClick() event in any scene.
     /// </summary>
     public void PreviousDay()
     {
         if (currentDay > 1)
         {
             currentDay--;
+            Debug.Log($"[DaySimulationManager] Day Decremented → Day {currentDay}");
             NotifyDayChanged();
         }
     }
@@ -66,6 +68,14 @@ public class DaySimulationManager : MonoBehaviour
     public void SetDay(int day)
     {
         currentDay = Mathf.Clamp(day, 1, totalDays);
+        NotifyDayChanged();
+    }
+
+    /// <summary>
+    /// Re-broadcasts the current day state (useful when opening a new scene).
+    /// </summary>
+    public void RefreshCurrentDay()
+    {
         NotifyDayChanged();
     }
 

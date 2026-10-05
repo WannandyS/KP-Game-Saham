@@ -4338,6 +4338,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 920272662}
   m_CullTransparentMesh: 1
+--- !u!1 &924676328
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 924676329}
+  - component: {fileID: 924676330}
+  m_Layer: 0
+  m_Name: DaySimulationManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &924676329
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 924676328}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1010.6852, y: 569.2306, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &924676330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 924676328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e0b512529ebbe46aaae3371b45193f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DaySimulationManager
+  currentDay: 1
+  totalDays: 236
 --- !u!1 &926201853
 GameObject:
   m_ObjectHideFlags: 0
@@ -5175,6 +5221,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1075290225}
   m_CullTransparentMesh: 1
+--- !u!1 &1099623012 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5501657933688935707, guid: 28867395851fc574b80b3d213771db45, type: 3}
+  m_PrefabInstance: {fileID: 4017804544977297988}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1099623013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1099623012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e08f1ac7de7c3947810c720bb696650, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NextDayButtonBridge
 --- !u!1 &1113786255
 GameObject:
   m_ObjectHideFlags: 0
@@ -8235,52 +8298,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1856958459}
   m_CullTransparentMesh: 1
---- !u!1 &1929749626
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1929749628}
-  - component: {fileID: 1929749627}
-  m_Layer: 0
-  m_Name: DaySimulationManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1929749627
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1929749626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16e0b512529ebbe46aaae3371b45193f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DaySimulationManager
-  currentDay: 1
-  totalDays: 236
---- !u!4 &1929749628
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1929749626}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1137.2893, y: 464.8079, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1947537653
 GameObject:
   m_ObjectHideFlags: 0
@@ -9382,9 +9399,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 543276521}
     m_Modifications:
     - target: {fileID: 2723369332676657705, guid: 28867395851fc574b80b3d213771db45, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2723369332676657705, guid: 28867395851fc574b80b3d213771db45, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1929749627}
+      objectReference: {fileID: 924676330}
+    - target: {fileID: 2723369332676657705, guid: 28867395851fc574b80b3d213771db45, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: NextDay
+      objectReference: {fileID: 0}
     - target: {fileID: 5501657933688935707, guid: 28867395851fc574b80b3d213771db45, type: 3}
       propertyPath: m_Name
       value: Button
@@ -9472,7 +9497,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5501657933688935707, guid: 28867395851fc574b80b3d213771db45, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1099623013}
   m_SourcePrefab: {fileID: 100100000, guid: 28867395851fc574b80b3d213771db45, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
@@ -9484,4 +9512,4 @@ SceneRoots:
   - {fileID: 1947537656}
   - {fileID: 1057764694}
   - {fileID: 689657962}
-  - {fileID: 1929749628}
+  - {fileID: 924676329}

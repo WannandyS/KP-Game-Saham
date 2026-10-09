@@ -24,7 +24,7 @@ public class NewsManager : MonoBehaviour
 
     [Header("UI References")]
     public NewsRowUI[] newsRows = new NewsRowUI[4];
-    public TextMeshProUGUI headerDateText; // Optional: Displays current date/time on top bar
+    public TextMeshProUGUI headerDateText; // Optional
 
     private List<NewsItem> allNewsList = new List<NewsItem>();
     private Dictionary<string, int> dateToDayMap = new Dictionary<string, int>();
@@ -34,19 +34,16 @@ public class NewsManager : MonoBehaviour
     private int currentNewsPageIndex = 0;
 
     private void Start()
-{
-    ParsePriceDataset();
-    ParseNewsDataset();
-
-    if (DaySimulationManager.Instance != null)
     {
-        // Register listener for day change events
-        DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
+        ParsePriceDataset();
+        ParseNewsDataset();
 
-        // Sync immediately with current persisted day state
-        HandleDayChanged(DaySimulationManager.Instance.currentDay);
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
+            HandleDayChanged(DaySimulationManager.Instance.currentDay);
+        }
     }
-}
 
     private void OnDestroy()
     {
@@ -91,19 +88,31 @@ public class NewsManager : MonoBehaviour
 
         List<string[]> rows = ParseCsvWithQuotes(newsCsvAsset.text);
 
+        bool isHeader = true;
+
         foreach (var columns in rows)
         {
+            if (isHeader)
+            {
+                isHeader = false;
+                continue;
+            }
+
             if (columns.Length < 4) continue;
 
-            string rawDateTime = columns[0].Trim();
-            string title = columns[1].Trim().Replace("[]", "").Trim();
-            string ticker = columns[2].Trim();
+            string rawDateStr = columns[0].Trim();
+            string ticker = columns[1].Trim();
+
+            string title = columns[2].Trim().Replace("[]", "").Trim();
             string description = columns[3].Trim();
 
-            string cleanedDateStr = Regex.Replace(rawDateTime, @"\s+", " ");
+            string[] formats = new string[]
+            {
+                "M/d/yyyy", "d/M/yyyy", "M/d/yyyy HH:mm:ss", "d/M/yyyy HH:mm:ss",
+                "yyyy-MM-dd", "d MMM yyyy", "dd/MM/yyyy"
+            };
 
-            if (DateTime.TryParseExact(cleanedDateStr, "d MMM yyyy HH:mm:ss",
-                CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
+            if (DateTime.TryParseExact(rawDateStr, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
             {
                 string keyDate = parsedDate.ToString("yyyy-MM-dd");
 
@@ -131,13 +140,12 @@ public class NewsManager : MonoBehaviour
             }
         }
 
-        // Sort news chronologically descending (newest first)
         allNewsList.Sort((a, b) => b.Date.CompareTo(a.Date));
     }
 
     private int FindNextTradingDay(DateTime newsDate)
     {
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < 30; i++)
         {
             string candidate = newsDate.AddDays(i).ToString("yyyy-MM-dd");
             if (dateToDayMap.TryGetValue(candidate, out int dayIndex))
@@ -155,17 +163,14 @@ public class NewsManager : MonoBehaviour
             headerDateText.text = dateStr;
         }
 
-        // Get all news published on or before current simulation day
         activeAvailableNews = allNewsList.FindAll(n => n.MappedDay <= currentDay);
-        
-        // Reset news page to 0 whenever day changes
+
         currentNewsPageIndex = 0;
         RefreshNewsUI();
     }
 
     public void RefreshNewsUI()
     {
-        // Clear all 4 rows
         for (int i = 0; i < newsRows.Length; i++)
         {
             if (newsRows[i] != null) newsRows[i].Clear();
@@ -179,14 +184,14 @@ public class NewsManager : MonoBehaviour
             if (newsIndex < activeAvailableNews.Count && newsRows[i] != null)
             {
                 var news = activeAvailableNews[newsIndex];
-                newsRows[i].SetNews(news.Title, news.Description, news.Date.ToString("dd MMM yyyy HH:mm"));
+
+                string formattedDayOnly = $"Day {news.MappedDay}";
+
+                newsRows[i].SetNews(news.Title, news.Description, formattedDayOnly);
             }
         }
     }
 
-    /// <summary>
-    /// Call this from UI Button OnClick() for Newer/Next News Page
-    /// </summary>
     public void PreviousNewsPage()
     {
         if (currentNewsPageIndex > 0)
@@ -196,9 +201,6 @@ public class NewsManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Call this from UI Button OnClick() for Older/Previous News Page
-    /// </summary>
     public void NextNewsPage()
     {
         if ((currentNewsPageIndex + 1) * newsRows.Length < activeAvailableNews.Count)
@@ -208,7 +210,6 @@ public class NewsManager : MonoBehaviour
         }
     }
 
-    // Handles multi-line CSV entries inside quotes
     private List<string[]> ParseCsvWithQuotes(string csvText)
     {
         List<string[]> rows = new List<string[]>();

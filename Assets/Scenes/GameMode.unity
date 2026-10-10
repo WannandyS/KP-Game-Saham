@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 52016407}
   - component: {fileID: 52016406}
   - component: {fileID: 52016408}
+  - component: {fileID: 52016409}
   m_Layer: 5
   m_Name: UpperMid
   m_TagString: Untagged
@@ -244,6 +245,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CandlestickChart
   chartArea: {fileID: 52016405}
+  maxCandles: 30
+  candleWidthPercent: 0.8
+  wickWidth: 2
+  minimumBodyHeight: 2
+  priceLabelWidth: 70
+  chartRightPadding: 5
+  footerHeight: 30
+  dayFontSize: 12
+  bullishColor: {r: 0, g: 1, b: 0, a: 1}
+  bearishColor: {r: 1, g: 0, b: 0, a: 1}
+  dojiColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  gridColor: {r: 1, g: 1, b: 1, a: 0.15}
+  gridLineCount: 5
+  gridLineWidth: 1
+  textColor: {r: 1, g: 1, b: 1, a: 1}
+  priceFontSize: 14
+  priceFont: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+--- !u!114 &52016409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 52016404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83b3822ccd4519246916e4012b787b5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CandlestickChart
+  chartArea: {fileID: 0}
   maxCandles: 30
   candleWidthPercent: 0.8
   wickWidth: 2
@@ -3601,7 +3632,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 542728485}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5be7e4a4f324d1c488ea414aec16b46b, type: 3}
+  m_Script: {fileID: 11500000, guid: f7ca1ec8967d77f418cfd8d8a4dbc24b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SearchableDropdown
   mainButton: {fileID: 465094344}
@@ -3612,10 +3643,10 @@ MonoBehaviour:
   itemPrefab: {fileID: 3260231601947528154, guid: a49b4f916fac5ad42a9acb2cb8961a79, type: 3}
   chartController: {fileID: 52016408}
   csvDatasets:
-  - {fileID: 4900000, guid: acabb5d7efe24424faa7626cc6f77f32, type: 3}
-  - {fileID: 4900000, guid: 14cc80aaf7aeabe478f89f21649cffc8, type: 3}
   - {fileID: 4900000, guid: a9c298886d5a3aa4b95bf07fbd964bc0, type: 3}
   - {fileID: 4900000, guid: 69a35f870e1d3164f996200c99d9f360, type: 3}
+  - {fileID: 4900000, guid: acabb5d7efe24424faa7626cc6f77f32, type: 3}
+  - {fileID: 4900000, guid: 14cc80aaf7aeabe478f89f21649cffc8, type: 3}
 --- !u!1 &543276517
 GameObject:
   m_ObjectHideFlags: 0

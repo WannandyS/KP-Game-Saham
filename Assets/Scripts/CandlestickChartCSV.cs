@@ -30,7 +30,7 @@ public class CandlestickChart : MonoBehaviour
     }
 
     [Header("CSV")]
-    public TextAsset csvFile;
+    private TextAsset currentCsvFile;
 
     [Header("Chart Area")]
     public RectTransform chartArea;
@@ -103,24 +103,38 @@ public class CandlestickChart : MonoBehaviour
 
     private void Start()
     {
-        LoadCSV();
         SubscribeToDayManager();
+    }
+
+    public void LoadNewDataset(TextAsset newCsv)
+    {
+        currentCsvFile = newCsv;
+        LoadCSV();
 
         if (DaySimulationManager.Instance != null)
         {
             DaySimulationManager.Instance.totalDays = allCandles.Count;
-
             HandleDayChanged(DaySimulationManager.Instance.currentDay);
+        }
+        else
+        {
+            HandleDayChanged(allCandles.Count);
         }
     }
 
     private void LoadCSV()
     {
         allCandles.Clear();
-        if (csvFile == null) return;
+        if (currentCsvFile == null) return;
 
-        string[] lines = csvFile.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        if (lines.Length <= 1) return;
+        // Use currentCsvFile instead of csvFile
+        string[] lines = currentCsvFile.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+        if (lines.Length <= 1)
+        {
+            ClearChart(); // Clear visuals if file is empty
+            return;
+        }
 
         string[] headers = SplitCSVLine(lines[0]);
         int dateIndex = FindColumnIndex(headers, "Date");

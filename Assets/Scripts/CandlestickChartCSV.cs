@@ -74,6 +74,10 @@ public class CandlestickChart : MonoBehaviour
     private readonly List<CandleData> allCandles = new List<CandleData>();
     private readonly List<CandleData> displayedCandles = new List<CandleData>();
 
+    // Menyimpan batas bawah dan atas grid yang sedang aktif agar posisi candle tetap akurat
+    private float currentGridMin = 0f;
+    private float currentGridMax = 1f;
+
     private void OnEnable()
     {
         SubscribeToDayManager();
@@ -127,12 +131,11 @@ public class CandlestickChart : MonoBehaviour
         allCandles.Clear();
         if (currentCsvFile == null) return;
 
-        // Use currentCsvFile instead of csvFile
         string[] lines = currentCsvFile.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
         if (lines.Length <= 1)
         {
-            ClearChart(); // Clear visuals if file is empty
+            ClearChart();
             return;
         }
 
@@ -205,18 +208,34 @@ public class CandlestickChart : MonoBehaviour
             lowestPrice -= 1f;
         }
 
+        // Hitung kelipatan langkah (step) yang bersih untuk indikator harga (misal kelipatan 100, 500, 1000)
         float priceRange = highestPrice - lowestPrice;
-        float padding = priceRange * 0.05f;
+        float roughStep = priceRange / Mathf.Max(1, gridLineCount);
+        float magnitude = Mathf.Pow(10, Mathf.Floor(Mathf.Log10(roughStep > 0 ? roughStep : 1f)));
+        float residual = roughStep / magnitude;
+        float cleanStep;
 
-        highestPrice += padding;
-        lowestPrice -= padding;
+        if (residual < 1.5f) cleanStep = 1f * magnitude;
+        else if (residual < 3f) cleanStep = 2f * magnitude;
+        else if (residual < 7f) cleanStep = 5f * magnitude;
+        else cleanStep = 10f * magnitude;
+
+        // Tentukan batas bawah dan atas grid yang dibulatkan rapi
+        currentGridMin = Mathf.Floor(lowestPrice / cleanStep) * cleanStep;
+        currentGridMax = Mathf.Ceil(highestPrice / cleanStep) * cleanStep;
+
+        // Jika rentang terlalu sempit, pastikan min dan max tidak sama
+        if (Mathf.Approximately(currentGridMin, currentGridMax))
+        {
+            currentGridMin -= cleanStep;
+            currentGridMax += cleanStep;
+        }
 
         float totalWidth = chartArea.rect.width;
         float candleAreaWidth = Mathf.Max(1f, totalWidth - priceLabelWidth - chartRightPadding);
 
-        DrawGrid(lowestPrice, highestPrice, candleAreaWidth);
+        DrawGrid(candleAreaWidth);
 
-        // Uniform slot sizing: Divides width by fixed maxCandles to prevent oversized elements on early days
         int slotCount = Mathf.Max(maxCandles, displayedCandles.Count);
         float slotWidth = candleAreaWidth / slotCount;
 
@@ -226,19 +245,19 @@ public class CandlestickChart : MonoBehaviour
             float candleWidth = slotWidth * candleWidthPercent;
             float x = (i * slotWidth) + (slotWidth * 0.5f);
 
-            DrawCandle(candle, x, candleWidth, lowestPrice, highestPrice);
+            DrawCandle(candle, x, candleWidth);
             CreateFooterLabel(candle.dayIndex, x, slotWidth);
         }
     }
 
-    private void DrawCandle(CandleData candle, float x, float candleWidth, float lowestPrice, float highestPrice)
+    private void DrawCandle(CandleData candle, float x, float candleWidth)
     {
         Color candleColor = candle.close > candle.open ? bullishColor : (candle.close < candle.open ? bearishColor : dojiColor);
 
-        float highY = PriceToY(candle.high, lowestPrice, highestPrice);
-        float lowY = PriceToY(candle.low, lowestPrice, highestPrice);
-        float openY = PriceToY(candle.open, lowestPrice, highestPrice);
-        float closeY = PriceToY(candle.close, lowestPrice, highestPrice);
+        float highY = PriceToY(candle.high);
+        float lowY = PriceToY(candle.low);
+        float openY = PriceToY(candle.open);
+        float closeY = PriceToY(candle.close);
 
         float wickTop = Mathf.Max(highY, lowY);
         float wickBottom = Mathf.Min(highY, lowY);
@@ -273,7 +292,7 @@ public class CandlestickChart : MonoBehaviour
         body.gameObject.AddComponent<ChartHoverTrigger>().Init(tooltipText);
     }
 
-    private void DrawGrid(float lowestPrice, float highestPrice, float candleAreaWidth)
+    private void DrawGrid(float candleAreaWidth)
     {
         if (gridLineCount <= 0) return;
         float printableHeight = chartArea.rect.height - footerHeight;
@@ -282,7 +301,9 @@ public class CandlestickChart : MonoBehaviour
         {
             float normalized = i / (float)gridLineCount;
             float y = footerHeight + (normalized * printableHeight);
-            float price = Mathf.Lerp(lowestPrice, highestPrice, normalized);
+
+            // Harga per baris grid dihitung berdasarkan kelipatan bersih (nice numbers)
+            float price = Mathf.Lerp(currentGridMin, currentGridMax, normalized);
 
             RectTransform line = CreateImage("GridLine", gridColor, false);
             line.SetParent(chartArea, false);
@@ -341,7 +362,7 @@ public class CandlestickChart : MonoBehaviour
         if (priceFont != null) text.font = priceFont;
     }
 
-    private string FormatPrice(float price) => price.ToString("#,##0.##", CultureInfo.InvariantCulture);
+    private string FormatPrice(float price) => Mathf.RoundToInt(price).ToString("#,##0", CultureInfo.InvariantCulture);
 
     private RectTransform CreateImage(string objectName, Color color, bool raycastTarget = false)
     {
@@ -352,9 +373,9 @@ public class CandlestickChart : MonoBehaviour
         return imageObject.GetComponent<RectTransform>();
     }
 
-    private float PriceToY(float price, float lowestPrice, float highestPrice)
+    private float PriceToY(float price)
     {
-        float normalized = Mathf.InverseLerp(lowestPrice, highestPrice, price);
+        float normalized = Mathf.InverseLerp(currentGridMin, currentGridMax, price);
         float printableHeight = chartArea.rect.height - footerHeight;
         return footerHeight + (normalized * printableHeight);
     }

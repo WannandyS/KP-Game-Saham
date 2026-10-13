@@ -15,6 +15,7 @@ public class SearchableDropdown : MonoBehaviour
 
     [Header("Chart Integration")]
     public CandlestickChart chartController;
+    public VolumeChartCSV volumeChartController; // <-- Added reference for volume
     public List<TextAsset> csvDatasets = new List<TextAsset>();
     private List<GameObject> itemGameObjects = new List<GameObject>();
 
@@ -23,7 +24,6 @@ public class SearchableDropdown : MonoBehaviour
         dropdownPanel.SetActive(false);
         mainButton.onClick.AddListener(ToggleDropdown);
         searchInput.onValueChanged.AddListener(FilterList);
-        
 
         GenerateAllItems();
 
@@ -85,14 +85,24 @@ public class SearchableDropdown : MonoBehaviour
         searchInput.text = selectedCsv.name;
         dropdownPanel.SetActive(false);
 
-        // Send the selected file to the chart
+        // Send the selected file to the candlestick chart
         if (chartController != null)
         {
             chartController.LoadNewDataset(selectedCsv);
         }
         else
         {
-            Debug.LogWarning("SearchableDropdown: Chart Controller is not assigned in the Inspector!");
+            Debug.LogWarning("SearchableDropdown: Candlestick Chart Controller is not assigned in the Inspector!");
+        }
+
+        // Send the selected file to the volume chart
+        if (volumeChartController != null)
+        {
+            volumeChartController.LoadNewDataset(selectedCsv);
+        }
+        else
+        {
+            Debug.LogWarning("SearchableDropdown: Volume Chart Controller is not assigned in the Inspector!");
         }
     }
 }

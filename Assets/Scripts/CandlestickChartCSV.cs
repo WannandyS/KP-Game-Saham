@@ -16,15 +16,17 @@ public class CandlestickChart : MonoBehaviour
         public float high;
         public float low;
         public float close;
+        public float volume; // Added
         public int dayIndex;
 
-        public CandleData(string date, float open, float high, float low, float close, int dayIndex)
+        public CandleData(string date, float open, float high, float low, float close, float volume, int dayIndex)
         {
             this.date = date;
             this.open = open;
             this.high = high;
             this.low = low;
             this.close = close;
+            this.volume = volume;
             this.dayIndex = dayIndex;
         }
     }
@@ -145,6 +147,7 @@ public class CandlestickChart : MonoBehaviour
         int highIndex = FindColumnIndex(headers, "High");
         int lowIndex = FindColumnIndex(headers, "Low");
         int closeIndex = FindColumnIndex(headers, "Close");
+        int volumeIndex = FindColumnIndex(headers, "Volume"); // Added
 
         int currentDayCounter = 1;
 
@@ -165,8 +168,12 @@ public class CandlestickChart : MonoBehaviour
                 !TryParseFloat(values[lowIndex], out float low) ||
                 !TryParseFloat(values[closeIndex], out float close))
                 continue;
-
-            allCandles.Add(new CandleData(date, open, high, low, close, currentDayCounter));
+            float volume = 0f;
+                if (volumeIndex != -1 && values.Length > volumeIndex)
+                {
+                    TryParseFloat(values[volumeIndex], out volume);
+                }
+            allCandles.Add(new CandleData(date, open, high, low, close, volume, currentDayCounter));
             currentDayCounter++;
         }
     }
@@ -263,11 +270,12 @@ public class CandlestickChart : MonoBehaviour
         float wickBottom = Mathf.Min(highY, lowY);
         float wickHeight = Mathf.Max(wickTop - wickBottom, 1f);
 
-        string tooltipText = $"<b>Day {candle.dayIndex}</b>\n" +
-                            $"Open: {FormatPrice(candle.open)}\n" +
-                            $"High: {FormatPrice(candle.high)}\n" +
-                            $"Low: {FormatPrice(candle.low)}\n" +
-                            $"Close: {FormatPrice(candle.close)}";
+        string tooltipText = $"<b>Day {candle.dayIndex}</b> |  " +
+                    $"O: {FormatPrice(candle.open)}  |  " +
+                    $"H: {FormatPrice(candle.high)}  |  " +
+                    $"L: {FormatPrice(candle.low)}  |  " +
+                    $"C: {FormatPrice(candle.close)}  |  " +
+                    $"Vol: {candle.volume:#,##0}";
 
         RectTransform wick = CreateImage("Wick", candleColor, true);
         wick.SetParent(chartArea, false);

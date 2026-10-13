@@ -174,7 +174,6 @@ public class VolumeChartCSV : MonoBehaviour
             float x = (i * slotWidth) + (slotWidth * 0.5f);
 
             DrawBar(data, maxVolume, x, width);
-            CreateFooterLabel(data.dayIndex, x, slotWidth);
         }
     }
 
@@ -192,7 +191,7 @@ public class VolumeChartCSV : MonoBehaviour
         bar.anchoredPosition = new Vector2(x, footerHeight);
         bar.sizeDelta = new Vector2(width, barHeight);
 
-        string tooltipText = $"<b>Day {data.dayIndex}</b>\n" +
+        string tooltipText = $"<b>Day {data.dayIndex}</b> " +
                             $"Volume: {data.volume:#,##0} ({FormatVolume(data.volume)})";
 
         bar.gameObject.AddComponent<ChartHoverTrigger>().Init(tooltipText);
@@ -281,6 +280,21 @@ public class VolumeChartCSV : MonoBehaviour
         image.color = color;
         image.raycastTarget = raycastTarget;
         return imgObj.GetComponent<RectTransform>();
+    }
+
+    public void LoadNewDataset(TextAsset newCsv)
+    {
+        csvFile = newCsv;
+        LoadCSV();
+
+        if (DaySimulationManager.Instance != null)
+        {
+            HandleDayChanged(DaySimulationManager.Instance.currentDay);
+        }
+        else
+        {
+            HandleDayChanged(allVolume.Count);
+        }
     }
 
     private void ClearChart()

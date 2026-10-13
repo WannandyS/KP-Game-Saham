@@ -12,7 +12,7 @@ public class ChartHoverTrigger : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (ChartTooltip.Instance != null)
+        if (ChartTooltip.Instance != null && !string.IsNullOrEmpty(infoText))
         {
             ChartTooltip.Instance.ShowTooltip(infoText);
         }
@@ -22,7 +22,7 @@ public class ChartHoverTrigger : MonoBehaviour, IPointerEnterHandler, IPointerEx
     {
         if (ChartTooltip.Instance != null)
         {
-            ChartTooltip.Instance.HideTooltip();
+            ChartTooltip.Instance.ClearTooltip();
         }
     }
 }

@@ -54,7 +54,7 @@ public class TradeController : MonoBehaviour
 
         // Update Panel UI labels safely
         if (stockNameText != null) stockNameText.text = datasetName;
-        if (currentPriceText != null) currentPriceText.text = $"${close:N2}";
+        if (currentPriceText != null) currentPriceText.text = $"Rp{close:N2}";
     }
 
     public void OnClickBuy()
@@ -99,7 +99,7 @@ public class TradeController : MonoBehaviour
         bool success = PortfolioManager.Instance.ExecuteSell(currentDatasetName, currentDate, currentDayIndex, shares, currentClosePrice);
         if (success)
         {
-            SetFeedback($"Sold {shares}x {currentDatasetName} @ ${currentClosePrice:N2}");
+            SetFeedback($"Sold {shares}x 100x {currentDatasetName} @ ${currentClosePrice:N2}");
         }
         else
         {

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -9,17 +10,33 @@ using UnityEngine.SceneManagement;
 
 public class MarketOverviewController : MonoBehaviour
 {
+    public enum SortOption
+    {
+        NameAZ,             // Name: A to Z
+        NameZA,             // Name: Z to A
+        PriceHighToLow,     // Price: High to Low
+        PriceLowToHigh,     // Price: Low to High
+        ChangeHighToLow,    // % Change: Highest Gainers First
+        ChangeLowToHigh,    // % Change: Highest Losers First
+        VolumeHighToLow,    // Volume: Highest to Lowest
+        MarketCapHighToLow  // Market Cap: Highest to Lowest
+    }
+
     [Header("CSV Data Settings")]
     [Tooltip("Assign CSV text files for all 45 stocks. Name files as 'SYMBOL.csv' (e.g., AADI.csv)")]
     public TextAsset[] csvFiles;
     
     [Header("Day Selection")]
-    public int currentDayIndex = 1; // Day 1 = 1st trading row, Day 2 = 2nd trading row, etc.
+    public int currentDayIndex = 1; // Updated automatically by DaySimulationManager
     public TMP_Text dayHeaderLabel; // Reference to "Day 2" header text in top right
 
     [Header("UI Prefab & Container")]
     public GameObject stockRowPrefab; // Row Prefab containing UI text components and 'See More' button
     public Transform rowContainer;   // Content transform inside ScrollRect ScrollView
+
+    [Header("Sorting Controls")]
+    public TMP_Dropdown sortDropdown;
+    public SortOption currentSortOption = SortOption.NameAZ;
 
     [Header("Stock Metadata Mock")]
     [Tooltip("Default total outstanding shares used to calculate Market Cap if not present in CSV")]
@@ -30,13 +47,65 @@ public class MarketOverviewController : MonoBehaviour
 
     private List<StockRowData> currentMarketData = new List<StockRowData>();
 
+    private void OnEnable()
+    {
+        SubscribeToDayManager();
+    }
+
+    private void OnDisable()
+    {
+        UnsubscribeFromDayManager();
+    }
+
+    private void SubscribeToDayManager()
+    {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+            DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
+        }
+    }
+
+    private void UnsubscribeFromDayManager()
+    {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+        }
+    }
+
     private void Start()
     {
-        UpdateMarketOverview(currentDayIndex);
+        SubscribeToDayManager();
+
+        // Setup dropdown listener if assigned
+        if (sortDropdown != null)
+        {
+            sortDropdown.onValueChanged.RemoveAllListeners();
+            sortDropdown.onValueChanged.AddListener(OnSortDropdownChanged);
+        }
+
+        // Load data for initial persistent day
+        if (DaySimulationManager.Instance != null)
+        {
+            UpdateMarketOverview(DaySimulationManager.Instance.currentDay);
+        }
+        else
+        {
+            UpdateMarketOverview(currentDayIndex);
+        }
     }
 
     /// <summary>
-    /// Loads and updates all 45 stocks for the specified trading day.
+    /// Called automatically whenever DaySimulationManager changes the global simulation day.
+    /// </summary>
+    private void HandleDayChanged(int newDay)
+    {
+        UpdateMarketOverview(newDay);
+    }
+
+    /// <summary>
+    /// Loads, sorts, and updates all 45 stocks for the specified trading day.
     /// </summary>
     public void UpdateMarketOverview(int dayIndex)
     {
@@ -48,13 +117,7 @@ public class MarketOverviewController : MonoBehaviour
 
         currentMarketData.Clear();
 
-        // Clear existing instantiated UI rows
-        foreach (Transform child in rowContainer)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // Process each CSV file
+        // 1. Process and parse each CSV file
         foreach (TextAsset csvAsset in csvFiles)
         {
             if (csvAsset == null) continue;
@@ -65,10 +128,81 @@ public class MarketOverviewController : MonoBehaviour
             if (data != null)
             {
                 currentMarketData.Add(data);
-                InstantiateRowUI(data);
             }
         }
+
+        // 2. Apply sorting before displaying UI
+        ApplySort();
+
+        // 3. Render UI rows
+        RebuildRowUI();
     }
+
+    /// <summary>
+    /// Sorts currentMarketData list based on currentSortOption.
+    /// </summary>
+    public void ApplySort()
+    {
+        switch (currentSortOption)
+        {
+            case SortOption.NameAZ:
+                currentMarketData = currentMarketData.OrderBy(s => s.stockSymbol).ToList();
+                break;
+            case SortOption.NameZA:
+                currentMarketData = currentMarketData.OrderByDescending(s => s.stockSymbol).ToList();
+                break;
+            case SortOption.PriceHighToLow:
+                currentMarketData = currentMarketData.OrderByDescending(s => s.price).ToList();
+                break;
+            case SortOption.PriceLowToHigh:
+                currentMarketData = currentMarketData.OrderBy(s => s.price).ToList();
+                break;
+            case SortOption.ChangeHighToLow:
+                currentMarketData = currentMarketData.OrderByDescending(s => s.changePercent).ToList();
+                break;
+            case SortOption.ChangeLowToHigh:
+                currentMarketData = currentMarketData.OrderBy(s => s.changePercent).ToList();
+                break;
+            case SortOption.VolumeHighToLow:
+                currentMarketData = currentMarketData.OrderByDescending(s => s.volume).ToList();
+                break;
+            case SortOption.MarketCapHighToLow:
+                currentMarketData = currentMarketData.OrderByDescending(s => s.marketCap).ToList();
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Clears container and instantiates sorted row prefabs.
+    /// </summary>
+    private void RebuildRowUI()
+    {
+        foreach (Transform child in rowContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (StockRowData data in currentMarketData)
+        {
+            InstantiateRowUI(data);
+        }
+    }
+
+    /// <summary>
+    /// Call this when changing dropdown filter selection.
+    /// </summary>
+    public void OnSortDropdownChanged(int index)
+    {
+        currentSortOption = (SortOption)index;
+        ApplySort();
+        RebuildRowUI();
+    }
+
+    // Public helper methods for UI buttons
+    public void SetSortMode(int sortOptionIndex) => OnSortDropdownChanged(sortOptionIndex);
+    public void SortByNameAZ() => OnSortDropdownChanged((int)SortOption.NameAZ);
+    public void SortByPriceHighToLow() => OnSortDropdownChanged((int)SortOption.PriceHighToLow);
+    public void SortByChangeHighToLow() => OnSortDropdownChanged((int)SortOption.ChangeHighToLow);
 
     /// <summary>
     /// Parses a standard stock CSV file and extracts data for a specific day row.
@@ -76,19 +210,16 @@ public class MarketOverviewController : MonoBehaviour
     private StockRowData ParseCSVForDay(string csvContent, string symbol, int day)
     {
         string[] lines = csvContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        if (lines.Length <= 1) return null; // Header only or empty
+        if (lines.Length <= 1) return null;
 
-        // Header: Date, Adj Close, Close, High, Low, Open, Volume
-        // Target index row (day 1 corresponds to line 1, day 2 to line 2, etc.)
-        if (day >= lines.Length) day = lines.Length - 1; // Clamp to available data
+        if (day >= lines.Length) day = lines.Length - 1;
 
         string[] currentCols = lines[day].Split(',');
         if (currentCols.Length < 7) return null;
 
-        float currentClose = float.Parse(currentCols[2]); // Close price
-        float currentVolume = float.Parse(currentCols[6]); // Volume
+        float currentClose = float.Parse(currentCols[2]);
+        float currentVolume = float.Parse(currentCols[6]);
 
-        // Calculate 24H Percentage Change relative to previous day
         float closePercentChange = 0f;
         if (day > 1)
         {
@@ -100,9 +231,8 @@ public class MarketOverviewController : MonoBehaviour
             }
         }
 
-        // Required Formulae
         float calculatedValue = currentClose * currentVolume;
-        float calculatedMarketCap = currentClose * defaultTotalShares; // Price * Total Outstanding Shares
+        float calculatedMarketCap = currentClose * defaultTotalShares;
 
         return new StockRowData
         {
@@ -116,9 +246,6 @@ public class MarketOverviewController : MonoBehaviour
         };
     }
 
-    /// <summary>
-    /// Instantiates and populates the UI Row prefab in the scrollable view.
-    /// </summary>
     private void InstantiateRowUI(StockRowData data)
     {
         GameObject newRow = Instantiate(stockRowPrefab, rowContainer);
@@ -130,21 +257,40 @@ public class MarketOverviewController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Handles click event for the "See More" detail button.
-    /// </summary>
     private void OnDetailsButtonClicked(StockRowData data)
     {
-        // Store selected stock symbol and date to pass to detail candlestick scene
         PlayerPrefs.SetString("SelectedStockSymbol", data.stockSymbol);
-        PlayerPrefs.SetInt("SelectedDayIndex", currentDayIndex);
+        
+        // Pass current day from DaySimulationManager if available
+        int activeDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : currentDayIndex;
+        PlayerPrefs.SetInt("SelectedDayIndex", activeDay);
         PlayerPrefs.Save();
 
-        // Load the Detail Scene showing Candlesticks & Volume
         SceneManager.LoadScene(detailSceneName);
     }
 
-    // Call this from a UI Button or Slider to switch days dynamically
-    public void NextDay() => UpdateMarketOverview(currentDayIndex + 1);
-    public void PreviousDay() => UpdateMarketOverview(currentDayIndex - 1);
+    // Method to call from UI Next/Prev buttons if using DaySimulationManager directly
+    public void NextDay()
+    {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.NextDay(); // Assuming DaySimulationManager has a NextDay method
+        }
+        else
+        {
+            UpdateMarketOverview(currentDayIndex + 1);
+        }
+    }
+
+    public void PreviousDay()
+    {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.PreviousDay();
+        }
+        else
+        {
+            UpdateMarketOverview(currentDayIndex - 1);
+        }
+    }
 }

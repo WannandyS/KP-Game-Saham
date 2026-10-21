@@ -69,17 +69,14 @@ public class PortfolioUI : MonoBehaviour
             var pos = kvp.Value;
             string ticker = pos.datasetName;
 
-            // Fetch current price and 24h change from CSV dataset matching ticker name
             GetMarketData(ticker, out float currentPrice, out float change24h);
 
-            // If no dataset found, fallback to average buy price so math doesn't break
             if (currentPrice <= 0f) currentPrice = pos.AverageBuyPrice;
 
-            float totalValue = pos.totalShares * currentPrice * 100;
+            float totalValue = pos.totalShares * currentPrice;
             float profitLoss = totalValue - pos.totalInvestedCost;
             totalHoldingsValue += totalValue;
 
-            // Instantiate Row Prefab
             if (holdingRowPrefab != null && holdingsContainer != null)
             {
                 GameObject rowObj = Instantiate(holdingRowPrefab, holdingsContainer);
@@ -101,10 +98,16 @@ public class PortfolioUI : MonoBehaviour
             }
         }
 
-        // Update Account Totals
-        float netWorth = totalHoldingsValue;
-        if (cashText != null) cashText.text = $"{cash:N2}";
-        if (totalNetWorthText != null) totalNetWorthText.text = $"{netWorth:N2}";
+        float netWorth = cash + totalHoldingsValue;
+        if (cashText != null) cashText.text = $"Cash: Rp{cash:N2}";
+        if (totalNetWorthText != null) totalNetWorthText.text = $"Net Worth: Rp{netWorth:N2}";
+
+        // --- ADD THIS TO FORCE UI LAYOUT TO REFRESH PROPERLY ---
+        if (holdingsContainer != null)
+        {
+            Canvas.ForceUpdateCanvases();
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(holdingsContainer as RectTransform);
+        }
     }
 
     // Helper to extract the latest price and 24h change percentage from the matching CSV file
@@ -113,8 +116,16 @@ public class PortfolioUI : MonoBehaviour
         latestPrice = 0f;
         change24h = 0f;
 
-        TextAsset targetCsv = csvDatasets.Find(csv => csv != null && csv.name == datasetName);
-        if (targetCsv == null) return;
+        // Clean name to match asset names securely (removes case sensitivity or extension issues)
+        string searchName = datasetName.Trim().ToLower();
+
+        TextAsset targetCsv = csvDatasets.Find(csv => csv != null && csv.name.Trim().ToLower() == searchName);
+        
+        if (targetCsv == null)
+        {
+            Debug.LogWarning($"PortfolioUI: Could not find CSV dataset matching ticker '{datasetName}'. Check your csvDatasets list assignment!");
+            return;
+        }
 
         string[] lines = targetCsv.text.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
         if (lines.Length <= 1) return;
@@ -139,14 +150,12 @@ public class PortfolioUI : MonoBehaviour
 
         if (closes.Count > 0)
         {
-            // Limit based on current day simulation if available, otherwise take the absolute latest row
             int currentDayLimit = (DaySimulationManager.Instance != null) ? Mathf.Min(DaySimulationManager.Instance.currentDay, closes.Count) : closes.Count;
             
             if (currentDayLimit > 0)
             {
                 latestPrice = closes[currentDayLimit - 1];
 
-                // Calculate 24h change between current day and previous day
                 if (currentDayLimit > 1)
                 {
                     float prevPrice = closes[currentDayLimit - 2];
@@ -155,7 +164,6 @@ public class PortfolioUI : MonoBehaviour
             }
         }
     }
-
     private int FindColumnIndex(string[] headers, string columnName)
     {
         for (int i = 0; i < headers.Length; i++)

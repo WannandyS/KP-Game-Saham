@@ -17,7 +17,7 @@ public class PortfolioManager : MonoBehaviour
         public int totalShares;
         public float totalInvestedCost; // Sum of (shares * purchase price)
 
-        public float AverageBuyPrice => totalShares * 100 > 0 ? totalInvestedCost / totalShares : 0f;
+        public float AverageBuyPrice => totalShares > 0 ? totalInvestedCost / totalShares : 0f;
     }
 
     [Serializable]
@@ -57,7 +57,7 @@ public class PortfolioManager : MonoBehaviour
     {
         if (sharesToBuy <= 0 || pricePerShare <= 0f) return false;
 
-        float totalCost = sharesToBuy * pricePerShare * 100 + (sharesToBuy * pricePerShare * 1 / 100);
+        float totalCost = sharesToBuy * pricePerShare;
         if (currentCash < totalCost)
         {
             Debug.LogWarning("PortfolioManager: Insufficient cash to complete buy order.");
@@ -104,7 +104,7 @@ public class PortfolioManager : MonoBehaviour
         
         // Calculate proportional cost basis being removed
         float costBasisPerShare = pos.AverageBuyPrice;
-        float revenue = sharesToSell * pricePerShare * 100 - (sharesToSell * pricePerShare * 2 / 100);
+        float revenue = sharesToSell * pricePerShare;
 
         pos.totalShares -= sharesToSell;
         pos.totalInvestedCost -= (sharesToSell * costBasisPerShare);

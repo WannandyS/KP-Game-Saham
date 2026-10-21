@@ -5,15 +5,29 @@ using UnityEngine.UI;
 public class TradeController : MonoBehaviour
 {
     [Header("UI References")]
-    public TMP_Text stockNameText;       // Displays active stock name
-    public TMP_Text currentPriceText;    // Displays current close price
-    public TMP_InputField shareInputAmount; // Input field for shares
-    public TMP_Text feedbackText;        // Status messages (success/failure)
+    public TMP_Text stockNameText;
+    public TMP_Text currentPriceText;
+    public TMP_InputField shareInputAmount;
+    public TMP_Text feedbackText;
+
+    [Header("Confirmation PopUps")]
+    public GameObject buyConfirmPopUp;       // PopUp Konfirmasi Beli (Yes/No)
+    public GameObject sellConfirmPopUp;      // PopUp Konfirmasi Jual (Yes/No)
+    public TMP_Text buyConfirmText;          // Text pesan rincian beli
+    public TMP_Text sellConfirmText;         // Text pesan rincian jual
+
+    [Header("Result PopUps")]
+    public GameObject buyPopUp;              // PopUp Beli Berhasil
+    public GameObject sellPopUp;             // PopUp Jual Berhasil
+    public GameObject insufficientCashPopUp; // PopUp Cash Tidak Cukup
+    public GameObject noSharesPopUp;         // PopUp Tidak Punya Saham / Saham Kurang
 
     private string currentDatasetName = "DefaultStock";
     private float currentClosePrice = 0f;
     private string currentDate = "";
     private int currentDayIndex = 1;
+
+    private int pendingShares = 0; // Menyimpan lembar/lot saham yang diinput
 
     private void Start()
     {
@@ -22,29 +36,23 @@ public class TradeController : MonoBehaviour
             shareInputAmount.text = "1";
         }
         SyncWithChart();
+        CloseAllPopUps();
     }
 
     private void OnEnable()
     {
-        // Automatically sync up the price whenever the trading panel is opened/enabled
         SyncWithChart();
     }
 
     public void SyncWithChart()
     {
         CandlestickChart chart = FindAnyObjectByType<CandlestickChart>();
-        if (chart != null)
+        if (chart != null && DaySimulationManager.Instance != null)
         {
-            // Trigger a refresh or force the chart to re-feed its current day state
-            if (DaySimulationManager.Instance != null)
-            {
-                // This triggers HandleDayChanged on the chart, which will push the latest price back here
-                // (Alternatively, you can read public data if exposed, but pushing via simulation day is seamless)
-            }
+            // Logika sync chart
         }
     }
 
-    // Called by CandlestickChart whenever data or day changes
     public void SetMarketPrice(string datasetName, string date, int dayIndex, float close)
     {
         currentDatasetName = datasetName;
@@ -52,59 +60,130 @@ public class TradeController : MonoBehaviour
         currentDayIndex = dayIndex;
         currentClosePrice = close;
 
-        // Update Panel UI labels safely
         if (stockNameText != null) stockNameText.text = datasetName;
         if (currentPriceText != null) currentPriceText.text = $"Rp{close:N2}";
     }
 
+    // --- ALUR BELI ---
     public void OnClickBuy()
     {
-        if (!int.TryParse(shareInputAmount.text, out int shares) || shares <= 0)
+        CloseAllPopUps();
+
+        if (!int.TryParse(shareInputAmount.text, out pendingShares) || pendingShares <= 0)
         {
-            SetFeedback("Please enter a valid share amount.");
+            SetFeedback("Jumlah lembar saham tidak valid.");
             return;
         }
+
+        float totalCost = pendingShares * currentClosePrice;
+        if (buyConfirmText != null)
+        {
+            buyConfirmText.text = $"Apakah Anda yakin ingin membeli {pendingShares} lot {currentDatasetName} seharga Rp{totalCost:N2}?";
+        }
+
+        ShowPopUp(buyConfirmPopUp);
+    }
+
+    public void ConfirmBuyYes()
+    {
+        CloseAllPopUps();
 
         if (PortfolioManager.Instance == null)
         {
-            SetFeedback("PortfolioManager not found! Make sure it's persistent.");
+            SetFeedback("PortfolioManager tidak ditemukan!");
             return;
         }
 
-        bool success = PortfolioManager.Instance.ExecuteBuy(currentDatasetName, currentDate, currentDayIndex, shares, currentClosePrice);
+        bool success = PortfolioManager.Instance.ExecuteBuy(currentDatasetName, currentDate, currentDayIndex, pendingShares, currentClosePrice);
+        
         if (success)
         {
-            SetFeedback($"Bought {shares}x {currentDatasetName} @ ${currentClosePrice:N2}");
+            SetFeedback($"Berhasil membeli {pendingShares}x {currentDatasetName}");
+            ShowPopUp(buyPopUp);
         }
         else
         {
-            SetFeedback("Buy failed: Insufficient cash.");
+            SetFeedback("Gagal beli: Saldo tidak cukup.");
+            ShowPopUp(insufficientCashPopUp);
         }
     }
 
+    // --- ALUR JUAL ---
     public void OnClickSell()
     {
-        if (!int.TryParse(shareInputAmount.text, out int shares) || shares <= 0)
+        CloseAllPopUps();
+
+        if (!int.TryParse(shareInputAmount.text, out pendingShares) || pendingShares <= 0)
         {
-            SetFeedback("Please enter a valid share amount.");
+            SetFeedback("Jumlah lembar saham tidak valid.");
             return;
         }
 
         if (PortfolioManager.Instance == null)
         {
-            SetFeedback("PortfolioManager not found!");
+            SetFeedback("PortfolioManager tidak ditemukan!");
             return;
         }
 
-        bool success = PortfolioManager.Instance.ExecuteSell(currentDatasetName, currentDate, currentDayIndex, shares, currentClosePrice);
+        // Cek kepemilikan saham langsung di PortfolioManager
+        int ownedShares = PortfolioManager.Instance.GetOwnedShares(currentDatasetName);
+
+        // Jika tidak punya saham sama sekali atau jumlah saham kurang dari input
+        if (ownedShares < pendingShares)
+        {
+            SetFeedback($"Gagal jual: Saham tidak mencukupi (dimiliki: {ownedShares}).");
+            ShowPopUp(noSharesPopUp); // LANGSUNG TAMPILKAN POPUP TIDAK ADA SAHAM
+            return;
+        }
+
+        // Jika saham mencukupi, baru tampilkan pop-up konfirmasi jual
+        float totalRevenue = pendingShares * currentClosePrice;
+        if (sellConfirmText != null)
+        {
+            sellConfirmText.text = $"Apakah Anda yakin ingin menjual {pendingShares} lot {currentDatasetName} seharga Rp{totalRevenue:N2}?";
+        }
+
+        ShowPopUp(sellConfirmPopUp);
+    }
+
+    public void ConfirmSellYes()
+    {
+        CloseAllPopUps();
+
+        if (PortfolioManager.Instance == null)
+        {
+            SetFeedback("PortfolioManager tidak ditemukan!");
+            return;
+        }
+
+        bool success = PortfolioManager.Instance.ExecuteSell(currentDatasetName, currentDate, currentDayIndex, pendingShares, currentClosePrice);
+        
         if (success)
         {
-            SetFeedback($"Sold {shares}x 100x {currentDatasetName} @ ${currentClosePrice:N2}");
+            SetFeedback($"Berhasil menjual {pendingShares}x {currentDatasetName}");
+            ShowPopUp(sellPopUp);
         }
         else
         {
-            SetFeedback("Sell failed: Not enough shares owned.");
+            SetFeedback("Gagal jual: Saham tidak cukup.");
+            ShowPopUp(noSharesPopUp);
         }
+    }
+
+    // --- HELPER POPUP ---
+    private void ShowPopUp(GameObject popUp)
+    {
+        if (popUp != null) popUp.SetActive(true);
+    }
+
+    public void CloseAllPopUps()
+    {
+        if (buyConfirmPopUp != null) buyConfirmPopUp.SetActive(false);
+        if (sellConfirmPopUp != null) sellConfirmPopUp.SetActive(false);
+        if (buyPopUp != null) buyPopUp.SetActive(false);
+        if (sellPopUp != null) sellPopUp.SetActive(false);
+        if (insufficientCashPopUp != null) insufficientCashPopUp.SetActive(false);
+        if (noSharesPopUp != null) noSharesPopUp.SetActive(false);
     }
 
     private void SetFeedback(string message)

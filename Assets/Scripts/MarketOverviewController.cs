@@ -17,17 +17,16 @@ public class MarketOverviewController : MonoBehaviour
         Value
     }
 
-    // NEW: Struct to hold references to the Header Text components
     [Serializable]
     public struct ColumnHeaderUI
     {
         public SortColumn columnType;
         public TMP_Text headerText;
-        [HideInInspector] public string originalText; // Stores the base text (e.g., "Price")
+        [HideInInspector] public string originalText; // Menyimpan teks dasar (misal: "SAHAM")
     }
 
     [Header("CSV Data Settings")]
-    [Tooltip("Assign CSV text files for all 45 stocks. Name files as 'SYMBOL.csv' (e.g., AADI.csv)")]
+    [Tooltip("Assign CSV text files for all stocks. Name files as 'SYMBOL.csv' (e.g., ADMR.csv)")]
     public TextAsset[] csvFiles;
 
     [Header("Day Selection")]
@@ -41,19 +40,34 @@ public class MarketOverviewController : MonoBehaviour
     [Header("Sorting State & UI")]
     public SortColumn currentSortColumn = SortColumn.Name;
     public bool isAscending = true;
-    public ColumnHeaderUI[] columnHeaders; // Array to hold the header text references
+    public ColumnHeaderUI[] columnHeaders; // Array penampung referensi header kolom
 
-    // NEW: Strings for the visual indicators
-    private readonly string arrowUp = "D";
-    private readonly string arrowDown = "A";
+    // Indikator panah visual sorting
+    private readonly string arrowUp = " ▲";
+    private readonly string arrowDown = " ▼";
 
     [Header("Stock Metadata Mock")]
     public float defaultTotalShares = 5000000000f;
 
     [Header("Target Scene")]
-    public string detailSceneName = "StockDetailScene";
+    public string detailSceneName = "DetailPerusahaan";
 
     private List<StockRowData> currentMarketData = new List<StockRowData>();
+
+    private void Awake()
+    {
+        // Menyimpan teks asli header sebelum ditambahkan panah indikator
+        if (columnHeaders != null)
+        {
+            for (int i = 0; i < columnHeaders.Length; i++)
+            {
+                if (columnHeaders[i].headerText != null)
+                {
+                    columnHeaders[i].originalText = columnHeaders[i].headerText.text;
+                }
+            }
+        }
+    }
 
     private void OnEnable()
     {
@@ -96,19 +110,6 @@ public class MarketOverviewController : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
-        // Awake runs before OnEnable and Start. 
-        // This guarantees we save the clean original text before any arrows are added.
-        for (int i = 0; i < columnHeaders.Length; i++)
-        {
-            if (columnHeaders[i].headerText != null)
-            {
-                columnHeaders[i].originalText = columnHeaders[i].headerText.text;
-            }
-        }
-    }
-
     private void HandleDayChanged(int newDay)
     {
         UpdateMarketOverview(newDay);
@@ -124,24 +125,30 @@ public class MarketOverviewController : MonoBehaviour
 
         currentMarketData.Clear();
 
-        foreach (TextAsset csvAsset in csvFiles)
+        if (csvFiles != null)
         {
-            if (csvAsset == null) continue;
-
-            string stockSymbol = csvAsset.name;
-            StockRowData data = ParseCSVForDay(csvAsset.text, stockSymbol, currentDayIndex);
-
-            if (data != null)
+            foreach (TextAsset csvAsset in csvFiles)
             {
-                currentMarketData.Add(data);
+                if (csvAsset == null) continue;
+
+                string stockSymbol = csvAsset.name; // Nama file CSV sebagai Ticker
+                StockRowData data = ParseCSVForDay(csvAsset.text, stockSymbol, currentDayIndex);
+
+                if (data != null)
+                {
+                    currentMarketData.Add(data);
+                }
             }
         }
 
         ApplySort();
         RebuildRowUI();
-        UpdateHeaderVisuals(); // Update arrows when data loads
+        UpdateHeaderVisuals();
     }
 
+    /// <summary>
+    /// Dipanggil dari OnClick() tombol Header Kolom di UI
+    /// </summary>
     public void OnColumnHeaderClicked(int columnIndex)
     {
         SortColumn clickedColumn = (SortColumn)columnIndex;
@@ -158,7 +165,7 @@ public class MarketOverviewController : MonoBehaviour
 
         ApplySort();
         RebuildRowUI();
-        UpdateHeaderVisuals(); // Update arrows when clicked
+        UpdateHeaderVisuals();
     }
 
     public void ApplySort()
@@ -198,27 +205,30 @@ public class MarketOverviewController : MonoBehaviour
         }
     }
 
-    // --- NEW: UI VISUAL UPDATER ---
     private void UpdateHeaderVisuals()
     {
+        if (columnHeaders == null) return;
+
         for (int i = 0; i < columnHeaders.Length; i++)
         {
             if (columnHeaders[i].headerText == null) continue;
 
-            
+            // Reset teks ke teks asli tanpa panah
             columnHeaders[i].headerText.text = columnHeaders[i].originalText;
 
+            // Tambahkan panah indikator jika kolom sedang aktif di-sort
             if (columnHeaders[i].columnType == currentSortColumn)
             {
                 string arrow = isAscending ? arrowUp : arrowDown;
-                columnHeaders[i].headerText.text = columnHeaders[i].headerText.text + arrow;
+                columnHeaders[i].headerText.text = columnHeaders[i].originalText + arrow;
             }
         }
     }
-    // ------------------------------
 
     private void RebuildRowUI()
     {
+        if (rowContainer == null) return;
+
         foreach (Transform child in rowContainer)
         {
             Destroy(child.gameObject);
@@ -271,19 +281,43 @@ public class MarketOverviewController : MonoBehaviour
 
     private void InstantiateRowUI(StockRowData data)
     {
+        if (stockRowPrefab == null || rowContainer == null) return;
+
         GameObject newRow = Instantiate(stockRowPrefab, rowContainer);
         StockRowUI rowUI = newRow.GetComponent<StockRowUI>();
 
         if (rowUI != null)
         {
-            rowUI.SetupRow(data, OnDetailsButtonClicked);
+            TextAsset priceCsv = GetCsvAssetBySymbol(data.stockSymbol);
+            string companyName = SelectedStockData.GetCompanyName(data.stockSymbol);
+
+            rowUI.SetupRow(data, priceCsv, companyName);
         }
     }
 
-    private void OnDetailsButtonClicked(StockRowData data)
+    private TextAsset GetCsvAssetBySymbol(string symbol)
     {
-        PlayerPrefs.SetString("SelectedStockSymbol", data.stockSymbol);
+        if (csvFiles == null) return null;
+        foreach (TextAsset csv in csvFiles)
+        {
+            if (csv != null && csv.name.Equals(symbol, StringComparison.OrdinalIgnoreCase))
+            {
+                return csv;
+            }
+        }
+        return null;
+    }
 
+    public void OnDetailsButtonClicked(StockRowData data)
+    {
+        if (data == null) return;
+
+        SelectedStockData.StockTicker = data.stockSymbol;
+        SelectedStockData.CompanyName = SelectedStockData.GetCompanyName(data.stockSymbol);
+        SelectedStockData.PriceCsvAsset = GetCsvAssetBySymbol(data.stockSymbol);
+        SelectedStockData.OpenOnGraphTab = false;
+
+        PlayerPrefs.SetString("SelectedStockSymbol", data.stockSymbol);
         int activeDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : currentDayIndex;
         PlayerPrefs.SetInt("SelectedDayIndex", activeDay);
         PlayerPrefs.Save();

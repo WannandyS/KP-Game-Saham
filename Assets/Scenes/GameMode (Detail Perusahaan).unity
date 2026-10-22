@@ -1859,7 +1859,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewsManager
   priceCsvAsset: {fileID: 4900000, guid: 14cc80aaf7aeabe478f89f21649cffc8, type: 3}
-  newsCsvAsset: {fileID: 4900000, guid: 4df8860adab1151449a00bcb71bd440c, type: 3}
+  allNewsCsvAssets:
+  - {fileID: 4900000, guid: 7b77066300ced1a43b62d9475566a75f, type: 3}
+  - {fileID: 4900000, guid: 5309a256d7bb86b4e85c87c4d63d3b99, type: 3}
+  - {fileID: 4900000, guid: ed37af7f455c66e4a8536ac087f04e13, type: 3}
+  - {fileID: 4900000, guid: 2b2c9fdba7660534d906554d2e1ac148, type: 3}
+  - {fileID: 4900000, guid: ba2084189bb7e4f4fbbb6031ad67f899, type: 3}
   newsRows:
   - {fileID: 1987818482}
   - {fileID: 1703676409}
@@ -3764,14 +3769,17 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4737116322543831121, guid: 7c82c88a1e08a22488a17865f3be15ac, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1689910467}
   m_SourcePrefab: {fileID: 100100000, guid: 7c82c88a1e08a22488a17865f3be15ac, type: 3}
 --- !u!114 &1445873403 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5176803539963057999, guid: 7c82c88a1e08a22488a17865f3be15ac, type: 3}
   m_PrefabInstance: {fileID: 1445873402}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1689910466}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3071fe31e485fa04687b3a3f7795af8a, type: 3}
@@ -3819,6 +3827,28 @@ RectTransform:
   m_AnchoredPosition: {x: -0.18563843, y: 0.2840271}
   m_SizeDelta: {x: 1328.2388, y: 871.00104}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1689910466 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4737116322543831121, guid: 7c82c88a1e08a22488a17865f3be15ac, type: 3}
+  m_PrefabInstance: {fileID: 1445873402}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1689910467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1689910466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3be21455a78fcd43a759423a2ecbb91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CompanyDetailController
+  tickerText: {fileID: 178356983}
+  companyNameText: {fileID: 2087626421}
+  candlestickChart: {fileID: 431513358}
+  newsManager: {fileID: 472825378}
+  tabsControl: {fileID: 1794295825}
 --- !u!114 &1703676409 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6708270669212954790, guid: ce719846e5a3a084899525252243f53f, type: 3}

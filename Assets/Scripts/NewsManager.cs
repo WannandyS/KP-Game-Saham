@@ -1,8 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using TMPro;
 
@@ -20,7 +20,9 @@ public class NewsManager : MonoBehaviour
 {
     [Header("CSV Text Assets")]
     public TextAsset priceCsvAsset;
-    public TextAsset newsCsvAsset;
+    
+    [Tooltip("Masukkan semua file CSV dari folder 'STOCK NEWS CSV' ke array ini.")]
+    public TextAsset[] allNewsCsvAssets; 
 
     [Header("UI References")]
     public NewsRowUI[] newsRows = new NewsRowUI[4];
@@ -35,13 +37,33 @@ public class NewsManager : MonoBehaviour
 
     private void Start()
     {
+        InitializeNewsData();
+    }
+
+    public void InitializeNewsData()
+    {
+        // Ambil CSV harga dari SelectedStockData jika slot di Inspector belum diisi
+        if (priceCsvAsset == null && SelectedStockData.PriceCsvAsset != null)
+        {
+            priceCsvAsset = SelectedStockData.PriceCsvAsset;
+        }
+
+        allNewsList.Clear();
+        dateToDayMap.Clear();
+        dayToDateMap.Clear();
+
         ParsePriceDataset();
-        ParseNewsDataset();
+        ParseAllNewsDatasets();
 
         if (DaySimulationManager.Instance != null)
         {
+            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
             DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
             HandleDayChanged(DaySimulationManager.Instance.currentDay);
+        }
+        else
+        {
+            HandleDayChanged(1); // Default Day 1
         }
     }
 
@@ -82,12 +104,24 @@ public class NewsManager : MonoBehaviour
         }
     }
 
-    private void ParseNewsDataset()
+    private void ParseAllNewsDatasets()
     {
-        if (newsCsvAsset == null) return;
+        if (allNewsCsvAssets == null || allNewsCsvAssets.Length == 0) return;
 
-        List<string[]> rows = ParseCsvWithQuotes(newsCsvAsset.text);
+        foreach (TextAsset newsCsv in allNewsCsvAssets)
+        {
+            if (newsCsv != null)
+            {
+                ParseSingleNewsCSV(newsCsv.text);
+            }
+        }
 
+        allNewsList.Sort((a, b) => b.Date.CompareTo(a.Date));
+    }
+
+    private void ParseSingleNewsCSV(string csvContent)
+    {
+        List<string[]> rows = ParseCsvWithQuotes(csvContent);
         bool isHeader = true;
 
         foreach (var columns in rows)
@@ -102,7 +136,6 @@ public class NewsManager : MonoBehaviour
 
             string rawDateStr = columns[0].Trim();
             string ticker = columns[1].Trim();
-
             string title = columns[2].Trim().Replace("[]", "").Trim();
             string description = columns[3].Trim();
 
@@ -139,8 +172,6 @@ public class NewsManager : MonoBehaviour
                 }
             }
         }
-
-        allNewsList.Sort((a, b) => b.Date.CompareTo(a.Date));
     }
 
     private int FindNextTradingDay(DateTime newsDate)
@@ -163,7 +194,13 @@ public class NewsManager : MonoBehaviour
             headerDateText.text = dateStr;
         }
 
-        activeAvailableNews = allNewsList.FindAll(n => n.MappedDay <= currentDay);
+        string activeTicker = SelectedStockData.StockTicker;
+
+        // Filter berita: hanya berita hingga Day aktif DAN sesuai dengan Ticker saham terpilih
+        activeAvailableNews = allNewsList.FindAll(n => 
+            n.MappedDay <= currentDay && 
+            (string.IsNullOrEmpty(activeTicker) || n.Ticker.Equals(activeTicker, StringComparison.OrdinalIgnoreCase))
+        );
 
         currentNewsPageIndex = 0;
         RefreshNewsUI();
@@ -184,7 +221,6 @@ public class NewsManager : MonoBehaviour
             if (newsIndex < activeAvailableNews.Count && newsRows[i] != null)
             {
                 var news = activeAvailableNews[newsIndex];
-
                 string formattedDayOnly = $"Day {news.MappedDay}";
 
                 newsRows[i].SetNews(news.Title, news.Description, formattedDayOnly);

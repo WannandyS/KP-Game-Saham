@@ -1072,13 +1072,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79181a9775581b64697454857c3a9771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StockRowUI
-  stockText: {fileID: 4267027889269195807}
+  symbolText: {fileID: 4267027889269195807}
   priceText: {fileID: 7673362674539918939}
   changeText: {fileID: 585936566479399178}
   volumeText: {fileID: 6637432409179320602}
-  valueText: {fileID: 4725105129766536522}
   marketCapText: {fileID: 658258231777519285}
-  detailsButton: {fileID: 1493072786876720465}
+  valueText: {fileID: 4725105129766536522}
+  seeDetailButton: {fileID: 1493072786876720465}
+  seeGraphButton: {fileID: 583236521966397583}
 --- !u!1 &6968814364831745252
 GameObject:
   m_ObjectHideFlags: 0

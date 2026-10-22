@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TabControl : MonoBehaviour
+public class TabsControl : MonoBehaviour
 {
     [Header("Buttons")]
     public Button newsButton;

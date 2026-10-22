@@ -1,74 +1,121 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class StockRowUI : MonoBehaviour
 {
-    [Header("UI Text Fields")]
-    public TMP_Text stockText;
+    [Header("UI Text References")]
+    public TMP_Text symbolText;
     public TMP_Text priceText;
     public TMP_Text changeText;
     public TMP_Text volumeText;
-    public TMP_Text valueText;
     public TMP_Text marketCapText;
+    public TMP_Text valueText;
 
-    [Header("Action Controls")]
-    public Button detailsButton;
+    [Header("UI Button References")]
+    public Button seeDetailButton;
+    public Button seeGraphButton;
 
-    private void Start()
-    {
-        if (DaySimulationManager.Instance != null)
-        {
-            DaySimulationManager.Instance.OnDayChanged += OnDayUpdated;
-            // Load data corresponding to the persistent current day
-            OnDayUpdated(DaySimulationManager.Instance.currentDay);
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (DaySimulationManager.Instance != null)
-        {
-            DaySimulationManager.Instance.OnDayChanged -= OnDayUpdated;
-        }
-    }
-
-    private void OnDayUpdated(int dayIndex)
-    {
-        // Update stock prices, candle charts, or portfolio values for 'dayIndex'
-    }
-
-    public void SetupRow(StockRowData data, Action<StockRowData> onDetailsClicked)
-    {
-        stockText.text = data.stockSymbol;
-        priceText.text = data.price.ToString("N0");
-        
-        // 24H Change % formatting with color indicators
-        string sign = data.changePercent >= 0 ? "+" : "";
-        changeText.text = $"{sign}{data.changePercent:F2}%";
-        changeText.color = data.changePercent >= 0 ? Color.green : Color.red;
-
-        volumeText.text = FormatLargeNumber(data.volume, false);
-        valueText.text = FormatLargeNumber(data.value, true);
-        marketCapText.text = FormatLargeNumber(data.marketCap, true);
-
-        detailsButton.onClick.RemoveAllListeners();
-        detailsButton.onClick.AddListener(() => onDetailsClicked?.Invoke(data));
-    }
+    [Header("Data References")]
+    private StockRowData currentData;
+    private TextAsset currentPriceCsv;
+    private string companyFullName;
 
     /// <summary>
-    /// Formats large currency/volume values into readable Millions (M) or Billions (B) suffixes.
+    /// Dipanggil oleh controller untuk mengisi UI baris saham
     /// </summary>
-    private string FormatLargeNumber(float number, bool appendM)
+    public void SetupRow(StockRowData data, TextAsset priceCsv, string companyName = "")
     {
-        if (number >= 1_000_000_000_000f)
-            return (number / 1_000_000_000_000f).ToString("F2") + " T";
-        if (number >= 1_000_000_000f)
-            return (number / 1_000_000_000f).ToString("F2") + " B";
-        if (number >= 1_000_000f)
-            return (number / 1_000_000f).ToString("F2") + " M";
+        currentData = data;
+        currentPriceCsv = priceCsv;
 
-        return number.ToString("N0") + (appendM ? " M" : "");
+        if (data == null)
+        {
+            Debug.LogError("[StockRowUI] Data saham null/kosong!");
+            return;
+        }
+
+        // Jika companyName tidak diisi dari controller, otomatis ambil dari SelectedStockData
+        if (string.IsNullOrEmpty(companyName))
+        {
+            companyFullName = SelectedStockData.GetCompanyName(data.stockSymbol);
+        }
+        else
+        {
+            companyFullName = companyName;
+        }
+
+        // Tampilkan data ke UI Text
+        if (symbolText != null)
+        {
+            symbolText.text = data.stockSymbol;
+        }
+        else
+        {
+            Debug.LogWarning($"[StockRowUI] Slot 'Symbol Text' di Prefab {gameObject.name} belum di-assign di Inspector!");
+        }
+
+        // PERBAIKAN: Awalan "Rp" dihapus, langsung menampilkan format angka
+        if (priceText != null) priceText.text = data.price.ToString("#,##0");
+        
+        if (changeText != null)
+        {
+            string sign = data.changePercent > 0 ? "+" : "";
+            changeText.text = $"{sign}{data.changePercent:F2}%";
+            changeText.color = data.changePercent >= 0 ? Color.green : Color.red;
+        }
+
+        if (volumeText != null) volumeText.text = FormatLargeNumber(data.volume);
+        if (marketCapText != null) marketCapText.text = FormatLargeNumber(data.marketCap);
+        if (valueText != null) valueText.text = FormatLargeNumber(data.value);
+
+        // Hubungkan Listener Tombol
+        if (seeDetailButton != null)
+        {
+            seeDetailButton.onClick.RemoveAllListeners();
+            seeDetailButton.onClick.AddListener(OnOpenDetail);
+        }
+
+        if (seeGraphButton != null)
+        {
+            seeGraphButton.onClick.RemoveAllListeners();
+            seeGraphButton.onClick.AddListener(OnOpenGraph);
+        }
+    }
+
+    private void OnOpenDetail()
+    {
+        SaveSelectedData(openOnGraph: false);
+        SceneManager.LoadScene("DetailPerusahaan");
+    }
+
+    private void OnOpenGraph()
+    {
+        SaveSelectedData(openOnGraph: true);
+        SceneManager.LoadScene("DetailPerusahaan");
+    }
+
+    private void SaveSelectedData(bool openOnGraph)
+    {
+        if (currentData == null) return;
+
+        SelectedStockData.StockTicker = currentData.stockSymbol;
+        SelectedStockData.CompanyName = !string.IsNullOrEmpty(companyFullName) 
+            ? companyFullName 
+            : SelectedStockData.GetCompanyName(currentData.stockSymbol);
+            
+        SelectedStockData.PriceCsvAsset = currentPriceCsv;
+        SelectedStockData.OpenOnGraphTab = openOnGraph;
+    }
+
+    private string FormatLargeNumber(float num)
+    {
+        if (num >= 1_000_000_000_000f) return (num / 1_000_000_000_000f).ToString("0.##") + " T";
+        if (num >= 1_000_000_000f) return (num / 1_000_000_000f).ToString("0.##") + " B";
+        if (num >= 1_000_000f) return (num / 1_000_000f).ToString("0.##") + " M";
+        if (num >= 1_000f) return (num / 1_000f).ToString("0.##") + " K";
+
+        return num.ToString("#,##0");
     }
 }

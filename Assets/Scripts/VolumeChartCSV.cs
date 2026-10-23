@@ -61,6 +61,10 @@ public class VolumeChartCSV : MonoBehaviour
     private void OnEnable()
     {
         SubscribeToDayManager();
+        if (allVolume.Count > 0 && DaySimulationManager.Instance != null)
+        {
+            HandleDayChanged(DaySimulationManager.Instance.currentDay);
+        }
     }
 
     private void OnDisable()
@@ -147,7 +151,8 @@ public class VolumeChartCSV : MonoBehaviour
     {
         ClearChart();
 
-        if (chartArea == null || displayedVolume.Count == 0) return;
+        if (chartArea == null || chartArea.rect.width <= 0 || chartArea.rect.height <= 0 || displayedVolume.Count == 0) 
+        return;
 
         float maxVolume = float.MinValue;
 

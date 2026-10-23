@@ -87,13 +87,13 @@ public class StockRowUI : MonoBehaviour
     private void OnOpenDetail()
     {
         SaveSelectedData(openOnGraph: false);
-        SceneManager.LoadScene("DetailPerusahaan");
+        SceneManager.LoadScene("Gamemode (DetailPerusahaan)");
     }
 
     private void OnOpenGraph()
     {
         SaveSelectedData(openOnGraph: true);
-        SceneManager.LoadScene("DetailPerusahaan");
+        SceneManager.LoadScene("Gamemode (DetailPerusahaan)");
     }
 
     private void SaveSelectedData(bool openOnGraph)
@@ -112,8 +112,8 @@ public class StockRowUI : MonoBehaviour
     private string FormatLargeNumber(float num)
     {
         if (num >= 1_000_000_000_000f) return (num / 1_000_000_000_000f).ToString("0.##") + " T";
-        if (num >= 1_000_000_000f) return (num / 1_000_000_000f).ToString("0.##") + " B";
-        if (num >= 1_000_000f) return (num / 1_000_000f).ToString("0.##") + " M";
+        if (num >= 1_000_000_000f) return (num / 1_000_000_000f).ToString("0.##") + " M";
+        if (num >= 1_000_000f) return (num / 1_000_000f).ToString("0.##") + " Jt";
         if (num >= 1_000f) return (num / 1_000f).ToString("0.##") + " K";
 
         return num.ToString("#,##0");

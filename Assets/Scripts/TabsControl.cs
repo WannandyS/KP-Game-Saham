@@ -29,7 +29,15 @@ public class TabsControl : MonoBehaviour
         if (newsButton != null) newsButton.onClick.AddListener(SelectNewsTab);
         if (graphButton != null) graphButton.onClick.AddListener(SelectGraphTab);
 
-        SelectNewsTab();
+        // Check preference if saved, default to Graph tab if requested
+        if (SelectedStockData.OpenOnGraphTab)
+        {
+            SelectGraphTab();
+        }
+        else
+        {
+            SelectNewsTab();
+        }
     }
 
     public void SelectNewsTab()

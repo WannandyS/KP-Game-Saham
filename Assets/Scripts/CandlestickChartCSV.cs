@@ -86,6 +86,11 @@ public class CandlestickChart : MonoBehaviour
     private void OnEnable()
     {
         SubscribeToDayManager();
+        // Redraw when switching back to this tab so it recalculates correct rect widths
+        if (allCandles.Count > 0 && DaySimulationManager.Instance != null)
+        {
+            HandleDayChanged(DaySimulationManager.Instance.currentDay);
+        }
     }
 
     private void OnDisable()
@@ -202,7 +207,8 @@ public class CandlestickChart : MonoBehaviour
     {
         ClearChart();
 
-        if (chartArea == null || displayedCandles.Count == 0) return;
+        if (chartArea == null || chartArea.rect.width <= 0 || chartArea.rect.height <= 0 || displayedCandles.Count == 0) 
+        return;
 
         float highestPrice = float.MinValue;
         float lowestPrice = float.MaxValue;
@@ -263,33 +269,31 @@ public class CandlestickChart : MonoBehaviour
     }
 
     private void HandleDayChanged(int currentSimDay)
+{
+    displayedCandles.Clear();
+
+    int targetIndex = Mathf.Min(currentSimDay, allCandles.Count);
+    int startIndex = Mathf.Max(0, targetIndex - maxCandles);
+
+    for (int i = startIndex; i < targetIndex; i++)
     {
-        displayedCandles.Clear();
-
-        int targetIndex = Mathf.Min(currentSimDay, allCandles.Count);
-        int startIndex = Mathf.Max(0, targetIndex - maxCandles);
-
-        for (int i = startIndex; i < targetIndex; i++)
-        {
-            displayedCandles.Add(allCandles[i]);
-        }
-
-        RedrawChart();
-
-        // Automatically find TradeController if not assigned in Inspector
-        if (tradeController == null)
-        {
-            tradeController = FindAnyObjectByType<TradeController>();
-        }
-
-        // Push latest price and stock name to the Trade Panel
-        if (tradeController != null && displayedCandles.Count > 0)
-        {
-            CandleData latest = displayedCandles[displayedCandles.Count - 1];
-            string datasetName = currentCsvFile != null ? currentCsvFile.name : "Stock";
-            tradeController.SetMarketPrice(datasetName, latest.date, latest.dayIndex, latest.close);
-        }
+        displayedCandles.Add(allCandles[i]);
     }
+
+    // Only redraw if the chart GameObject and its panel are active
+    if (gameObject.activeInHierarchy && chartArea != null && chartArea.rect.width > 0)
+    {
+        RedrawChart();
+    }
+
+    // Push latest price and stock name to the Trade Panel
+    if (tradeController != null && displayedCandles.Count > 0)
+    {
+        CandleData latest = displayedCandles[displayedCandles.Count - 1];
+        string datasetName = currentCsvFile != null ? currentCsvFile.name : "Stock";
+        tradeController.SetMarketPrice(datasetName, latest.date, latest.dayIndex, latest.close);
+    }
+}
 
     private void DrawCandle(CandleData candle, float x, float candleWidth)
     {

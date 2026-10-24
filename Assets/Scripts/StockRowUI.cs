@@ -87,13 +87,13 @@ public class StockRowUI : MonoBehaviour
     private void OnOpenDetail()
     {
         SaveSelectedData(openOnGraph: false);
-        SceneManager.LoadScene("Gamemode (DetailPerusahaan)");
+        SceneManager.LoadScene("Gamemode (Detail Perusahaan)");
     }
 
     private void OnOpenGraph()
     {
         SaveSelectedData(openOnGraph: true);
-        SceneManager.LoadScene("Gamemode (DetailPerusahaan)");
+        SceneManager.LoadScene("Gamemode (Detail Perusahaan)");
     }
 
     private void SaveSelectedData(bool openOnGraph)

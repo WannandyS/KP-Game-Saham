@@ -1,7 +1,12 @@
 using UnityEngine;
+using TMPro;
 
 public class DetailSceneController : MonoBehaviour
 {
+    [Header("UI Text References")]
+    public TMP_Text tickerText;          
+    public TMP_Text companyNameText;     
+
     [Header("Chart Components")]
     public CandlestickChart candlestickChart;
     public VolumeChartCSV volumeChart;
@@ -12,44 +17,94 @@ public class DetailSceneController : MonoBehaviour
     [Header("Default Fallback Dataset")]
     public TextAsset defaultFallbackCsv;
 
-    private void Start()
+    private void OnEnable()
     {
-        // 1. Determine which stock ticker/CSV to load
-        string ticker = PlayerPrefs.GetString("SelectedStockSymbol", SelectedStockData.StockTicker);
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+            DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
+        }
+
+        InitializeDetailScene();
+    }
+
+    private void OnDisable()
+    {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+        }
+    }
+
+    private void HandleDayChanged(int newDay)
+    {
+        if (candlestickChart != null)
+        {
+            candlestickChart.RedrawChart();
+        }
+
+        if (newsManager != null)
+        {
+            newsManager.RefreshNewsUI();
+        }
+    }
+
+    public void InitializeDetailScene()
+    {
+        string ticker = SelectedStockData.StockTicker;
         TextAsset stockCsv = SelectedStockData.PriceCsvAsset;
+
+        if (string.IsNullOrEmpty(ticker))
+        {
+            ticker = PlayerPrefs.GetString("SelectedStockSymbol", "");
+            
+            if (!string.IsNullOrEmpty(ticker))
+            {
+                SelectedStockData.StockTicker = ticker;
+                SelectedStockData.CompanyName = SelectedStockData.GetCompanyName(ticker);
+            }
+        }
 
         if (stockCsv == null)
         {
             stockCsv = defaultFallbackCsv;
+            SelectedStockData.PriceCsvAsset = stockCsv;
+            
+            if (string.IsNullOrEmpty(SelectedStockData.StockTicker) && defaultFallbackCsv != null)
+            {
+                SelectedStockData.StockTicker = defaultFallbackCsv.name;
+                SelectedStockData.CompanyName = SelectedStockData.GetCompanyName(defaultFallbackCsv.name);
+            }
         }
 
-        int targetDay = PlayerPrefs.GetInt("SelectedDayIndex", 1);
-        if (DaySimulationManager.Instance != null)
+        if (tickerText != null) 
+            tickerText.text = SelectedStockData.StockTicker;
+            
+        if (companyNameText != null) 
         {
-            DaySimulationManager.Instance.currentDay = targetDay;
+            string fullCompanyName = !string.IsNullOrEmpty(SelectedStockData.CompanyName) 
+                ? SelectedStockData.CompanyName 
+                : SelectedStockData.GetCompanyName(SelectedStockData.StockTicker);
+
+            companyNameText.text = fullCompanyName;
         }
 
-        Debug.Log($"[DetailSceneController] Initializing scene for stock: {ticker} on Day {targetDay}");
+        int currentDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
+        Debug.Log($"[DetailSceneController] Loading stock: {SelectedStockData.StockTicker} ({SelectedStockData.CompanyName}) on Day {currentDay}");
 
-        // 2. Load dataset into Candlestick Chart
         if (candlestickChart != null && stockCsv != null)
         {
-            candlestickChart.LoadNewDataset(stockCsv);
+            candlestickChart.SetCSV(stockCsv);
         }
 
-        // 3. Load dataset into Volume Chart
         if (volumeChart != null && stockCsv != null)
         {
             volumeChart.LoadNewDataset(stockCsv);
         }
 
-        // 4. Initialize News
         if (newsManager != null)
         {
-            if (stockCsv != null && newsManager.priceCsvAsset == null)
-            {
-                newsManager.priceCsvAsset = stockCsv;
-            }
+            newsManager.priceCsvAsset = stockCsv;
             newsManager.InitializeNewsData();
         }
     }

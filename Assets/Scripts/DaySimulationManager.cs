@@ -12,7 +12,13 @@ public class DaySimulationManager : MonoBehaviour
     [Tooltip("Maximum day available in the dataset.")]
     public int totalDays = 236;
 
+    [Header("Debounce / Cooldown Settings")]
+    [Tooltip("Minimum time (in seconds) required between day changes to prevent double-triggering.")]
+    public float clickCooldown = 0.25f;
+
     public event Action<int> OnDayChanged;
+
+    private float lastClickTime = 0f;
 
     private void Awake()
     {
@@ -24,7 +30,7 @@ public class DaySimulationManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject); // Keeps this manager alive when loading new scenes
+        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
@@ -32,11 +38,15 @@ public class DaySimulationManager : MonoBehaviour
         NotifyDayChanged();
     }
 
-    /// <summary>
-    /// Call this method from any "Next Day" UI Button OnClick() event in any scene.
-    /// </summary>
     public void NextDay()
     {
+        if (Time.unscaledTime - lastClickTime < clickCooldown)
+        {
+            return;
+        }
+
+        lastClickTime = Time.unscaledTime;
+
         if (currentDay < totalDays)
         {
             currentDay++;
@@ -49,11 +59,15 @@ public class DaySimulationManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Call this method from any "Previous Day" UI Button OnClick() event in any scene.
-    /// </summary>
     public void PreviousDay()
     {
+        if (Time.unscaledTime - lastClickTime < clickCooldown)
+        {
+            return;
+        }
+
+        lastClickTime = Time.unscaledTime;
+
         if (currentDay > 1)
         {
             currentDay--;
@@ -62,18 +76,12 @@ public class DaySimulationManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Jump directly to a specific day.
-    /// </summary>
     public void SetDay(int day)
     {
         currentDay = Mathf.Clamp(day, 1, totalDays);
         NotifyDayChanged();
     }
 
-    /// <summary>
-    /// Re-broadcasts the current day state (useful when opening a new scene).
-    /// </summary>
     public void RefreshCurrentDay()
     {
         NotifyDayChanged();

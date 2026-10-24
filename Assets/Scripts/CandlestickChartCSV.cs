@@ -16,7 +16,7 @@ public class CandlestickChart : MonoBehaviour
         public float high;
         public float low;
         public float close;
-        public float volume; // Added
+        public float volume;
         public int dayIndex;
 
         public CandleData(string date, float open, float high, float low, float close, float volume, int dayIndex)
@@ -32,7 +32,7 @@ public class CandlestickChart : MonoBehaviour
     }
 
     [Header("CSV")]
-    private TextAsset currentCsvFile;
+    public TextAsset currentCsvFile; // Diubah ke public agar bisa diset via script/Inspector
 
     [Header("Chart Area")]
     public RectTransform chartArea;
@@ -79,14 +79,25 @@ public class CandlestickChart : MonoBehaviour
     private readonly List<CandleData> allCandles = new List<CandleData>();
     private readonly List<CandleData> displayedCandles = new List<CandleData>();
 
-    // Menyimpan batas bawah dan atas grid yang sedang aktif agar posisi candle tetap akurat
     private float currentGridMin = 0f;
     private float currentGridMax = 1f;
+
+    public static CandlestickChart Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void OnEnable()
     {
         SubscribeToDayManager();
-        // Redraw when switching back to this tab so it recalculates correct rect widths
+        
+        if (allCandles.Count == 0 && currentCsvFile != null)
+        {
+            LoadCSV();
+        }
+
         if (allCandles.Count > 0 && DaySimulationManager.Instance != null)
         {
             HandleDayChanged(DaySimulationManager.Instance.currentDay);
@@ -118,6 +129,20 @@ public class CandlestickChart : MonoBehaviour
     private void Start()
     {
         SubscribeToDayManager();
+        if (allCandles.Count == 0 && currentCsvFile != null)
+        {
+            LoadCSV();
+            if (DaySimulationManager.Instance != null)
+            {
+                HandleDayChanged(DaySimulationManager.Instance.currentDay);
+            }
+        }
+    }
+
+    public void SetCSV(TextAsset newCsv)
+    {
+        currentCsvFile = newCsv;
+        LoadCSV();
     }
 
     public void LoadNewDataset(TextAsset newCsv)
@@ -155,8 +180,9 @@ public class CandlestickChart : MonoBehaviour
         int highIndex = FindColumnIndex(headers, "High");
         int lowIndex = FindColumnIndex(headers, "Low");
         int closeIndex = FindColumnIndex(headers, "Close");
-        int volumeIndex = FindColumnIndex(headers, "Volume"); // Added
+        int volumeIndex = FindColumnIndex(headers, "Volume");
 
+        // FIX BUG LOMPAT HARI
         int currentDayCounter = 1;
 
         for (int i = 1; i < lines.Length; i++)
@@ -176,18 +202,18 @@ public class CandlestickChart : MonoBehaviour
                 !TryParseFloat(values[lowIndex], out float low) ||
                 !TryParseFloat(values[closeIndex], out float close))
                 continue;
+
             float volume = 0f;
-                if (volumeIndex != -1 && values.Length > volumeIndex)
-                {
-                    TryParseFloat(values[volumeIndex], out volume);
-                }
+            if (volumeIndex != -1 && values.Length > volumeIndex)
+            {
+                TryParseFloat(values[volumeIndex], out volume);
+            }
+
+            // Memasukkan data dengan indeks hari yang tepat (Day 1, Day 2, Day 3, dst.)
             allCandles.Add(new CandleData(date, open, high, low, close, volume, currentDayCounter));
             currentDayCounter++;
         }
     }
-
-    public static CandlestickChart Instance { get; private set; }
-    private void Awake() { Instance = this; } // (or add to existing Awake/Start)
 
     public static bool ActiveLatestCandle(out string assetName, out string date, out float closePrice)
     {
@@ -203,12 +229,39 @@ public class CandlestickChart : MonoBehaviour
         return true;
     }
 
+    private void HandleDayChanged(int currentSimDay)
+    {
+        displayedCandles.Clear();
+
+        int targetIndex = Mathf.Min(currentSimDay, allCandles.Count);
+        int startIndex = Mathf.Max(0, targetIndex - maxCandles);
+
+        for (int i = startIndex; i < targetIndex; i++)
+        {
+            displayedCandles.Add(allCandles[i]);
+        }
+
+        // FIX GRAFIK HILANG: Redraw dijalankan selama chartArea dan GameObject chart ada di Hierarchy
+        if (chartArea != null)
+        {
+            RedrawChart();
+        }
+
+        // Kirim update ke Trade Controller
+        if (tradeController != null && displayedCandles.Count > 0)
+        {
+            CandleData latest = displayedCandles[displayedCandles.Count - 1];
+            string datasetName = currentCsvFile != null ? currentCsvFile.name : "Stock";
+            tradeController.SetMarketPrice(datasetName, latest.date, latest.dayIndex, latest.close);
+        }
+    }
+
     public void RedrawChart()
     {
         ClearChart();
 
         if (chartArea == null || chartArea.rect.width <= 0 || chartArea.rect.height <= 0 || displayedCandles.Count == 0) 
-        return;
+            return;
 
         float highestPrice = float.MinValue;
         float lowestPrice = float.MaxValue;
@@ -226,7 +279,6 @@ public class CandlestickChart : MonoBehaviour
             lowestPrice -= 1f;
         }
 
-        // Hitung kelipatan langkah (step) yang bersih untuk indikator harga (misal kelipatan 100, 500, 1000)
         float priceRange = highestPrice - lowestPrice;
         float roughStep = priceRange / Mathf.Max(1, gridLineCount);
         float magnitude = Mathf.Pow(10, Mathf.Floor(Mathf.Log10(roughStep > 0 ? roughStep : 1f)));
@@ -238,11 +290,9 @@ public class CandlestickChart : MonoBehaviour
         else if (residual < 7f) cleanStep = 5f * magnitude;
         else cleanStep = 10f * magnitude;
 
-        // Tentukan batas bawah dan atas grid yang dibulatkan rapi
         currentGridMin = Mathf.Floor(lowestPrice / cleanStep) * cleanStep;
         currentGridMax = Mathf.Ceil(highestPrice / cleanStep) * cleanStep;
 
-        // Jika rentang terlalu sempit, pastikan min dan max tidak sama
         if (Mathf.Approximately(currentGridMin, currentGridMax))
         {
             currentGridMin -= cleanStep;
@@ -267,33 +317,6 @@ public class CandlestickChart : MonoBehaviour
             CreateFooterLabel(candle.dayIndex, x, slotWidth);
         }
     }
-
-    private void HandleDayChanged(int currentSimDay)
-{
-    displayedCandles.Clear();
-
-    int targetIndex = Mathf.Min(currentSimDay, allCandles.Count);
-    int startIndex = Mathf.Max(0, targetIndex - maxCandles);
-
-    for (int i = startIndex; i < targetIndex; i++)
-    {
-        displayedCandles.Add(allCandles[i]);
-    }
-
-    // Only redraw if the chart GameObject and its panel are active
-    if (gameObject.activeInHierarchy && chartArea != null && chartArea.rect.width > 0)
-    {
-        RedrawChart();
-    }
-
-    // Push latest price and stock name to the Trade Panel
-    if (tradeController != null && displayedCandles.Count > 0)
-    {
-        CandleData latest = displayedCandles[displayedCandles.Count - 1];
-        string datasetName = currentCsvFile != null ? currentCsvFile.name : "Stock";
-        tradeController.SetMarketPrice(datasetName, latest.date, latest.dayIndex, latest.close);
-    }
-}
 
     private void DrawCandle(CandleData candle, float x, float candleWidth)
     {
@@ -348,7 +371,6 @@ public class CandlestickChart : MonoBehaviour
             float normalized = i / (float)gridLineCount;
             float y = footerHeight + (normalized * printableHeight);
 
-            // Harga per baris grid dihitung berdasarkan kelipatan bersih (nice numbers)
             float price = Mathf.Lerp(currentGridMin, currentGridMax, normalized);
 
             RectTransform line = CreateImage("GridLine", gridColor, false);

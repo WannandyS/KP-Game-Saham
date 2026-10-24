@@ -12,14 +12,36 @@ public class CompanyDetailController : MonoBehaviour
     public NewsManager newsManager;           
     public TabsControl tabsControl;           
 
-    private void Start()
+    private void OnEnable()
     {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+            DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
+        }
+
         LoadStockData();
     }
 
-    private void OnEnable()
+    private void OnDisable()
     {
-        LoadStockData();
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+        }
+    }
+
+    private void HandleDayChanged(int newDay)
+    {
+        if (candlestickChart != null)
+        {
+            candlestickChart.RedrawChart();
+        }
+
+        if (newsManager != null)
+        {
+            newsManager.RefreshNewsUI();
+        }
     }
 
     public void LoadStockData()
@@ -32,14 +54,12 @@ public class CompanyDetailController : MonoBehaviour
 
         if (candlestickChart != null && SelectedStockData.PriceCsvAsset != null)
         {
-            candlestickChart.SendMessage("SetCSV", SelectedStockData.PriceCsvAsset, SendMessageOptions.DontRequireReceiver);
-            candlestickChart.SendMessage("RedrawChart", SendMessageOptions.DontRequireReceiver);
+            candlestickChart.SetCSV(SelectedStockData.PriceCsvAsset);
         }
 
         if (newsManager != null && SelectedStockData.PriceCsvAsset != null)
         {
             newsManager.priceCsvAsset = SelectedStockData.PriceCsvAsset;
-            
             newsManager.InitializeNewsData();
         }
 

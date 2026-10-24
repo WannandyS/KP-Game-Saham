@@ -58,9 +58,22 @@ public class VolumeChartCSV : MonoBehaviour
     private readonly List<VolumeData> allVolume = new List<VolumeData>();
     private readonly List<VolumeData> displayedVolume = new List<VolumeData>();
 
+    public static VolumeChartCSV Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     private void OnEnable()
     {
         SubscribeToDayManager();
+
+        if (allVolume.Count == 0 && csvFile != null)
+        {
+            LoadCSV();
+        }
+
         if (allVolume.Count > 0 && DaySimulationManager.Instance != null)
         {
             HandleDayChanged(DaySimulationManager.Instance.currentDay);
@@ -91,13 +104,30 @@ public class VolumeChartCSV : MonoBehaviour
 
     private void Start()
     {
-        LoadCSV();
         SubscribeToDayManager();
 
-        if (DaySimulationManager.Instance != null)
+        if (allVolume.Count == 0 && csvFile != null)
         {
-            HandleDayChanged(DaySimulationManager.Instance.currentDay);
+            LoadCSV();
+            if (DaySimulationManager.Instance != null)
+            {
+                HandleDayChanged(DaySimulationManager.Instance.currentDay);
+            }
         }
+    }
+
+    public void SetCSV(TextAsset newCsv)
+    {
+        csvFile = newCsv;
+        LoadCSV();
+
+        int currentDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
+        HandleDayChanged(currentDay);
+    }
+
+    public void LoadNewDataset(TextAsset newCsv)
+    {
+        SetCSV(newCsv);
     }
 
     private void LoadCSV()
@@ -106,11 +136,18 @@ public class VolumeChartCSV : MonoBehaviour
         if (csvFile == null) return;
 
         string[] lines = csvFile.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        if (lines.Length <= 1) return;
+        if (lines.Length <= 1)
+        {
+            ClearChart();
+            return;
+        }
 
         string[] headers = SplitCSVLine(lines[0]);
         int dateIndex = FindColumnIndex(headers, "Date");
         if (dateIndex == -1) dateIndex = 0;
+
+        int volIdx = FindColumnIndex(headers, "Volume");
+        if (volIdx != -1) volumeColumnIndex = volIdx;
 
         int currentDayCounter = 1;
 
@@ -144,7 +181,10 @@ public class VolumeChartCSV : MonoBehaviour
             displayedVolume.Add(allVolume[i]);
         }
 
-        RedrawChart();
+        if (chartArea != null)
+        {
+            RedrawChart();
+        }
     }
 
     public void RedrawChart()
@@ -152,7 +192,7 @@ public class VolumeChartCSV : MonoBehaviour
         ClearChart();
 
         if (chartArea == null || chartArea.rect.width <= 0 || chartArea.rect.height <= 0 || displayedVolume.Count == 0) 
-        return;
+            return;
 
         float maxVolume = float.MinValue;
 
@@ -168,7 +208,6 @@ public class VolumeChartCSV : MonoBehaviour
 
         DrawGrid(maxVolume, barAreaWidth);
 
-        // Uniform slot sizing: Divides width by fixed maxBars to keep bar sizes uniform
         int slotCount = Mathf.Max(maxBars, displayedVolume.Count);
         float slotWidth = barAreaWidth / slotCount;
 
@@ -285,21 +324,6 @@ public class VolumeChartCSV : MonoBehaviour
         image.color = color;
         image.raycastTarget = raycastTarget;
         return imgObj.GetComponent<RectTransform>();
-    }
-
-    public void LoadNewDataset(TextAsset newCsv)
-    {
-        csvFile = newCsv;
-        LoadCSV();
-
-        if (DaySimulationManager.Instance != null)
-        {
-            HandleDayChanged(DaySimulationManager.Instance.currentDay);
-        }
-        else
-        {
-            HandleDayChanged(allVolume.Count);
-        }
     }
 
     private void ClearChart()

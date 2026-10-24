@@ -17,6 +17,13 @@ public class DetailSceneController : MonoBehaviour
     [Header("Default Fallback Dataset")]
     public TextAsset defaultFallbackCsv;
 
+    private static bool isInitialized = false;
+
+    private void Awake()
+    {
+        isInitialized = false;
+    }
+
     private void OnEnable()
     {
         if (DaySimulationManager.Instance != null)
@@ -25,7 +32,10 @@ public class DetailSceneController : MonoBehaviour
             DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
         }
 
-        InitializeDetailScene();
+        if (!isInitialized)
+        {
+            InitializeDetailScene();
+        }
     }
 
     private void OnDisable()
@@ -51,6 +61,9 @@ public class DetailSceneController : MonoBehaviour
 
     public void InitializeDetailScene()
     {
+        if (isInitialized) return;
+        isInitialized = true;
+
         string ticker = SelectedStockData.StockTicker;
         TextAsset stockCsv = SelectedStockData.PriceCsvAsset;
 
@@ -99,7 +112,7 @@ public class DetailSceneController : MonoBehaviour
 
         if (volumeChart != null && stockCsv != null)
         {
-            volumeChart.LoadNewDataset(stockCsv);
+            volumeChart.SetCSV(stockCsv);
         }
 
         if (newsManager != null)

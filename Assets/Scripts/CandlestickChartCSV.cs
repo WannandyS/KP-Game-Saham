@@ -32,7 +32,7 @@ public class CandlestickChart : MonoBehaviour
     }
 
     [Header("CSV")]
-    public TextAsset currentCsvFile; // Diubah ke public agar bisa diset via script/Inspector
+    public TextAsset currentCsvFile;
 
     [Header("Chart Area")]
     public RectTransform chartArea;
@@ -143,6 +143,9 @@ public class CandlestickChart : MonoBehaviour
     {
         currentCsvFile = newCsv;
         LoadCSV();
+
+        int currentDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
+        HandleDayChanged(currentDay);
     }
 
     public void LoadNewDataset(TextAsset newCsv)
@@ -182,7 +185,6 @@ public class CandlestickChart : MonoBehaviour
         int closeIndex = FindColumnIndex(headers, "Close");
         int volumeIndex = FindColumnIndex(headers, "Volume");
 
-        // FIX BUG LOMPAT HARI
         int currentDayCounter = 1;
 
         for (int i = 1; i < lines.Length; i++)
@@ -209,7 +211,6 @@ public class CandlestickChart : MonoBehaviour
                 TryParseFloat(values[volumeIndex], out volume);
             }
 
-            // Memasukkan data dengan indeks hari yang tepat (Day 1, Day 2, Day 3, dst.)
             allCandles.Add(new CandleData(date, open, high, low, close, volume, currentDayCounter));
             currentDayCounter++;
         }
@@ -241,13 +242,11 @@ public class CandlestickChart : MonoBehaviour
             displayedCandles.Add(allCandles[i]);
         }
 
-        // FIX GRAFIK HILANG: Redraw dijalankan selama chartArea dan GameObject chart ada di Hierarchy
         if (chartArea != null)
         {
             RedrawChart();
         }
 
-        // Kirim update ke Trade Controller
         if (tradeController != null && displayedCandles.Count > 0)
         {
             CandleData latest = displayedCandles[displayedCandles.Count - 1];

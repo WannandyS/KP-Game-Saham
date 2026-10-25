@@ -23,7 +23,6 @@ public class PortfolioUI : MonoBehaviour
             PortfolioManager.Instance.OnPortfolioUpdated += RefreshUI;
         }
 
-        // Subscribe to day changes so portfolio updates live with the simulation
         if (DaySimulationManager.Instance != null)
         {
             DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
@@ -47,7 +46,7 @@ public class PortfolioUI : MonoBehaviour
 
     private void HandleDayChanged(int day)
     {
-        RefreshUI(); // Automatically recalculate and redraw rows when day changes
+        RefreshUI();
     }
 
     public void RefreshUI()
@@ -57,17 +56,16 @@ public class PortfolioUI : MonoBehaviour
         float cash = PortfolioManager.Instance.currentCash;
         float totalHoldingsValue = 0f;
 
-        // Clear existing rows
         foreach (Transform child in holdingsContainer)
         {
             Destroy(child.gameObject);
         }
 
-        // Loop through all current holdings and build rows
         foreach (var kvp in PortfolioManager.Instance.GetAllHoldings())
         {
             var pos = kvp.Value;
             string ticker = pos.datasetName;
+            string companyName = SelectedStockData.GetCompanyName(ticker); // Fetch full company name
 
             GetMarketData(ticker, out float currentPrice, out float change24h);
 
@@ -86,6 +84,7 @@ public class PortfolioUI : MonoBehaviour
                 {
                     rowComponent.SetupRow(
                         ticker,
+                        companyName, // Passed separately to row
                         pos.AverageBuyPrice,
                         pos.totalInvestedCost,
                         change24h,
@@ -102,7 +101,6 @@ public class PortfolioUI : MonoBehaviour
         if (cashText != null) cashText.text = $"Cash: Rp{cash:N2}";
         if (totalNetWorthText != null) totalNetWorthText.text = $"Net Worth: Rp{netWorth:N2}";
 
-        // --- ADD THIS TO FORCE UI LAYOUT TO REFRESH PROPERLY ---
         if (holdingsContainer != null)
         {
             Canvas.ForceUpdateCanvases();
@@ -110,22 +108,15 @@ public class PortfolioUI : MonoBehaviour
         }
     }
 
-    // Helper to extract the latest price and 24h change percentage from the matching CSV file
     private void GetMarketData(string datasetName, out float latestPrice, out float change24h)
     {
         latestPrice = 0f;
         change24h = 0f;
 
-        // Clean name to match asset names securely (removes case sensitivity or extension issues)
         string searchName = datasetName.Trim().ToLower();
-
         TextAsset targetCsv = csvDatasets.Find(csv => csv != null && csv.name.Trim().ToLower() == searchName);
         
-        if (targetCsv == null)
-        {
-            Debug.LogWarning($"PortfolioUI: Could not find CSV dataset matching ticker '{datasetName}'. Check your csvDatasets list assignment!");
-            return;
-        }
+        if (targetCsv == null) return;
 
         string[] lines = targetCsv.text.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
         if (lines.Length <= 1) return;
@@ -164,6 +155,7 @@ public class PortfolioUI : MonoBehaviour
             }
         }
     }
+
     private int FindColumnIndex(string[] headers, string columnName)
     {
         for (int i = 0; i < headers.Length; i++)

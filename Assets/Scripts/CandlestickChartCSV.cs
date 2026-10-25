@@ -247,11 +247,28 @@ public class CandlestickChart : MonoBehaviour
             RedrawChart();
         }
 
-        if (tradeController != null && displayedCandles.Count > 0)
+        // --- Update Default Tooltip to Current Day's Info ---
+        if (displayedCandles.Count > 0)
         {
             CandleData latest = displayedCandles[displayedCandles.Count - 1];
             string datasetName = currentCsvFile != null ? currentCsvFile.name : "Stock";
-            tradeController.SetMarketPrice(datasetName, latest.date, latest.dayIndex, latest.close);
+
+            string currentDayInfo = $"<b>{datasetName} - Day {latest.dayIndex}</b> ({latest.date}) |  " +
+                                    $"O: {FormatPrice(latest.open)}  |  " +
+                                    $"H: {FormatPrice(latest.high)}  |  " +
+                                    $"L: {FormatPrice(latest.low)}  |  " +
+                                    $"C: {FormatPrice(latest.close)}  |  " +
+                                    $"Vol: {latest.volume:#,##0}";
+
+            if (ChartTooltip.Instance != null)
+            {
+                ChartTooltip.Instance.SetDefaultText(currentDayInfo);
+            }
+
+            if (tradeController != null)
+            {
+                tradeController.SetMarketPrice(datasetName, latest.date, latest.dayIndex, latest.close);
+            }
         }
     }
 

@@ -61,7 +61,7 @@ public class TradeController : MonoBehaviour
         currentClosePrice = close;
 
         if (stockNameText != null) stockNameText.text = datasetName;
-        if (currentPriceText != null) currentPriceText.text = $"Rp{close:N2}";
+        if (currentPriceText != null) currentPriceText.text = $"{close:N2}";
     }
 
     // --- ALUR BELI ---

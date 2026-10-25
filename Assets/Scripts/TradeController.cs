@@ -11,23 +11,23 @@ public class TradeController : MonoBehaviour
     public TMP_Text feedbackText;
 
     [Header("Confirmation PopUps")]
-    public GameObject buyConfirmPopUp;       // PopUp Konfirmasi Beli (Yes/No)
-    public GameObject sellConfirmPopUp;      // PopUp Konfirmasi Jual (Yes/No)
-    public TMP_Text buyConfirmText;          // Text pesan rincian beli
-    public TMP_Text sellConfirmText;         // Text pesan rincian jual
+    public GameObject buyConfirmPopUp;       
+    public GameObject sellConfirmPopUp;      
+    public TMP_Text buyConfirmText;          
+    public TMP_Text sellConfirmText;         
 
     [Header("Result PopUps")]
-    public GameObject buyPopUp;              // PopUp Beli Berhasil
-    public GameObject sellPopUp;             // PopUp Jual Berhasil
-    public GameObject insufficientCashPopUp; // PopUp Cash Tidak Cukup
-    public GameObject noSharesPopUp;         // PopUp Tidak Punya Saham / Saham Kurang
+    public GameObject buyPopUp;              
+    public GameObject sellPopUp;             
+    public GameObject insufficientCashPopUp; 
+    public GameObject noSharesPopUp;         
 
-    private string currentDatasetName = "DefaultStock";
+    private string currentDatasetName = "";
     private float currentClosePrice = 0f;
     private string currentDate = "";
     private int currentDayIndex = 1;
 
-    private int pendingShares = 0; // Menyimpan lembar/lot saham yang diinput
+    private int pendingShares = 1;
 
     private void Start()
     {
@@ -35,33 +35,86 @@ public class TradeController : MonoBehaviour
         {
             shareInputAmount.text = "1";
         }
-        SyncWithChart();
+
         CloseAllPopUps();
+        Invoke(nameof(SyncWithChart), 0.05f);
     }
 
     private void OnEnable()
     {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+            DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
+        }
+
+        Invoke(nameof(SyncWithChart), 0.05f);
+    }
+
+    private void OnDisable()
+    {
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+        }
+    }
+
+    private void HandleDayChanged(int newDay)
+    {
         SyncWithChart();
+    }
+
+    private string CleanTicker(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return "";
+        return input.Trim().ToUpper().Replace(".CSV", "").Replace("_CSV", "");
+    }
+
+    public void OnStockSelected(string selectedTicker)
+    {
+        string clean = CleanTicker(selectedTicker);
+        SelectedStockData.StockTicker = clean;
+        if (stockNameText != null) stockNameText.text = clean;
+        
+        CancelInvoke(nameof(SyncWithChart));
+        Invoke(nameof(SyncWithChart), 0.05f);
     }
 
     public void SyncWithChart()
     {
-        CandlestickChart chart = FindAnyObjectByType<CandlestickChart>();
-        if (chart != null && DaySimulationManager.Instance != null)
+        string activeTicker = CleanTicker(SelectedStockData.StockTicker);
+
+        if (CandlestickChart.ActiveLatestCandle(out string assetName, out string date, out float closePrice))
         {
-            // Logika sync chart
+            int activeDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
+
+            if (string.IsNullOrEmpty(activeTicker)) 
+            {
+                activeTicker = CleanTicker(assetName);
+            }
+
+            SetMarketPrice(activeTicker, date, activeDay, closePrice);
+        }
+        else if (!string.IsNullOrEmpty(activeTicker))
+        {
+            if (stockNameText != null) stockNameText.text = activeTicker;
         }
     }
 
     public void SetMarketPrice(string datasetName, string date, int dayIndex, float close)
     {
-        currentDatasetName = datasetName;
+        string cleanName = CleanTicker(!string.IsNullOrEmpty(SelectedStockData.StockTicker) ? SelectedStockData.StockTicker : datasetName);
+
+        currentDatasetName = cleanName;
         currentDate = date;
         currentDayIndex = dayIndex;
         currentClosePrice = close;
 
-        if (stockNameText != null) stockNameText.text = datasetName;
-        if (currentPriceText != null) currentPriceText.text = $"{close:N2}";
+        if (stockNameText != null) 
+            stockNameText.text = currentDatasetName;
+            
+        if (currentPriceText != null) 
+            currentPriceText.text = $"Rp{close:N2}";
     }
 
     // --- ALUR BELI ---
@@ -69,10 +122,13 @@ public class TradeController : MonoBehaviour
     {
         CloseAllPopUps();
 
-        if (!int.TryParse(shareInputAmount.text, out pendingShares) || pendingShares <= 0)
+        if (shareInputAmount != null)
         {
-            SetFeedback("Jumlah lembar saham tidak valid.");
-            return;
+            if (!int.TryParse(shareInputAmount.text, out pendingShares) || pendingShares <= 0)
+            {
+                SetFeedback("Jumlah lembar saham tidak valid.");
+                return;
+            }
         }
 
         float totalCost = pendingShares * currentClosePrice;
@@ -108,15 +164,18 @@ public class TradeController : MonoBehaviour
         }
     }
 
-    // --- ALUR JUAL ---
+    // --- ALUR JUAL DARI SCENE TRADING ---
     public void OnClickSell()
     {
         CloseAllPopUps();
 
-        if (!int.TryParse(shareInputAmount.text, out pendingShares) || pendingShares <= 0)
+        if (shareInputAmount != null)
         {
-            SetFeedback("Jumlah lembar saham tidak valid.");
-            return;
+            if (!int.TryParse(shareInputAmount.text, out pendingShares) || pendingShares <= 0)
+            {
+                SetFeedback("Jumlah lembar saham tidak valid.");
+                return;
+            }
         }
 
         if (PortfolioManager.Instance == null)
@@ -125,18 +184,15 @@ public class TradeController : MonoBehaviour
             return;
         }
 
-        // Cek kepemilikan saham langsung di PortfolioManager
         int ownedShares = PortfolioManager.Instance.GetOwnedShares(currentDatasetName);
 
-        // Jika tidak punya saham sama sekali atau jumlah saham kurang dari input
-        if (ownedShares < pendingShares)
+        if (ownedShares < pendingShares || ownedShares <= 0)
         {
             SetFeedback($"Gagal jual: Saham tidak mencukupi (dimiliki: {ownedShares}).");
-            ShowPopUp(noSharesPopUp); // LANGSUNG TAMPILKAN POPUP TIDAK ADA SAHAM
+            ShowPopUp(noSharesPopUp);
             return;
         }
 
-        // Jika saham mencukupi, baru tampilkan pop-up konfirmasi jual
         float totalRevenue = pendingShares * currentClosePrice;
         if (sellConfirmText != null)
         {
@@ -144,6 +200,51 @@ public class TradeController : MonoBehaviour
         }
 
         ShowPopUp(sellConfirmPopUp);
+    }
+
+    /// <summary>
+    /// DIPANGGIL TOMBOL JUAL DI PORTOFOLIO: Langsung menjual seluruh saham dari baris Portofolio.
+    /// </summary>
+    public void OnClickSellAllFromPortfolio(string stockSymbol, float sellPrice)
+    {
+        CloseAllPopUps();
+
+        if (PortfolioManager.Instance == null)
+        {
+            SetFeedback("PortfolioManager tidak ditemukan!");
+            return;
+        }
+
+        string cleanSymbol = CleanTicker(stockSymbol);
+        int ownedShares = PortfolioManager.Instance.GetOwnedShares(cleanSymbol);
+
+        if (ownedShares <= 0)
+        {
+            SetFeedback($"Gagal jual: Saham {cleanSymbol} tidak mencukupi (dimiliki: 0).");
+            ShowPopUp(noSharesPopUp);
+            return;
+        }
+
+        currentDatasetName = cleanSymbol;
+        pendingShares = ownedShares;
+        
+        if (sellPrice > 0)
+        {
+            currentClosePrice = sellPrice;
+        }
+
+        float totalRevenue = pendingShares * currentClosePrice;
+        if (sellConfirmText != null)
+        {
+            sellConfirmText.text = $"Apakah Anda yakin ingin menjual SELURUH ({pendingShares} lot) {currentDatasetName} seharga Rp{totalRevenue:N2}?";
+        }
+
+        ShowPopUp(sellConfirmPopUp);
+    }
+
+    public void OnClickSellAllFromPortfolio(string stockSymbol)
+    {
+        OnClickSellAllFromPortfolio(stockSymbol, currentClosePrice);
     }
 
     public void ConfirmSellYes()
@@ -170,7 +271,6 @@ public class TradeController : MonoBehaviour
         }
     }
 
-    // --- HELPER POPUP ---
     private void ShowPopUp(GameObject popUp)
     {
         if (popUp != null) popUp.SetActive(true);

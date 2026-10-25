@@ -247,13 +247,17 @@ public class CandlestickChart : MonoBehaviour
             RedrawChart();
         }
 
-        // --- Update Default Tooltip to Current Day's Info ---
         if (displayedCandles.Count > 0)
         {
             CandleData latest = displayedCandles[displayedCandles.Count - 1];
-            string datasetName = currentCsvFile != null ? currentCsvFile.name : "Stock";
+            
+            // Prioritaskan Ticker dari SelectedStockData agar cocok dengan pilihan pemain
+            string activeTicker = !string.IsNullOrEmpty(SelectedStockData.StockTicker) 
+                ? SelectedStockData.StockTicker 
+                : (currentCsvFile != null ? currentCsvFile.name : "Stock");
 
-            string currentDayInfo = $"<b>{datasetName} - Day {latest.dayIndex}</b> ({latest.date}) |  " +
+            // Format Header Baru (Penanggalan (YYYY-MM-DD) dihilangkan)
+            string currentDayInfo = $"<b>{activeTicker} - Day {latest.dayIndex}</b> |  " +
                                     $"O: {FormatPrice(latest.open)}  |  " +
                                     $"H: {FormatPrice(latest.high)}  |  " +
                                     $"L: {FormatPrice(latest.low)}  |  " +
@@ -265,9 +269,14 @@ public class CandlestickChart : MonoBehaviour
                 ChartTooltip.Instance.SetDefaultText(currentDayInfo);
             }
 
+            if (tradeController == null)
+            {
+                tradeController = FindAnyObjectByType<TradeController>();
+            }
+
             if (tradeController != null)
             {
-                tradeController.SetMarketPrice(datasetName, latest.date, latest.dayIndex, latest.close);
+                tradeController.SetMarketPrice(activeTicker, latest.date, latest.dayIndex, latest.close);
             }
         }
     }

@@ -2,12 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class SearchableDropdown : MonoBehaviour
+public class SearchableDropdown : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [Header("UI References")]
     public Button mainButton;
-    public TMP_Text mainButtonText;
+    public TMP_Text mainButtonText; // Tetap statis (tidak akan diubah nilainya oleh skrip)
     public GameObject dropdownPanel;
     public TMP_InputField searchInput;
     public Transform contentContainer;
@@ -15,23 +16,66 @@ public class SearchableDropdown : MonoBehaviour
 
     [Header("Chart Integration")]
     public CandlestickChart chartController;
-    public VolumeChartCSV volumeChartController; // <-- Added reference for volume
+    public VolumeChartCSV volumeChartController;
+    public TradeController tradeController;
     public List<TextAsset> csvDatasets = new List<TextAsset>();
     private List<GameObject> itemGameObjects = new List<GameObject>();
+
+    private string currentSelectedTicker = "";
 
     void Start()
     {
         dropdownPanel.SetActive(false);
-        mainButton.onClick.AddListener(ToggleDropdown);
-        searchInput.onValueChanged.AddListener(FilterList);
+        
+        if (mainButton != null)
+        {
+            mainButton.onClick.AddListener(ToggleDropdown);
+        }
+
+        if (searchInput != null)
+        {
+            searchInput.onValueChanged.AddListener(FilterList);
+        }
 
         GenerateAllItems();
 
-        // Optional: Auto-load the first CSV in the list when the game starts
+        if (tradeController == null)
+        {
+            tradeController = FindAnyObjectByType<TradeController>();
+        }
+
         if (csvDatasets.Count > 0)
         {
-            OnItemSelected(csvDatasets[0]);
+            TextAsset initialCsv = csvDatasets[0];
+
+            if (!string.IsNullOrEmpty(SelectedStockData.StockTicker))
+            {
+                TextAsset found = csvDatasets.Find(x => x != null && x.name.Equals(SelectedStockData.StockTicker, System.StringComparison.OrdinalIgnoreCase));
+                if (found != null) initialCsv = found;
+            }
+
+            OnItemSelected(initialCsv);
         }
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        // Hanya kosongkan teks pencarian pada input field saat tombol ditekan
+        if (searchInput != null) searchInput.text = "";
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (!dropdownPanel.activeSelf)
+        {
+            RestoreText();
+        }
+    }
+
+    private void RestoreText()
+    {
+        // Hanya mengembalikan teks saham aktif ke InputField pencarian
+        if (searchInput != null) searchInput.text = currentSelectedTicker;
     }
 
     public void ToggleDropdown()
@@ -41,9 +85,15 @@ public class SearchableDropdown : MonoBehaviour
 
         if (isActive)
         {
-            searchInput.text = "";
-            FilterList("");
-            searchInput.Select();
+            if (searchInput != null)
+            {
+                searchInput.text = "";
+                searchInput.Select();
+            }
+        }
+        else
+        {
+            RestoreText();
         }
     }
 
@@ -55,54 +105,73 @@ public class SearchableDropdown : MonoBehaviour
 
             GameObject newItem = Instantiate(itemPrefab, contentContainer);
 
-            // Set the button text to the name of the CSV file
-            newItem.GetComponentInChildren<TMP_Text>().text = csvFile.name;
+            TMP_Text itemText = newItem.GetComponentInChildren<TMP_Text>();
+            if (itemText != null) itemText.text = csvFile.name;
 
-            // Pass the actual TextAsset to the click event
             newItem.GetComponent<Button>().onClick.AddListener(() => OnItemSelected(csvFile));
 
             itemGameObjects.Add(newItem);
         }
     }
 
+    /// <summary>
+    /// Memfilter list kode saham secara ketat dari huruf pertama hingga huruf berikutnya (Strict Prefix Match)
+    /// </summary>
     private void FilterList(string query)
     {
-        query = query.ToLower();
+        query = query.ToLower().Trim();
 
         for (int i = 0; i < csvDatasets.Count; i++)
         {
             if (csvDatasets[i] == null) continue;
 
-            // Check if the CSV file name contains the search query
-            bool match = csvDatasets[i].name.ToLower().Contains(query);
-            itemGameObjects[i].SetActive(match);
+            string stockName = csvDatasets[i].name.ToLower();
+
+            if (string.IsNullOrEmpty(query))
+            {
+                itemGameObjects[i].SetActive(true);
+            }
+            else if (stockName.StartsWith(query))
+            {
+                itemGameObjects[i].SetActive(true);
+            }
+            else
+            {
+                itemGameObjects[i].SetActive(false);
+            }
         }
     }
 
     private void OnItemSelected(TextAsset selectedCsv)
     {
-        // Update the Dropdown UI label
-        searchInput.text = selectedCsv.name;
+        if (selectedCsv == null) return;
+
+        currentSelectedTicker = selectedCsv.name;
+
+        SelectedStockData.StockTicker = selectedCsv.name;
+        SelectedStockData.PriceCsvAsset = selectedCsv;
+
+        RestoreText();
         dropdownPanel.SetActive(false);
 
-        // Send the selected file to the candlestick chart
         if (chartController != null)
         {
             chartController.LoadNewDataset(selectedCsv);
         }
-        else
-        {
-            Debug.LogWarning("SearchableDropdown: Candlestick Chart Controller is not assigned in the Inspector!");
-        }
 
-        // Send the selected file to the volume chart
         if (volumeChartController != null)
         {
             volumeChartController.LoadNewDataset(selectedCsv);
         }
-        else
+
+        if (tradeController == null)
         {
-            Debug.LogWarning("SearchableDropdown: Volume Chart Controller is not assigned in the Inspector!");
+            tradeController = FindAnyObjectByType<TradeController>();
+        }
+
+        if (tradeController != null)
+        {
+            tradeController.OnStockSelected(selectedCsv.name);
         }
     }
 }

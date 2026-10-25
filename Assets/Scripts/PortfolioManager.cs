@@ -32,7 +32,7 @@ public class PortfolioManager : MonoBehaviour
         public float totalAmount;
     }
 
-    // Key: Dataset/Stock Name
+    // Key: Dataset/Stock Name (Normalized UPPERCASE & Trimmed)
     private readonly Dictionary<string, Position> holdings = new Dictionary<string, Position>();
     private readonly List<TransactionRecord> transactionHistory = new List<TransactionRecord>();
 
@@ -53,6 +53,15 @@ public class PortfolioManager : MonoBehaviour
         currentCash = startingCash;
     }
 
+    /// <summary>
+    /// Helper untuk membersihkan string ticker agar selalu konsisten
+    /// </summary>
+    private string CleanTicker(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return "";
+        return input.Trim().ToUpper().Replace(".CSV", "").Replace("_CSV", "");
+    }
+
     public bool ExecuteBuy(string datasetName, string date, int dayIndex, int sharesToBuy, float pricePerShare)
     {
         if (sharesToBuy <= 0 || pricePerShare <= 0f) return false;
@@ -64,14 +73,15 @@ public class PortfolioManager : MonoBehaviour
             return false;
         }
 
+        string cleanName = CleanTicker(datasetName);
         currentCash -= totalCost;
 
-        if (!holdings.ContainsKey(datasetName))
+        if (!holdings.ContainsKey(cleanName))
         {
-            holdings[datasetName] = new Position { datasetName = datasetName, totalShares = 0, totalInvestedCost = 0f };
+            holdings[cleanName] = new Position { datasetName = cleanName, totalShares = 0, totalInvestedCost = 0f };
         }
 
-        Position pos = holdings[datasetName];
+        Position pos = holdings[cleanName];
         pos.totalShares += sharesToBuy;
         pos.totalInvestedCost += totalCost;
 
@@ -79,7 +89,7 @@ public class PortfolioManager : MonoBehaviour
         {
             date = date,
             dayIndex = dayIndex,
-            datasetName = datasetName,
+            datasetName = cleanName,
             isBuy = true,
             shares = sharesToBuy,
             pricePerShare = pricePerShare,
@@ -94,13 +104,15 @@ public class PortfolioManager : MonoBehaviour
     {
         if (sharesToSell <= 0 || pricePerShare <= 0f) return false;
 
-        if (!holdings.ContainsKey(datasetName) || holdings[datasetName].totalShares < sharesToSell)
+        string cleanName = CleanTicker(datasetName);
+
+        if (!holdings.ContainsKey(cleanName) || holdings[cleanName].totalShares < sharesToSell)
         {
-            Debug.LogWarning("PortfolioManager: Not enough shares owned to complete sell order.");
+            Debug.LogWarning($"PortfolioManager: Not enough shares owned for '{cleanName}' to complete sell order.");
             return false;
         }
 
-        Position pos = holdings[datasetName];
+        Position pos = holdings[cleanName];
         
         // Calculate proportional cost basis being removed
         float costBasisPerShare = pos.AverageBuyPrice;
@@ -113,14 +125,14 @@ public class PortfolioManager : MonoBehaviour
         // Clean up empty positions
         if (pos.totalShares <= 0)
         {
-            holdings.Remove(datasetName);
+            holdings.Remove(cleanName);
         }
 
         transactionHistory.Add(new TransactionRecord
         {
             date = date,
             dayIndex = dayIndex,
-            datasetName = datasetName,
+            datasetName = cleanName,
             isBuy = false,
             shares = sharesToSell,
             pricePerShare = pricePerShare,
@@ -136,9 +148,10 @@ public class PortfolioManager : MonoBehaviour
 
     public int GetOwnedShares(string datasetName)
     {
-        if (holdings.ContainsKey(datasetName))
+        string cleanName = CleanTicker(datasetName);
+        if (holdings.ContainsKey(cleanName))
         {
-            return holdings[datasetName].totalShares;
+            return holdings[cleanName].totalShares;
         }
         return 0;
     }

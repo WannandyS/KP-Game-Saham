@@ -10,11 +10,11 @@ public class PortfolioUI : MonoBehaviour
     public TMP_Text totalNetWorthText;
 
     [Header("Holdings List")]
-    public Transform holdingsContainer;          // The Vertical Layout Group holding the rows
-    public GameObject holdingRowPrefab;        // Prefab with Horizontal Layout Group + PortfolioHoldingRow script
+    public Transform holdingsContainer;          
+    public GameObject holdingRowPrefab;        
 
     [Header("Dataset References for Pricing Lookup")]
-    public List<TextAsset> csvDatasets = new List<TextAsset>(); // Assign your stock CSVs here too
+    public List<TextAsset> csvDatasets = new List<TextAsset>(); 
 
     private void OnEnable()
     {
@@ -65,7 +65,6 @@ public class PortfolioUI : MonoBehaviour
         {
             var pos = kvp.Value;
             string ticker = pos.datasetName;
-            string companyName = SelectedStockData.GetCompanyName(ticker); // Fetch full company name
 
             GetMarketData(ticker, out float currentPrice, out float change24h);
 
@@ -84,7 +83,6 @@ public class PortfolioUI : MonoBehaviour
                 {
                     rowComponent.SetupRow(
                         ticker,
-                        companyName, // Passed separately to row
                         pos.AverageBuyPrice,
                         pos.totalInvestedCost,
                         change24h,
@@ -113,8 +111,8 @@ public class PortfolioUI : MonoBehaviour
         latestPrice = 0f;
         change24h = 0f;
 
-        string searchName = datasetName.Trim().ToLower();
-        TextAsset targetCsv = csvDatasets.Find(csv => csv != null && csv.name.Trim().ToLower() == searchName);
+        string searchName = datasetName.Trim().ToLower().Replace(".csv", "").Replace("_csv", "");
+        TextAsset targetCsv = csvDatasets.Find(csv => csv != null && csv.name.Trim().ToLower().Replace(".csv", "").Replace("_csv", "") == searchName);
         
         if (targetCsv == null) return;
 

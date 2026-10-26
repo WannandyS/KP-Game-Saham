@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class PortfolioManager : MonoBehaviour
@@ -15,7 +16,7 @@ public class PortfolioManager : MonoBehaviour
     {
         public string datasetName;
         public int totalShares;
-        public float totalInvestedCost; // Sum of (shares * purchase price)
+        public float totalInvestedCost;
 
         public float AverageBuyPrice => totalShares > 0 ? totalInvestedCost / totalShares : 0f;
     }
@@ -26,17 +27,15 @@ public class PortfolioManager : MonoBehaviour
         public string date;
         public int dayIndex;
         public string datasetName;
-        public bool isBuy; // true = Buy, false = Sell
+        public bool isBuy;
         public int shares;
         public float pricePerShare;
         public float totalAmount;
     }
 
-    // Key: Dataset/Stock Name (Normalized UPPERCASE & Trimmed)
     private readonly Dictionary<string, Position> holdings = new Dictionary<string, Position>();
     private readonly List<TransactionRecord> transactionHistory = new List<TransactionRecord>();
 
-    // Events for UI updating
     public event Action OnPortfolioUpdated;
 
     private void Awake()
@@ -53,13 +52,16 @@ public class PortfolioManager : MonoBehaviour
         currentCash = startingCash;
     }
 
-    /// <summary>
-    /// Helper untuk membersihkan string ticker agar selalu konsisten
-    /// </summary>
-    private string CleanTicker(string input)
+    // PEMBERSIHAN TICKER TOTAL: Menghapus .csv, _csv, spasi, dan karakter tak terlihat
+    public string CleanTicker(string input)
     {
         if (string.IsNullOrEmpty(input)) return "";
-        return input.Trim().ToUpper().Replace(".CSV", "").Replace("_CSV", "");
+        
+        string clean = input.Trim();
+        clean = Regex.Replace(clean, @"(?i)(\.csv|_csv)$", ""); // Hapus .csv / _csv di akhir
+        clean = Regex.Replace(clean, @"\s+", "");             // Hapus semua spasi
+        
+        return clean.ToUpper();
     }
 
     public bool ExecuteBuy(string datasetName, string date, int dayIndex, int sharesToBuy, float pricePerShare)
@@ -114,7 +116,6 @@ public class PortfolioManager : MonoBehaviour
 
         Position pos = holdings[cleanName];
         
-        // Calculate proportional cost basis being removed
         float costBasisPerShare = pos.AverageBuyPrice;
         float revenue = sharesToSell * pricePerShare;
 
@@ -122,7 +123,6 @@ public class PortfolioManager : MonoBehaviour
         pos.totalInvestedCost -= (sharesToSell * costBasisPerShare);
         currentCash += revenue;
 
-        // Clean up empty positions
         if (pos.totalShares <= 0)
         {
             holdings.Remove(cleanName);

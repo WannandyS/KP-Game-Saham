@@ -261,7 +261,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PortfolioItemUI
   tickerText: {fileID: 7657476413899087602}
-  companyNameText: {fileID: 0}
   buyPriceText: {fileID: 7958111341059176239}
   totalInvestedText: {fileID: 9184556679009084231}
   change24hText: {fileID: 2289927450731677813}
@@ -269,6 +268,7 @@ MonoBehaviour:
   totalValueText: {fileID: 5869565979097395982}
   profitLossText: {fileID: 8104034448770906235}
   profitLossPercentText: {fileID: 5148822411041407197}
+  sellButton: {fileID: 3784702316164150775}
 --- !u!1 &3408934938994018897
 GameObject:
   m_ObjectHideFlags: 0
@@ -1342,19 +1342,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5421480171925221572}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6684169220700865483, guid: 4f3816af8bf36ed459e3307b660d5fe5, type: 3}
-        m_TargetAssemblyTypeName: TradeController, Assembly-CSharp
-        m_MethodName: OnClickSell
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &7179974088588952516
 MonoBehaviour:
   m_ObjectHideFlags: 0

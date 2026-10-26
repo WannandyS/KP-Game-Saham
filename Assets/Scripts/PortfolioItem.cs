@@ -1,11 +1,11 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class PortfolioHoldingRow : MonoBehaviour
 {
     [Header("UI Text References (Asset Info)")]
     public TMP_Text tickerText;
-    public TMP_Text companyNameText; // Separate field for company name
 
     [Header("UI Text References (Financials)")]
     public TMP_Text buyPriceText;
@@ -13,14 +13,16 @@ public class PortfolioHoldingRow : MonoBehaviour
     public TMP_Text change24hText;
     public TMP_Text shareAmountText;
     public TMP_Text totalValueText;
-    public TMP_Text profitLossText;         // Rp Profit/Loss only
-    public TMP_Text profitLossPercentText;  // ROI % only
+    public TMP_Text profitLossText;         // Rp Profit/Loss
+    public TMP_Text profitLossPercentText;  // ROI %
 
-    public void SetupRow(string ticker, string companyName, float buyPrice, float invested, float change24h, int shares, float currentPrice, float totalValue, float profitLoss)
+    [Header("UI Action Button")]
+    public Button sellButton; // Slot untuk tombol Jual di prefab baris portofolio
+
+    public void SetupRow(string ticker, float buyPrice, float invested, float change24h, int shares, float currentPrice, float totalValue, float profitLoss)
     {
-        // Asset Ticker and Company Name separated
+        // Set nama ticker saham
         if (tickerText != null) tickerText.text = ticker;
-        if (companyNameText != null) companyNameText.text = companyName;
 
         if (buyPriceText != null) buyPriceText.text = $"Rp{buyPrice:N2}";
         if (totalInvestedText != null) totalInvestedText.text = $"Rp{invested:N2}";
@@ -35,7 +37,7 @@ public class PortfolioHoldingRow : MonoBehaviour
         if (shareAmountText != null) shareAmountText.text = shares.ToString("N0");
         if (totalValueText != null) totalValueText.text = $"Rp{totalValue:N2}";
 
-        // Profit/Loss Amount (Rp) separated
+        // Profit/Loss Amount (Rp)
         if (profitLossText != null)
         {
             string sign = profitLoss >= 0 ? "+" : "";
@@ -43,13 +45,31 @@ public class PortfolioHoldingRow : MonoBehaviour
             profitLossText.text = $"<color={color}>{sign}Rp{profitLoss:N2}</color>";
         }
 
-        // ROI Percentage (%) separated
+        // ROI Percentage (%)
         if (profitLossPercentText != null)
         {
             string sign = profitLoss >= 0 ? "+" : "";
             string color = profitLoss >= 0 ? "green" : "red";
             float roi = invested > 0 ? (profitLoss / invested) * 100f : 0f;
             profitLossPercentText.text = $"<color={color}>{sign}{roi:N2}%</color>";
+        }
+
+        // Listener tombol Jual langsung dari Portofolio
+        if (sellButton != null)
+        {
+            sellButton.onClick.RemoveAllListeners();
+            sellButton.onClick.AddListener(() =>
+            {
+                TradeController trade = Object.FindAnyObjectByType<TradeController>();
+                if (trade != null)
+                {
+                    trade.OnClickSellAllFromPortfolio(ticker, currentPrice);
+                }
+                else
+                {
+                    Debug.LogError("TradeController tidak ditemukan di scene!");
+                }
+            });
         }
     }
 }

@@ -1,10 +1,11 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Text.RegularExpressions;
 
 public class TradeController : MonoBehaviour
 {
-    [Header("UI References")]
+    [Header("UI References (Optional in Portfolio Scene)")]
     public TMP_Text stockNameText;
     public TMP_Text currentPriceText;
     public TMP_InputField shareInputAmount;
@@ -15,6 +16,7 @@ public class TradeController : MonoBehaviour
     public GameObject sellConfirmPopUp;      
     public TMP_Text buyConfirmText;          
     public TMP_Text sellConfirmText;         
+    public Button sellConfirmYesButton;      
 
     [Header("Result PopUps")]
     public GameObject buyPopUp;              
@@ -66,8 +68,14 @@ public class TradeController : MonoBehaviour
 
     private string CleanTicker(string input)
     {
+        if (PortfolioManager.Instance != null)
+            return PortfolioManager.Instance.CleanTicker(input);
+
         if (string.IsNullOrEmpty(input)) return "";
-        return input.Trim().ToUpper().Replace(".CSV", "").Replace("_CSV", "");
+        string clean = input.Trim();
+        clean = Regex.Replace(clean, @"(?i)(\.csv|_csv)$", "");
+        clean = Regex.Replace(clean, @"\s+", "");
+        return clean.ToUpper();
     }
 
     public void OnStockSelected(string selectedTicker)
@@ -117,7 +125,6 @@ public class TradeController : MonoBehaviour
             currentPriceText.text = $"Rp{close:N2}";
     }
 
-    // --- ALUR BELI ---
     public void OnClickBuy()
     {
         CloseAllPopUps();
@@ -164,7 +171,6 @@ public class TradeController : MonoBehaviour
         }
     }
 
-    // --- ALUR JUAL DARI SCENE TRADING ---
     public void OnClickSell()
     {
         CloseAllPopUps();
@@ -199,12 +205,15 @@ public class TradeController : MonoBehaviour
             sellConfirmText.text = $"Apakah Anda yakin ingin menjual {pendingShares} lot {currentDatasetName} seharga Rp{totalRevenue:N2}?";
         }
 
+        if (sellConfirmYesButton != null)
+        {
+            sellConfirmYesButton.onClick.RemoveAllListeners();
+            sellConfirmYesButton.onClick.AddListener(ConfirmSellYes);
+        }
+
         ShowPopUp(sellConfirmPopUp);
     }
 
-    /// <summary>
-    /// DIPANGGIL TOMBOL JUAL DI PORTOFOLIO: Langsung menjual seluruh saham dari baris Portofolio.
-    /// </summary>
     public void OnClickSellAllFromPortfolio(string stockSymbol, float sellPrice)
     {
         CloseAllPopUps();
@@ -218,6 +227,8 @@ public class TradeController : MonoBehaviour
         string cleanSymbol = CleanTicker(stockSymbol);
         int ownedShares = PortfolioManager.Instance.GetOwnedShares(cleanSymbol);
 
+        Debug.Log($"[Portfolio Sell Attempt] Raw Symbol: '{stockSymbol}' -> Cleaned: '{cleanSymbol}', Owned Shares: {ownedShares}");
+
         if (ownedShares <= 0)
         {
             SetFeedback($"Gagal jual: Saham {cleanSymbol} tidak mencukupi (dimiliki: 0).");
@@ -225,18 +236,21 @@ public class TradeController : MonoBehaviour
             return;
         }
 
-        currentDatasetName = cleanSymbol;
-        pendingShares = ownedShares;
-        
-        if (sellPrice > 0)
-        {
-            currentClosePrice = sellPrice;
-        }
+        float priceToUse = sellPrice > 0 ? sellPrice : currentClosePrice;
+        float totalRevenue = ownedShares * priceToUse;
 
-        float totalRevenue = pendingShares * currentClosePrice;
         if (sellConfirmText != null)
         {
-            sellConfirmText.text = $"Apakah Anda yakin ingin menjual SELURUH ({pendingShares} lot) {currentDatasetName} seharga Rp{totalRevenue:N2}?";
+            sellConfirmText.text = $"Apakah Anda yakin ingin menjual SELURUH ({ownedShares} lot) {cleanSymbol} seharga Rp{totalRevenue:N2}?";
+        }
+
+        if (sellConfirmYesButton != null)
+        {
+            sellConfirmYesButton.onClick.RemoveAllListeners();
+            sellConfirmYesButton.onClick.AddListener(() =>
+            {
+                ExecutePortfolioSellDirect(cleanSymbol, ownedShares, priceToUse);
+            });
         }
 
         ShowPopUp(sellConfirmPopUp);
@@ -245,6 +259,29 @@ public class TradeController : MonoBehaviour
     public void OnClickSellAllFromPortfolio(string stockSymbol)
     {
         OnClickSellAllFromPortfolio(stockSymbol, currentClosePrice);
+    }
+
+    private void ExecutePortfolioSellDirect(string symbol, int shares, float price)
+    {
+        CloseAllPopUps();
+
+        if (PortfolioManager.Instance == null) return;
+
+        string execDate = !string.IsNullOrEmpty(currentDate) ? currentDate : "Portfolio Sale";
+        int execDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : currentDayIndex;
+
+        bool success = PortfolioManager.Instance.ExecuteSell(symbol, execDate, execDay, shares, price);
+
+        if (success)
+        {
+            SetFeedback($"Berhasil menjual {shares}x {symbol}");
+            ShowPopUp(sellPopUp);
+        }
+        else
+        {
+            SetFeedback("Gagal jual: Terjadi kesalahan eksekusi.");
+            ShowPopUp(noSharesPopUp);
+        }
     }
 
     public void ConfirmSellYes()
@@ -271,9 +308,18 @@ public class TradeController : MonoBehaviour
         }
     }
 
+    // --- DITAMBAHKAN: SetAsLastSibling untuk memastikan PopUp tampil di urutan terdepan UI ---
     private void ShowPopUp(GameObject popUp)
     {
-        if (popUp != null) popUp.SetActive(true);
+        if (popUp != null)
+        {
+            popUp.SetActive(true);
+            popUp.transform.SetAsLastSibling();
+        }
+        else
+        {
+            Debug.LogError("TradeController: Referensi PopUp bernilai NULL di Inspector!");
+        }
     }
 
     public void CloseAllPopUps()

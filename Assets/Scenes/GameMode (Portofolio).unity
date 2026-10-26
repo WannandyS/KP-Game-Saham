@@ -5760,6 +5760,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2129208946}
     - target: {fileID: 6684169220700865483, guid: 4f3816af8bf36ed459e3307b660d5fe5, type: 3}
+      propertyPath: sellConfirmYesButton
+      value: 
+      objectReference: {fileID: 419681356}
+    - target: {fileID: 6684169220700865483, guid: 4f3816af8bf36ed459e3307b660d5fe5, type: 3}
       propertyPath: insufficientCashPopUp
       value: 
       objectReference: {fileID: 1568881734}

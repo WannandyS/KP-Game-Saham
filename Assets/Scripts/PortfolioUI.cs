@@ -8,6 +8,8 @@ public class PortfolioUI : MonoBehaviour
     [Header("Account Summary")]
     public TMP_Text cashText;
     public TMP_Text totalNetWorthText;
+    public TMP_Text totalProfitLossText;       // Added for Total P/L
+    public TMP_Text profitLossPercentageText; // Added for P/L Percentage
 
     [Header("Holdings List")]
     public Transform holdingsContainer;          
@@ -95,9 +97,29 @@ public class PortfolioUI : MonoBehaviour
             }
         }
 
-        float netWorth = cash + totalHoldingsValue;
-        if (cashText != null) cashText.text = $"Cash: Rp{cash:N2}";
-        if (totalNetWorthText != null) totalNetWorthText.text = $"Net Worth: Rp{netWorth:N2}";
+        float netWorth = cash + totalHoldingsValue;        
+
+        // --- Overall P/L Calculations Based on Starting Cash ---
+        // Note: Ensure your PortfolioManager has a public variable or property named 'initialCash' or 'startingCash'.
+        float startingCash = PortfolioManager.Instance.startingCash; 
+        float totalProfitLoss = cash - startingCash;
+        float profitLossPercentage = cash > 0f ? (totalProfitLoss / startingCash) * 100f : 0f;
+
+        // --- UI Text Assignments ---
+        if (cashText != null) cashText.text = $"Rp{cash}";
+        if (totalNetWorthText != null) totalNetWorthText.text = $"Rp{netWorth}";
+        
+        if (totalProfitLossText != null)
+        {
+            string sign = totalProfitLoss >= 0 ? "+" : "";
+            totalProfitLossText.text = $"{sign}Rp{totalProfitLoss}";
+        }
+
+        if (profitLossPercentageText != null)
+        {
+            string sign = profitLossPercentage >= 0 ? "+" : "";
+            profitLossPercentageText.text = $"{sign}{profitLossPercentage:F2}%";
+        }
 
         if (holdingsContainer != null)
         {

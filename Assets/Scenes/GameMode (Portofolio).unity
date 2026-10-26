@@ -219,6 +219,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PortfolioUI
   cashText: {fileID: 147050681}
   totalNetWorthText: {fileID: 1178238752}
+  totalProfitLossText: {fileID: 1814242022}
+  profitLossPercentageText: {fileID: 939464692}
   holdingsContainer: {fileID: 1415745305}
   holdingRowPrefab: {fileID: 3307153521004220618, guid: 57651a32f1f49a34d87e23d594c84524, type: 3}
   csvDatasets:
@@ -4336,7 +4338,7 @@ GameObject:
   - component: {fileID: 939464693}
   - component: {fileID: 939464692}
   m_Layer: 5
-  m_Name: Equity Value (2)
+  m_Name: PL Change Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6940,7 +6942,7 @@ GameObject:
   - component: {fileID: 1814242023}
   - component: {fileID: 1814242022}
   m_Layer: 5
-  m_Name: Equity Value (1)
+  m_Name: TotalPL Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

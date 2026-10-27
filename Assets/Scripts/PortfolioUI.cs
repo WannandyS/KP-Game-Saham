@@ -99,32 +99,34 @@ public class PortfolioUI : MonoBehaviour
 
         float netWorth = cash + totalHoldingsValue;        
 
-        // --- Overall P/L Calculations Based on Starting Cash ---
-        // Note: Ensure your PortfolioManager has a public variable or property named 'initialCash' or 'startingCash'.
-        float startingCash = PortfolioManager.Instance.startingCash; 
-        float totalProfitLoss = cash - startingCash;
-        float profitLossPercentage = cash > 0f ? (totalProfitLoss / startingCash) * 100f : 0f;
+        // --- CORRECTED Overall P/L Calculations ---
+        float totalInvestedCostSum = 0f;
+        foreach (var kvp in PortfolioManager.Instance.GetAllHoldings())
+        {
+            totalInvestedCostSum += kvp.Value.totalInvestedCost;
+        }
+
+        // Access startingCash via PortfolioManager.Instance
+        float initialCash = PortfolioManager.Instance.startingCash;
+        float totalProfitLoss = netWorth - initialCash;
+        float profitLossPercentage = initialCash > 0f ? (totalProfitLoss / initialCash) * 100f : 0f;
 
         // --- UI Text Assignments ---
-        if (cashText != null) cashText.text = $"Rp{cash}";
-        if (totalNetWorthText != null) totalNetWorthText.text = $"Rp{netWorth}";
+        if (cashText != null) cashText.text = $"Rp{cash:N2}";
+        if (totalNetWorthText != null) totalNetWorthText.text = $"Rp{netWorth:N2}";
         
         if (totalProfitLossText != null)
         {
             string sign = totalProfitLoss >= 0 ? "+" : "";
-            totalProfitLossText.text = $"{sign}Rp{totalProfitLoss}";
+            string color = totalProfitLoss >= 0 ? "green" : "red";
+            totalProfitLossText.text = $"<color={color}>{sign}Rp{totalProfitLoss:N2}</color>";
         }
 
         if (profitLossPercentageText != null)
         {
             string sign = profitLossPercentage >= 0 ? "+" : "";
-            profitLossPercentageText.text = $"{sign}{profitLossPercentage:F2}%";
-        }
-
-        if (holdingsContainer != null)
-        {
-            Canvas.ForceUpdateCanvases();
-            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(holdingsContainer as RectTransform);
+            string color = profitLossPercentage >= 0 ? "green" : "red";
+            profitLossPercentageText.text = $"<color={color}>{sign}{profitLossPercentage:F2}%</color>";
         }
     }
 

@@ -8,15 +8,15 @@ public class PortfolioUI : MonoBehaviour
     [Header("Account Summary")]
     public TMP_Text cashText;
     public TMP_Text totalNetWorthText;
-    public TMP_Text totalProfitLossText;       // Added for Total P/L
-    public TMP_Text profitLossPercentageText; // Added for P/L Percentage
+    public TMP_Text totalProfitLossText;
+    public TMP_Text profitLossPercentageText;
 
     [Header("Holdings List")]
-    public Transform holdingsContainer;          
-    public GameObject holdingRowPrefab;        
+    public Transform holdingsContainer;
+    public GameObject holdingRowPrefab;
 
     [Header("Dataset References for Pricing Lookup")]
-    public List<TextAsset> csvDatasets = new List<TextAsset>(); 
+    public List<TextAsset> csvDatasets = new List<TextAsset>();
 
     private void OnEnable()
     {
@@ -56,7 +56,7 @@ public class PortfolioUI : MonoBehaviour
         if (PortfolioManager.Instance == null) return;
 
         float cash = PortfolioManager.Instance.currentCash;
-        float totalHoldingsValue = 0f;
+        float totalHoldingsGrossValue = 0f;
 
         foreach (Transform child in holdingsContainer)
         {
@@ -66,15 +66,16 @@ public class PortfolioUI : MonoBehaviour
         foreach (var kvp in PortfolioManager.Instance.GetAllHoldings())
         {
             var pos = kvp.Value;
-            string ticker = pos.datasetName;
+            string symbol = pos.stockSymbol;
 
-            GetMarketData(ticker, out float currentPrice, out float change24h);
+            GetMarketData(symbol, out float currentPrice, out float change24h);
 
             if (currentPrice <= 0f) currentPrice = pos.AverageBuyPrice;
 
-            float totalValue = pos.totalShares * currentPrice;
-            float profitLoss = totalValue - pos.totalInvestedCost;
-            totalHoldingsValue += totalValue;
+            // Pure Gross Value - No projected sell fees included in portfolio view
+            float grossValue = pos.totalShares * currentPrice;
+            float profitLoss = grossValue - pos.totalInvestedCost;
+            totalHoldingsGrossValue += grossValue;
 
             if (holdingRowPrefab != null && holdingsContainer != null)
             {
@@ -83,38 +84,30 @@ public class PortfolioUI : MonoBehaviour
 
                 if (rowComponent != null)
                 {
+                    // Pass TotalLots instead of totalShares if your UI is set up to display Lots
                     rowComponent.SetupRow(
-                        ticker,
+                        symbol,
                         pos.AverageBuyPrice,
                         pos.totalInvestedCost,
                         change24h,
-                        pos.totalShares,
+                        pos.TotalLots,
                         currentPrice,
-                        totalValue,
+                        grossValue,
                         profitLoss
                     );
                 }
             }
         }
 
-        float netWorth = cash + totalHoldingsValue;        
+        float netWorth = cash + totalHoldingsGrossValue;
 
-        // --- CORRECTED Overall P/L Calculations ---
-        float totalInvestedCostSum = 0f;
-        foreach (var kvp in PortfolioManager.Instance.GetAllHoldings())
-        {
-            totalInvestedCostSum += kvp.Value.totalInvestedCost;
-        }
-
-        // Access startingCash via PortfolioManager.Instance
         float initialCash = PortfolioManager.Instance.startingCash;
         float totalProfitLoss = netWorth - initialCash;
         float profitLossPercentage = initialCash > 0f ? (totalProfitLoss / initialCash) * 100f : 0f;
 
-        // --- UI Text Assignments ---
         if (cashText != null) cashText.text = $"Rp{cash:N2}";
         if (totalNetWorthText != null) totalNetWorthText.text = $"Rp{netWorth:N2}";
-        
+
         if (totalProfitLossText != null)
         {
             string sign = totalProfitLoss >= 0 ? "+" : "";
@@ -130,14 +123,14 @@ public class PortfolioUI : MonoBehaviour
         }
     }
 
-    private void GetMarketData(string datasetName, out float latestPrice, out float change24h)
+    private void GetMarketData(string stockSymbol, out float latestPrice, out float change24h)
     {
         latestPrice = 0f;
         change24h = 0f;
 
-        string searchName = datasetName.Trim().ToLower().Replace(".csv", "").Replace("_csv", "");
+        string searchName = stockSymbol.Trim().ToLower().Replace(".csv", "").Replace("_csv", "");
         TextAsset targetCsv = csvDatasets.Find(csv => csv != null && csv.name.Trim().ToLower().Replace(".csv", "").Replace("_csv", "") == searchName);
-        
+
         if (targetCsv == null) return;
 
         string[] lines = targetCsv.text.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
@@ -164,7 +157,7 @@ public class PortfolioUI : MonoBehaviour
         if (closes.Count > 0)
         {
             int currentDayLimit = (DaySimulationManager.Instance != null) ? Mathf.Min(DaySimulationManager.Instance.currentDay, closes.Count) : closes.Count;
-            
+
             if (currentDayLimit > 0)
             {
                 latestPrice = closes[currentDayLimit - 1];

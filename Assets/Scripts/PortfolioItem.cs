@@ -13,20 +13,19 @@ public class PortfolioHoldingRow : MonoBehaviour
     public TMP_Text change24hText;
     public TMP_Text shareAmountText;
     public TMP_Text totalValueText;
-    public TMP_Text profitLossText;         // Rp Profit/Loss
-    public TMP_Text profitLossPercentText;  // ROI %
+    public TMP_Text profitLossText;
+    public TMP_Text profitLossPercentText;
 
-    [Header("UI Action Button")]
-    public Button sellButton; // Slot untuk tombol Jual di prefab baris portofolio
+    [Header("UI Action Controls")]
+    public TMP_InputField sellLotInput; // Make sure this is assigned in the Prefab
+    public Button sellButton;
 
-    public void SetupRow(string ticker, float buyPrice, float invested, float change24h, int shares, float currentPrice, float totalValue, float profitLoss)
+    public void SetupRow(string stockSymbol, float buyPrice, float invested, float change24h, int lotsOwned, float currentPrice, float totalValue, float profitLoss)
     {
-        // Set nama ticker saham
-        if (tickerText != null) tickerText.text = ticker;
-
+        if (tickerText != null) tickerText.text = stockSymbol;
         if (buyPriceText != null) buyPriceText.text = $"Rp{buyPrice:N2}";
         if (totalInvestedText != null) totalInvestedText.text = $"Rp{invested:N2}";
-        
+
         if (change24hText != null)
         {
             string sign = change24h >= 0 ? "+" : "";
@@ -34,10 +33,9 @@ public class PortfolioHoldingRow : MonoBehaviour
             change24hText.text = $"<color={color}>{sign}{change24h:N2}%</color>";
         }
 
-        if (shareAmountText != null) shareAmountText.text = shares.ToString("N0");
+        if (shareAmountText != null) shareAmountText.text = lotsOwned.ToString("N0");
         if (totalValueText != null) totalValueText.text = $"Rp{totalValue:N2}";
 
-        // Profit/Loss Amount (Rp)
         if (profitLossText != null)
         {
             string sign = profitLoss >= 0 ? "+" : "";
@@ -45,7 +43,6 @@ public class PortfolioHoldingRow : MonoBehaviour
             profitLossText.text = $"<color={color}>{sign}Rp{profitLoss:N2}</color>";
         }
 
-        // ROI Percentage (%)
         if (profitLossPercentText != null)
         {
             string sign = profitLoss >= 0 ? "+" : "";
@@ -54,7 +51,13 @@ public class PortfolioHoldingRow : MonoBehaviour
             profitLossPercentText.text = $"<color={color}>{sign}{roi:N2}%</color>";
         }
 
-        // Listener tombol Jual langsung dari Portofolio
+        // Set default text to maximum lots owned
+        if (sellLotInput != null)
+        {
+            sellLotInput.text = lotsOwned.ToString();
+        }
+
+        // --- LISTENER RESTORED ---
         if (sellButton != null)
         {
             sellButton.onClick.RemoveAllListeners();
@@ -63,7 +66,14 @@ public class PortfolioHoldingRow : MonoBehaviour
                 TradeController trade = Object.FindAnyObjectByType<TradeController>();
                 if (trade != null)
                 {
-                    trade.OnClickSellAllFromPortfolio(ticker, currentPrice);
+                    int lotsToSell = lotsOwned;
+
+                    if (sellLotInput != null && int.TryParse(sellLotInput.text, out int parsedLots) && parsedLots > 0)
+                    {
+                        lotsToSell = parsedLots;
+                    }
+
+                    trade.OnClickSellPartialFromPortfolio(stockSymbol, lotsToSell, currentPrice);
                 }
                 else
                 {

@@ -7,29 +7,25 @@ public class PortfolioManager : MonoBehaviour
 {
     public static PortfolioManager Instance { get; private set; }
 
+    public const int SHARES_PER_LOT = 100;
+
     [Header("Wallet & Capital")]
-    public float startingCash = 10000000f;
+    public float startingCash = 100000000f; // Cash awal
     public float currentCash { get; private set; }
 
     [Header("Trading Fees")]
-    [Tooltip("0.002 = 0.2% fee when buying")]
-    public float buyFeeRate = 0.002f;
-    [Tooltip("0.003 = 0.3% fee when selling")]
-    public float sellFeeRate = 0.003f;
-
-    public const int SHARES_PER_LOT = 100;
+    public float buyFeeRate = 0.002f;  // 0.2% fee beli
+    public float sellFeeRate = 0.003f; // 0.3% fee jual
 
     [Serializable]
     public class Position
     {
         public string stockSymbol;
         public int totalShares;
-        public float totalInvestedCost; // Includes buy fees (for accurate P/L)
-        public float totalBaseCost;     // Pure stock cost (for accurate UI Base Price)
+        public float totalInvestedCost; // Termasuk Fee Beli
 
-        // UPDATED: Now calculates using the pure base cost, ignoring fees
-        public float AverageBuyPrice => totalShares > 0 ? totalBaseCost / totalShares : 0f;
         public int TotalLots => totalShares / SHARES_PER_LOT;
+        public float AverageBuyPrice => totalShares > 0 ? totalInvestedCost / totalShares : 0f;
     }
 
     [Serializable]
@@ -37,11 +33,10 @@ public class PortfolioManager : MonoBehaviour
     {
         public string date;
         public int dayIndex;
-        public string stockSymbol;
+        public string datasetName;
         public bool isBuy;
-        public int lots;
+        public int shares;
         public float pricePerShare;
-        public float feeAmount;
         public float totalAmount;
     }
 
@@ -77,46 +72,38 @@ public class PortfolioManager : MonoBehaviour
     {
         if (lotsToBuy <= 0 || pricePerShare <= 0f) return false;
 
-        int totalShares = lotsToBuy * SHARES_PER_LOT;
-        float grossCost = totalShares * pricePerShare; // Pure base cost
+        int sharesToBuy = lotsToBuy * SHARES_PER_LOT;
+        float grossCost = sharesToBuy * pricePerShare;
         float fee = grossCost * buyFeeRate;
-        float totalCost = grossCost + fee;             // Total out-of-pocket
+        float totalCostWithFee = grossCost + fee;
 
-        if (currentCash < totalCost)
+        if (currentCash < totalCostWithFee)
         {
-            Debug.LogWarning("PortfolioManager: Insufficient cash to complete buy order with fees.");
+            Debug.LogWarning("PortfolioManager: Saldo tidak mencukupi untuk membeli.");
             return false;
         }
 
-        string cleanSymbol = CleanTicker(stockSymbol);
-        currentCash -= totalCost;
+        string cleanName = CleanTicker(stockSymbol);
+        currentCash -= totalCostWithFee;
 
-        if (!holdings.ContainsKey(cleanSymbol))
+        if (!holdings.ContainsKey(cleanName))
         {
-            holdings[cleanSymbol] = new Position
-            {
-                stockSymbol = cleanSymbol,
-                totalShares = 0,
-                totalInvestedCost = 0f,
-                totalBaseCost = 0f
-            };
+            holdings[cleanName] = new Position { stockSymbol = cleanName, totalShares = 0, totalInvestedCost = 0f };
         }
 
-        Position pos = holdings[cleanSymbol];
-        pos.totalShares += totalShares;
-        pos.totalInvestedCost += totalCost; // Track money spent
-        pos.totalBaseCost += grossCost;     // Track pure market value
+        Position pos = holdings[cleanName];
+        pos.totalShares += sharesToBuy;
+        pos.totalInvestedCost += totalCostWithFee;
 
         transactionHistory.Add(new TransactionRecord
         {
             date = date,
             dayIndex = dayIndex,
-            stockSymbol = cleanSymbol,
+            datasetName = cleanName,
             isBuy = true,
-            lots = lotsToBuy,
+            shares = sharesToBuy,
             pricePerShare = pricePerShare,
-            feeAmount = fee,
-            totalAmount = totalCost
+            totalAmount = totalCostWithFee
         });
 
         OnPortfolioUpdated?.Invoke();
@@ -127,45 +114,39 @@ public class PortfolioManager : MonoBehaviour
     {
         if (lotsToSell <= 0 || pricePerShare <= 0f) return false;
 
-        int totalSharesToSell = lotsToSell * SHARES_PER_LOT;
-        string cleanSymbol = CleanTicker(stockSymbol);
+        string cleanName = CleanTicker(stockSymbol);
+        int sharesToSell = lotsToSell * SHARES_PER_LOT;
 
-        if (!holdings.ContainsKey(cleanSymbol) || holdings[cleanSymbol].totalShares < totalSharesToSell)
+        if (!holdings.ContainsKey(cleanName) || holdings[cleanName].totalShares < sharesToSell)
         {
-            Debug.LogWarning($"PortfolioManager: Not enough shares owned for '{cleanSymbol}' to complete sell order.");
+            Debug.LogWarning($"PortfolioManager: Lembar saham '{cleanName}' tidak mencukupi untuk dijual.");
             return false;
         }
 
-        Position pos = holdings[cleanSymbol];
-
-        float grossRevenue = totalSharesToSell * pricePerShare;
+        Position pos = holdings[cleanName];
+        
+        float costBasisPerShare = pos.AverageBuyPrice;
+        float grossRevenue = sharesToSell * pricePerShare;
         float fee = grossRevenue * sellFeeRate;
         float netRevenue = grossRevenue - fee;
 
-        // Calculate both cost bases before reducing shares
-        float baseCostBasisPerShare = pos.AverageBuyPrice;
-        float investedCostBasisPerShare = pos.totalInvestedCost / pos.totalShares;
-
-        pos.totalShares -= totalSharesToSell;
-        pos.totalBaseCost -= (totalSharesToSell * baseCostBasisPerShare);
-        pos.totalInvestedCost -= (totalSharesToSell * investedCostBasisPerShare);
-
+        pos.totalShares -= sharesToSell;
+        pos.totalInvestedCost -= (sharesToSell * costBasisPerShare);
         currentCash += netRevenue;
 
         if (pos.totalShares <= 0)
         {
-            holdings.Remove(cleanSymbol);
+            holdings.Remove(cleanName);
         }
 
         transactionHistory.Add(new TransactionRecord
         {
             date = date,
             dayIndex = dayIndex,
-            stockSymbol = cleanSymbol,
+            datasetName = cleanName,
             isBuy = false,
-            lots = lotsToSell,
+            shares = sharesToSell,
             pricePerShare = pricePerShare,
-            feeAmount = fee,
             totalAmount = netRevenue
         });
 
@@ -174,14 +155,20 @@ public class PortfolioManager : MonoBehaviour
     }
 
     public Dictionary<string, Position> GetAllHoldings() => holdings;
+    public List<TransactionRecord> GetTransactionHistory() => transactionHistory;
+
+    public int GetOwnedShares(string stockSymbol)
+    {
+        string cleanName = CleanTicker(stockSymbol);
+        if (holdings.ContainsKey(cleanName))
+        {
+            return holdings[cleanName].totalShares;
+        }
+        return 0;
+    }
 
     public int GetOwnedLots(string stockSymbol)
     {
-        string cleanSymbol = CleanTicker(stockSymbol);
-        if (holdings.ContainsKey(cleanSymbol))
-        {
-            return holdings[cleanSymbol].TotalLots;
-        }
-        return 0;
+        return GetOwnedShares(stockSymbol) / SHARES_PER_LOT;
     }
 }

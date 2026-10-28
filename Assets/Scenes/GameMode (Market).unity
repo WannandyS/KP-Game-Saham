@@ -301,6 +301,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PortfolioManager
   startingCash: 1000000
+  buyFeeRate: 0.002
+  sellFeeRate: 0.003
 --- !u!4 &124772751
 Transform:
   m_ObjectHideFlags: 0
@@ -4412,21 +4414,58 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MarketOverviewController
   csvFiles:
-  - {fileID: 4900000, guid: 33d5adb899dca5e498b0e114ab770ace, type: 3}
-  - {fileID: 4900000, guid: d02c57cf59b62594cac278b40cb26ca8, type: 3}
-  - {fileID: 4900000, guid: 2c5f41894c73d554993d89fce2e83a37, type: 3}
-  - {fileID: 4900000, guid: 82b749b246c164845b74ab49e44f3eec, type: 3}
-  - {fileID: 4900000, guid: 9a717c89a069a0a4184f7ce8db114e38, type: 3}
-  - {fileID: 4900000, guid: 1a37109f05bb61f46adb416b815b39cd, type: 3}
-  - {fileID: 4900000, guid: 128d6e26407d50044b64826cab5120a3, type: 3}
-  - {fileID: 4900000, guid: 5c2c5c1ea8959c349a360a2fc732127d, type: 3}
-  - {fileID: 4900000, guid: 810ed7187216ac744a22d73277d32926, type: 3}
-  - {fileID: 4900000, guid: ff7201cf13c525840a4a414b4992fcf9, type: 3}
-  - {fileID: 4900000, guid: ca738ff3badcd584793da67333b3fcc2, type: 3}
-  - {fileID: 4900000, guid: d32021f8caa4fb740837bff4649611fe, type: 3}
-  - {fileID: 4900000, guid: 2d9eb7d52c487044a9e1b768ae086151, type: 3}
-  - {fileID: 4900000, guid: 58fdc5955683650409ecb3527b942d6c, type: 3}
-  - {fileID: 4900000, guid: b77a87ef2509f9d47877f6334706899e, type: 3}
+  - {fileID: 4900000, guid: ba18eac2d0baf3d4595f5ae6b067ce88, type: 3}
+  - {fileID: 4900000, guid: eaf662abc7c4dac438ff693e04423313, type: 3}
+  - {fileID: 4900000, guid: 2dd9fc56df37dbd48b0d8598cb81e301, type: 3}
+  - {fileID: 4900000, guid: e649a4bb13eeaf64f825ea37aa7407d9, type: 3}
+  - {fileID: 4900000, guid: edce5b4967c9e654b96b7925634e1259, type: 3}
+  - {fileID: 4900000, guid: 4582b97cfb7e3bf43ad809683ebdda32, type: 3}
+  - {fileID: 4900000, guid: b879496c13cfabc46ab1ab05eb38cdb6, type: 3}
+  - {fileID: 4900000, guid: 10a8930b862fdb74093fe908ee557c0e, type: 3}
+  - {fileID: 4900000, guid: 834d47100eb47ad44b1ec38f6e66e748, type: 3}
+  - {fileID: 4900000, guid: 445846fdff3159e4e902c0a090c6e3e5, type: 3}
+  - {fileID: 4900000, guid: 23deb20078f7a724b8e5e1e1f1cc5874, type: 3}
+  - {fileID: 4900000, guid: 767d659f6eb55e0499d599cd255f688c, type: 3}
+  - {fileID: 4900000, guid: 675fc856ac8f6c3498b91e9030e526f3, type: 3}
+  - {fileID: 4900000, guid: 89bce0e7b4e5aed4fa68c56c35813dd6, type: 3}
+  - {fileID: 4900000, guid: 0fded7904e24a034d844faa946cad44d, type: 3}
+  - {fileID: 4900000, guid: 575c2ef377f6a0148bb477cd4028ac55, type: 3}
+  - {fileID: 4900000, guid: 6ae7f204ecaf66e4eb4577c42e3c47bd, type: 3}
+  - {fileID: 4900000, guid: c7f470faa90cfb94eb345da39742a190, type: 3}
+  - {fileID: 4900000, guid: 0f4daa8dd89591742bf4473202f6b743, type: 3}
+  - {fileID: 4900000, guid: a7e421e8fa9c01b45b6be47ee0b9da77, type: 3}
+  - {fileID: 4900000, guid: fab286bc069dcdf4c9426047bbbd18ba, type: 3}
+  - {fileID: 4900000, guid: 3d2dc4ce57039f148bab002832218872, type: 3}
+  - {fileID: 4900000, guid: d5fdd872eb36e3a4b971b382bec12f6c, type: 3}
+  - {fileID: 4900000, guid: 7d6cc6ec54d3c64499db549061ee1c83, type: 3}
+  - {fileID: 4900000, guid: b36fa8f548b26be48900a58a79b0b270, type: 3}
+  - {fileID: 4900000, guid: a29f6559664ed604ab91c90f97447b71, type: 3}
+  - {fileID: 4900000, guid: 8f840970bf47ef24e958ea5249bb7a2b, type: 3}
+  - {fileID: 4900000, guid: c560a452b798046448e9f2d8277d7bb2, type: 3}
+  - {fileID: 4900000, guid: f1e2f4a90e8784b429e3fc2ff60dda0d, type: 3}
+  - {fileID: 4900000, guid: 3fec074a46152c941825bc7d6e6e7a25, type: 3}
+  - {fileID: 4900000, guid: 6f03ae368f85cf74ebbfa202c27efd29, type: 3}
+  - {fileID: 4900000, guid: f22b8ec77a2872a489e50d47ff6ebd12, type: 3}
+  - {fileID: 4900000, guid: f139e6e61a122d7438f18702eb9de6bc, type: 3}
+  - {fileID: 4900000, guid: fc49862d5db16f64884a8f82d3f84c59, type: 3}
+  - {fileID: 4900000, guid: 2694b4eb9392de74b8575df7d8477efa, type: 3}
+  - {fileID: 4900000, guid: 72909c7c775aec04a87fab392a8fde77, type: 3}
+  - {fileID: 4900000, guid: 98c37fa901d88fc4fbdf2175ac772ba4, type: 3}
+  - {fileID: 4900000, guid: 70f746dfc74ca5c40a0e490a537ee5d6, type: 3}
+  - {fileID: 4900000, guid: 2ae791351c0eca349a07d476a5c73a1d, type: 3}
+  - {fileID: 4900000, guid: 6607acca170233c48ac53486d5cb69c7, type: 3}
+  - {fileID: 4900000, guid: 2449dbc95c268744d920bf6046dd099f, type: 3}
+  - {fileID: 4900000, guid: 4568dd9846789be45b3925c3dd61253a, type: 3}
+  - {fileID: 4900000, guid: 0e23a02e825aff94c925c0680a442b3a, type: 3}
+  - {fileID: 4900000, guid: ab173ab3b3a958c48b64e1054f754c92, type: 3}
+  - {fileID: 4900000, guid: 7c55d0b35ecb4f748b8b37c733f07a48, type: 3}
+  - {fileID: 4900000, guid: 1524840ab573379489c117f917c58297, type: 3}
+  - {fileID: 4900000, guid: 7301537819208b8488d3061f909a9702, type: 3}
+  - {fileID: 4900000, guid: 58a08621489e3b44ea307396469fe0df, type: 3}
+  - {fileID: 4900000, guid: 548a9a51476f85643ae6f14e7abf7abc, type: 3}
+  - {fileID: 4900000, guid: e1c11203972c8f346a20f4a005f57f45, type: 3}
+  - {fileID: 4900000, guid: 6fa45a46254d5b1468fd340f25fb176f, type: 3}
+  - {fileID: 4900000, guid: b9154412dbf47a4408f0bb393e6fcd8c, type: 3}
   currentDayIndex: 1
   dayHeaderLabel: {fileID: 0}
   stockRowPrefab: {fileID: 6958180326924395134, guid: a98be0ffb337b5f47bc628076bab0ded, type: 3}

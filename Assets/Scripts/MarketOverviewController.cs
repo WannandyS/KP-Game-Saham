@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Globalization;
 
 public class MarketOverviewController : MonoBehaviour
 {
@@ -245,19 +246,21 @@ public class MarketOverviewController : MonoBehaviour
         string[] lines = csvContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         if (lines.Length <= 1) return null;
 
+        // Baris 0 adalah Header: Date,Adj Close,Close,High,Low,Open,Volume,Market Cap
         if (day >= lines.Length) day = lines.Length - 1;
 
         string[] currentCols = lines[day].Split(',');
         if (currentCols.Length < 7) return null;
 
-        float currentClose = float.Parse(currentCols[2]);
-        float currentVolume = float.Parse(currentCols[6]);
+        // Gunakan CultureInfo.InvariantCulture untuk mengantisipasi desimal
+        float currentClose = float.Parse(currentCols[2], CultureInfo.InvariantCulture);
+        float currentVolume = float.Parse(currentCols[6], CultureInfo.InvariantCulture);
 
         float closePercentChange = 0f;
         if (day > 1)
         {
             string[] prevCols = lines[day - 1].Split(',');
-            float prevClose = float.Parse(prevCols[2]);
+            float prevClose = float.Parse(prevCols[2], CultureInfo.InvariantCulture);
             if (prevClose > 0)
             {
                 closePercentChange = ((currentClose - prevClose) / prevClose) * 100f;
@@ -265,7 +268,18 @@ public class MarketOverviewController : MonoBehaviour
         }
 
         float calculatedValue = currentClose * currentVolume;
-        float calculatedMarketCap = currentClose * defaultTotalShares;
+
+        // DIBUAT DYNAMIC: Membaca Market Cap dari kolom ke-8 (index 7) jika tersedia di CSV
+        float calculatedMarketCap = 0f;
+        if (currentCols.Length >= 8 && float.TryParse(currentCols[7], NumberStyles.Any, CultureInfo.InvariantCulture, out float parsedMarketCap))
+        {
+            calculatedMarketCap = parsedMarketCap;
+        }
+        else
+        {
+            // Fallback jika CSV lama tidak memiliki kolom Market Cap
+            calculatedMarketCap = currentClose * defaultTotalShares;
+        }
 
         return new StockRowData
         {

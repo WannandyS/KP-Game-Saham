@@ -262,7 +262,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -36, y: 405}
+  m_AnchoredPosition: {x: -69.524, y: 405}
   m_SizeDelta: {x: 139.0489, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &79592240
@@ -285,7 +285,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Jumlah
+  m_text: Volume
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1657,7 +1657,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 615, y: 405}
+  m_AnchoredPosition: {x: 598, y: 405}
   m_SizeDelta: {x: 183.8244, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &416943125
@@ -2956,7 +2956,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 382, y: 405}
+  m_AnchoredPosition: {x: 367, y: 405}
   m_SizeDelta: {x: 227.0385, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &595355857
@@ -4632,7 +4632,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 154, y: 405}
+  m_AnchoredPosition: {x: 129, y: 405}
   m_SizeDelta: {x: 183.8244, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1044382270
@@ -4655,7 +4655,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Nilai
+  m_text: Value
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4768,7 +4768,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -202, y: 405}
+  m_AnchoredPosition: {x: -244, y: 405}
   m_SizeDelta: {x: 123.1007, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1053678178
@@ -4904,7 +4904,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -627, y: 405}
+  m_AnchoredPosition: {x: -642, y: 405}
   m_SizeDelta: {x: 160.6593, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1079528304
@@ -4927,7 +4927,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Harga
+  m_text: Entry
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5307,7 +5307,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c206d6af54886f441b57f7856b087e7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PortfolioManager
-  startingCash: 1000000
+  startingCash: 10000000
+  buyFeeRate: 0.002
+  sellFeeRate: 0.003
 --- !u!4 &1192010969
 Transform:
   m_ObjectHideFlags: 0
@@ -5846,8 +5848,8 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 0
   m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
@@ -7929,7 +7931,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -404, y: 405}
+  m_AnchoredPosition: {x: -430, y: 405}
   m_SizeDelta: {x: 181.9294, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2125981544
@@ -7952,7 +7954,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Investasi
+  m_text: Pengeluaran
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

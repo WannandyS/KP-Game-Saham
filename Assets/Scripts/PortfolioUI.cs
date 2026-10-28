@@ -105,14 +105,14 @@ public class PortfolioUI : MonoBehaviour
         float totalProfitLoss = netWorth - initialCash;
         float profitLossPercentage = initialCash > 0f ? (totalProfitLoss / initialCash) * 100f : 0f;
 
-        if (cashText != null) cashText.text = $"Rp{cash:N2}";
-        if (totalNetWorthText != null) totalNetWorthText.text = $"Rp{netWorth:N2}";
+        if (cashText != null) cashText.text = $"{cash:N0}";
+        if (totalNetWorthText != null) totalNetWorthText.text = $"{netWorth:N0}";
 
         if (totalProfitLossText != null)
         {
             string sign = totalProfitLoss >= 0 ? "+" : "";
             string color = totalProfitLoss >= 0 ? "green" : "red";
-            totalProfitLossText.text = $"<color={color}>{sign}Rp{totalProfitLoss:N2}</color>";
+            totalProfitLossText.text = $"<color={color}>{sign}{totalProfitLoss:N0}</color>";
         }
 
         if (profitLossPercentageText != null)

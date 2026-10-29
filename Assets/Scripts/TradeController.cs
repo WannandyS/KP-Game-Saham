@@ -2,28 +2,31 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Globalization;
 
 public class TradeController : MonoBehaviour
 {
     [Header("UI References")]
     public TMP_Text stockNameText;
     public TMP_Text currentPriceText;
+    public TMP_Text change24hText;          // <-- Added reference for 24h Change UI
     public TMP_InputField lotInputAmount;
     public TMP_Text liveBuyPreviewText;
     public TMP_Text feedbackText;
 
     [Header("Confirmation PopUps")]
     public GameObject buyConfirmPopUp;
-    public GameObject sellConfirmPopUp;      // RESTORED
+    public GameObject sellConfirmPopUp;      
     public TMP_Text buyConfirmText;
-    public TMP_Text sellConfirmText;         // RESTORED
-    public Button sellConfirmYesButton;      // RESTORED
+    public TMP_Text sellConfirmText;         
+    public Button sellConfirmYesButton;      
 
     [Header("Result PopUps")]
     public GameObject buyPopUp;
-    public GameObject sellPopUp;             // RESTORED
+    public GameObject sellPopUp;             
     public GameObject insufficientCashPopUp;
-    public GameObject noSharesPopUp;         // RESTORED
+    public GameObject noSharesPopUp;         
 
     private string currentStockSymbol = "";
     private float currentClosePrice = 0f;
@@ -108,9 +111,81 @@ public class TradeController : MonoBehaviour
         currentClosePrice = close;
 
         if (stockNameText != null) stockNameText.text = currentStockSymbol;
-        if (currentPriceText != null) currentPriceText.text = $"Rp{close:N2}";
+        if (currentPriceText != null) currentPriceText.text = $"{close:N0}";
+
+        // --- Calculate and Display 24H Change ---
+        CalculateAndDisplay24HChange(currentStockSymbol, dayIndex, close);
 
         UpdateLivePreview();
+    }
+
+    private void CalculateAndDisplay24HChange(string symbol, int dayIndex, float currentPrice)
+    {
+        if (change24hText == null) return;
+
+        float changePercent = 0f;
+        bool found = false;
+
+        // Try getting CSV asset from SelectedStockData or fallback
+        TextAsset csv = SelectedStockData.PriceCsvAsset;
+        if (csv == null)
+        {
+            // Fallback search in Resources or active scene if needed
+            csv = Resources.Load<TextAsset>(symbol);
+        }
+
+        if (csv != null)
+        {
+            string[] lines = csv.text.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length > 1)
+            {
+                string[] headers = lines[0].Split(',');
+                int closeIndex = -1;
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    if (headers[i].Trim().Trim('"').Equals("Close", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        closeIndex = i;
+                        break;
+                    }
+                }
+
+                if (closeIndex != -1 && dayIndex > 1 && dayIndex < lines.Length)
+                {
+                    string[] prevCols = lines[dayIndex - 1].Split(','); // dayIndex is 1-based, lines[1] is Day 1
+                    string[] currentCols = lines[dayIndex].Split(',');
+
+                    if (prevCols.Length > closeIndex && currentCols.Length > closeIndex)
+                    {
+                        if (float.TryParse(prevCols[closeIndex].Trim().Trim('"'), NumberStyles.Float, CultureInfo.InvariantCulture, out float prevClose))
+                        {
+                            if (prevClose > 0f)
+                            {
+                                changePercent = ((currentPrice - prevClose) / prevClose) * 100f;
+                                found = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!found && dayIndex <= 1)
+        {
+            changePercent = 0f; // Day 1 has no previous close
+            found = true;
+        }
+
+        if (found)
+        {
+            string sign = changePercent >= 0 ? "+" : "";
+            string color = changePercent >= 0 ? "green" : "red";
+            change24hText.text = $"<color={color}>{sign}{changePercent:N2}%</color>";
+        }
+        else
+        {
+            change24hText.text = "0.00%";
+        }
     }
 
     public void UpdateLivePreview()
@@ -120,11 +195,11 @@ public class TradeController : MonoBehaviour
             float grossCost = lots * PortfolioManager.SHARES_PER_LOT * currentClosePrice;
             float fee = grossCost * (PortfolioManager.Instance != null ? PortfolioManager.Instance.buyFeeRate : 0f);
             float totalCost = grossCost + fee;
-            if (liveBuyPreviewText != null) liveBuyPreviewText.text = $"Estimasi Beli: Rp{totalCost:N2}";
+            if (liveBuyPreviewText != null) liveBuyPreviewText.text = $"Estimasi Beli: {totalCost:N0}";
         }
         else
         {
-            if (liveBuyPreviewText != null) liveBuyPreviewText.text = "Estimasi Beli: Rp0.00";
+            if (liveBuyPreviewText != null) liveBuyPreviewText.text = "Estimasi Beli: Rp0";
         }
     }
 
@@ -144,7 +219,7 @@ public class TradeController : MonoBehaviour
 
         if (buyConfirmText != null)
         {
-            buyConfirmText.text = $"Beli {pendingLots} lot ({pendingLots * PortfolioManager.SHARES_PER_LOT} lembar) {currentStockSymbol}?\n\nHarga Dasar: Rp{grossCost:N2}\nBiaya Beli: Rp{fee:N2}\n\nTotal: Rp{totalCost:N2}";
+            buyConfirmText.text = $"Beli {pendingLots} lot ({pendingLots * PortfolioManager.SHARES_PER_LOT} lembar) {currentStockSymbol}?\n\nHarga Dasar: {grossCost:N0}\nBiaya Beli: {fee:N0}\n\nTotal: {totalCost:N0}";
         }
         ShowPopUp(buyConfirmPopUp);
     }
@@ -167,14 +242,12 @@ public class TradeController : MonoBehaviour
         }
     }
 
-    // --- SELLING LOGIC (RESTORED) ---
+    // --- SELLING LOGIC ---
 
-    // Called by the main trading screen Sell Button
     public void OnClickSell()
     {
         CloseAllPopUps();
-
-        int lots = 0; // Declare the variable first to satisfy the compiler
+        int lots = 0;
 
         if (lotInputAmount != null && (!int.TryParse(lotInputAmount.text, out lots) || lots <= 0))
         {
@@ -185,7 +258,6 @@ public class TradeController : MonoBehaviour
         TriggerSellConfirmation(currentStockSymbol, lots, currentClosePrice);
     }
 
-    // Called dynamically from the Portfolio UI rows
     public void OnClickSellPartialFromPortfolio(string stockSymbol, int lotsToSell, float sellPrice)
     {
         CloseAllPopUps();
@@ -193,7 +265,6 @@ public class TradeController : MonoBehaviour
         TriggerSellConfirmation(stockSymbol, lotsToSell, priceToUse);
     }
 
-    // Centralized popup generation for selling
     private void TriggerSellConfirmation(string stockSymbol, int lotsToSell, float priceToUse)
     {
         if (PortfolioManager.Instance == null) return;
@@ -213,7 +284,7 @@ public class TradeController : MonoBehaviour
 
         if (sellConfirmText != null)
         {
-            sellConfirmText.text = $"Jual {lotsToSell} lot ({lotsToSell * PortfolioManager.SHARES_PER_LOT} lembar) {cleanSymbol}?\n\nNilai Jual: Rp{grossRevenue:N2}\nBiaya Jual: -Rp{fee:N2}\n\nTotal Diterima: Rp{netRevenue:N2}";
+            sellConfirmText.text = $"Jual {lotsToSell} lot ({lotsToSell * PortfolioManager.SHARES_PER_LOT} lembar) {cleanSymbol}?\n\nNilai Jual: {grossRevenue:N0}\nBiaya Jual: -{fee:N0}\n\nTotal Diterima: {netRevenue:N0}";
         }
 
         if (sellConfirmYesButton != null)
@@ -225,7 +296,6 @@ public class TradeController : MonoBehaviour
         ShowPopUp(sellConfirmPopUp);
     }
 
-    // Executes the final sale
     private void ExecutePortfolioSellDirect(string symbol, int lots, float price)
     {
         CloseAllPopUps();
@@ -247,7 +317,6 @@ public class TradeController : MonoBehaviour
         }
     }
 
-    // --- UTILITIES ---
     private void ShowPopUp(GameObject popUp)
     {
         if (popUp != null)

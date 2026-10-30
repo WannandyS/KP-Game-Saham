@@ -165,7 +165,7 @@ public class PortfolioUI : MonoBehaviour
                 if (currentDayLimit > 1)
                 {
                     float prevPrice = closes[currentDayLimit - 2];
-                    change24h = ((latestPrice - prevPrice) / prevPrice) * 100f;
+                    change24h = latestPrice;
                 }
             }
         }

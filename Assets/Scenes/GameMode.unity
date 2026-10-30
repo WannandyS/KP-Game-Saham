@@ -384,7 +384,7 @@ GameObject:
   - component: {fileID: 129419984}
   - component: {fileID: 129419983}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -520,7 +520,7 @@ GameObject:
   - component: {fileID: 155431806}
   - component: {fileID: 155431805}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: SahamText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -656,7 +656,7 @@ GameObject:
   - component: {fileID: 237594359}
   - component: {fileID: 237594358}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2898,7 +2898,7 @@ GameObject:
   - component: {fileID: 710614589}
   - component: {fileID: 710614588}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3765,7 +3765,7 @@ GameObject:
   - component: {fileID: 846280029}
   - component: {fileID: 846280028}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: CancelButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4312,7 +4312,7 @@ GameObject:
   - component: {fileID: 1057790728}
   - component: {fileID: 1057790727}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: JualText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4448,7 +4448,7 @@ GameObject:
   - component: {fileID: 1177494777}
   - component: {fileID: 1177494776}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4659,7 +4659,7 @@ GameObject:
   - component: {fileID: 1196665492}
   - component: {fileID: 1196665491}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: HargaText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4876,7 +4876,7 @@ GameObject:
   - component: {fileID: 1267381555}
   - component: {fileID: 1267381554}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: CancelButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5023,7 +5023,7 @@ GameObject:
   - component: {fileID: 1271887109}
   - component: {fileID: 1271887108}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5509,7 +5509,7 @@ GameObject:
   - component: {fileID: 1331482572}
   - component: {fileID: 1331482571}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: BeliText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5724,7 +5724,7 @@ GameObject:
   - component: {fileID: 1369622929}
   - component: {fileID: 1369622928}
   m_Layer: 5
-  m_Name: Button
+  m_Name: OkayButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5950,7 +5950,7 @@ GameObject:
   - component: {fileID: 1390595798}
   - component: {fileID: 1390595797}
   m_Layer: 5
-  m_Name: Text (TMP) (2)
+  m_Name: PersentaseText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6436,7 +6436,7 @@ GameObject:
   - component: {fileID: 1573339270}
   - component: {fileID: 1573339269}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6572,7 +6572,7 @@ GameObject:
   - component: {fileID: 1586701168}
   - component: {fileID: 1586701167}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: DescriptionText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6708,7 +6708,7 @@ GameObject:
   - component: {fileID: 1624428105}
   - component: {fileID: 1624428104}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6846,7 +6846,7 @@ GameObject:
   - component: {fileID: 1657962780}
   - component: {fileID: 1657962779}
   m_Layer: 5
-  m_Name: Button
+  m_Name: YesButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6993,7 +6993,7 @@ GameObject:
   - component: {fileID: 1672945030}
   - component: {fileID: 1672945029}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7129,7 +7129,7 @@ GameObject:
   - component: {fileID: 1710673618}
   - component: {fileID: 1710673617}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: DescriptionText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7612,7 +7612,7 @@ GameObject:
   - component: {fileID: 1788556241}
   - component: {fileID: 1788556240}
   m_Layer: 5
-  m_Name: Button
+  m_Name: OkayButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8295,7 +8295,7 @@ GameObject:
   - component: {fileID: 2012293155}
   - component: {fileID: 2012293154}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8431,7 +8431,7 @@ GameObject:
   - component: {fileID: 2025411505}
   - component: {fileID: 2025411504}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8841,7 +8841,7 @@ GameObject:
   - component: {fileID: 2092405785}
   - component: {fileID: 2092405784}
   m_Layer: 5
-  m_Name: Button
+  m_Name: OkayButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8990,7 +8990,7 @@ GameObject:
   - component: {fileID: 2104422647}
   - component: {fileID: 2104422646}
   m_Layer: 5
-  m_Name: Button
+  m_Name: YesButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9254,7 +9254,7 @@ GameObject:
   - component: {fileID: 2144088480}
   - component: {fileID: 2144088479}
   m_Layer: 5
-  m_Name: Button
+  m_Name: OkayButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

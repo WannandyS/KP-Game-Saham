@@ -25,14 +25,8 @@ public class PortfolioHoldingRow : MonoBehaviour
         if (tickerText != null) tickerText.text = stockSymbol;
         if (buyPriceText != null) buyPriceText.text = $"{buyPrice:N0}";
         if (totalInvestedText != null) totalInvestedText.text = $"{invested:N0}";
-
-        if (change24hText != null)
-        {
-            string sign = change24h >= 0 ? "+" : "";
-            string color = change24h >= 0 ? "green" : "red";
-            change24hText.text = $"<color={color}>{sign}{change24h:N0}%</color>";
-        }
-
+        if (change24hText != null) change24hText.text = $"{currentPrice:N0}";
+        
         if (shareAmountText != null) shareAmountText.text = lotsOwned.ToString("N0");
         if (totalValueText != null) totalValueText.text = $"{totalValue:N0}";
 
@@ -48,7 +42,7 @@ public class PortfolioHoldingRow : MonoBehaviour
             string sign = profitLoss >= 0 ? "+" : "";
             string color = profitLoss >= 0 ? "green" : "red";
             float roi = invested > 0 ? (profitLoss / invested) * 100f : 0f;
-            profitLossPercentText.text = $"<color={color}>{sign}{roi:N0}%</color>";
+            profitLossPercentText.text = $"<color={color}>{sign}{roi:N2}%</color>";
         }
 
         // --- Setup Input Field Default Value ---

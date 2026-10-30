@@ -331,7 +331,7 @@ GameObject:
   - component: {fileID: 128158305}
   - component: {fileID: 128158304}
   m_Layer: 5
-  m_Name: Bt (2)
+  m_Name: Bt24H
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -463,7 +463,7 @@ GameObject:
   - component: {fileID: 240245597}
   - component: {fileID: 240245596}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: TitleScene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2737,7 +2737,7 @@ GameObject:
   - component: {fileID: 1288205360}
   - component: {fileID: 1288205359}
   m_Layer: 5
-  m_Name: Bt (1)
+  m_Name: BtHarga
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2979,7 +2979,7 @@ GameObject:
   - component: {fileID: 1318104306}
   - component: {fileID: 1318104305}
   m_Layer: 5
-  m_Name: Bt (4)
+  m_Name: BtMarketCap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3306,7 +3306,7 @@ GameObject:
   - component: {fileID: 1539239602}
   - component: {fileID: 1539239601}
   m_Layer: 5
-  m_Name: Bt (5)
+  m_Name: BtValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3549,7 +3549,7 @@ GameObject:
   - component: {fileID: 1720410573}
   - component: {fileID: 1720410572}
   m_Layer: 5
-  m_Name: Bt
+  m_Name: BtSaham
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3864,7 +3864,7 @@ GameObject:
   - component: {fileID: 1771353125}
   - component: {fileID: 1771353124}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: Header
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4521,7 +4521,7 @@ GameObject:
   - component: {fileID: 2075140725}
   - component: {fileID: 2075140724}
   m_Layer: 5
-  m_Name: Bt (3)
+  m_Name: BtVolume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

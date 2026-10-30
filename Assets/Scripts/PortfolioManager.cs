@@ -93,7 +93,7 @@ public class PortfolioManager : MonoBehaviour
 
         Position pos = holdings[cleanName];
         pos.totalShares += sharesToBuy;
-        pos.totalInvestedCost += totalCostWithFee;
+        pos.totalInvestedCost += grossCost;
 
         transactionHistory.Add(new TransactionRecord
         {

@@ -3518,7 +3518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c206d6af54886f441b57f7856b087e7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PortfolioManager
-  startingCash: 1000000
+  startingCash: 100000000
   buyFeeRate: 0.002
   sellFeeRate: 0.003
 --- !u!4 &769769007
@@ -5897,7 +5897,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000061035156, y: 0.001159668}
+  m_AnchoredPosition: {x: 0, y: 0.0012207031}
   m_SizeDelta: {x: -1467.524, y: -720.12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1371270345

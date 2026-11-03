@@ -10,6 +10,7 @@ public class PortfolioUI : MonoBehaviour
     public TMP_Text totalNetWorthText;
     public TMP_Text totalProfitLossText;
     public TMP_Text profitLossPercentageText;
+    public TMP_Text equityText;
 
     [Header("Holdings List")]
     public Transform holdingsContainer;
@@ -100,13 +101,14 @@ public class PortfolioUI : MonoBehaviour
         }
 
         float netWorth = cash + totalHoldingsGrossValue;
-
+        float equity = totalHoldingsGrossValue;
         float initialCash = PortfolioManager.Instance.startingCash;
         float totalProfitLoss = netWorth - initialCash;
         float profitLossPercentage = initialCash > 0f ? (totalProfitLoss / initialCash) * 100f : 0f;
 
         if (cashText != null) cashText.text = $"{cash:N0}";
         if (totalNetWorthText != null) totalNetWorthText.text = $"{netWorth:N0}";
+        if (totalHoldingsGrossValue != null) equityText.text = $"{totalHoldingsGrossValue:N0}";
 
         if (totalProfitLossText != null)
         {

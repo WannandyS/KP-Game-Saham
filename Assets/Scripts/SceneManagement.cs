@@ -70,9 +70,9 @@ public class SceneManagement : MonoBehaviour
         SceneManager.LoadScene("GameMode (Portofolio)");
     }
 
-    public void GameNews()
+    public void GameLog()
     {
-        SceneManager.LoadScene("GameMode (World News)");
+        SceneManager.LoadScene("GameMode (Log)");
     }
 
     public void GameDetailPerusahaan()

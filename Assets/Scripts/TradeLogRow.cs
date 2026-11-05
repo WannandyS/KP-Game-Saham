@@ -23,21 +23,43 @@ public class TradeLogRowUI : MonoBehaviour
     public TMP_Text glText;          // G / L
     public TMP_Text glPercentText;   // G / L %
 
-    public void SetupBuyRow(int lots, string symbol, float avgPrice, float grossVal, float fee, float total)
+    // Dipanggil saat baris pertama kali dibuat untuk mengosongkan semua kolom awal
+    public void InitEmptyRow()
     {
-        ClearAll();
+        if (buyNoText) buyNoText.text = "";
+        if (buySahamText) buySahamText.text = "";
+        if (buyAvgText) buyAvgText.text = "";
+        if (buyValueText) buyValueText.text = "";
+        if (buyFeeText) buyFeeText.text = "";
+        if (buyTotalText) buyTotalText.text = "";
+
+        if (sellNoText) sellNoText.text = "";
+        if (sellSahamText) sellSahamText.text = "";
+        if (sellAvgText) sellAvgText.text = "";
+        if (sellValueText) sellValueText.text = "";
+        if (sellFeeText) sellFeeText.text = "";
+        if (sellTotalText) sellTotalText.text = "";
+
+        if (glText) glText.text = "";
+        if (glPercentText) glPercentText.text = "";
+
+        gameObject.SetActive(true);
+    }
+
+    // Mengisi khusus kolom BUY (tanpa menghapus kolom SELL)
+    public void SetupBuyColumns(int lots, string symbol, float avgPrice, float grossVal, float fee, float total)
+    {
         if (buyNoText != null) buyNoText.text = lots.ToString("N0");
         if (buySahamText != null) buySahamText.text = symbol;
         if (buyAvgText != null) buyAvgText.text = avgPrice.ToString("N0");
         if (buyValueText != null) buyValueText.text = grossVal.ToString("N0");
         if (buyFeeText != null) buyFeeText.text = fee.ToString("N0");
         if (buyTotalText != null) buyTotalText.text = total.ToString("N0");
-        gameObject.SetActive(true);
     }
 
-    public void SetupSellRow(int lots, string symbol, float avgPrice, float grossVal, float fee, float netTotal, float gainLoss, float gainLossPercent)
+    // Mengisi khusus kolom SELL dan Profit/Loss (tanpa menghapus kolom BUY)
+    public void SetupSellColumns(int lots, string symbol, float avgPrice, float grossVal, float fee, float netTotal, float gainLoss, float gainLossPercent)
     {
-        ClearAll();
         if (sellNoText != null) sellNoText.text = lots.ToString("N0");
         if (sellSahamText != null) sellSahamText.text = symbol;
         if (sellAvgText != null) sellAvgText.text = avgPrice.ToString("N0");
@@ -58,27 +80,5 @@ public class TradeLogRowUI : MonoBehaviour
             string color = gainLossPercent >= 0 ? "green" : "red";
             glPercentText.text = $"<color={color}>{sign}{gainLossPercent:F2}%</color>";
         }
-
-        gameObject.SetActive(true);
-    }
-
-    private void ClearAll()
-    {
-        if (buyNoText) buyNoText.text = "";
-        if (buySahamText) buySahamText.text = "";
-        if (buyAvgText) buyAvgText.text = "";
-        if (buyValueText) buyValueText.text = "";
-        if (buyFeeText) buyFeeText.text = "";
-        if (buyTotalText) buyTotalText.text = "";
-
-        if (sellNoText) sellNoText.text = "";
-        if (sellSahamText) sellSahamText.text = "";
-        if (sellAvgText) sellAvgText.text = "";
-        if (sellValueText) sellValueText.text = "";
-        if (sellFeeText) sellFeeText.text = "";
-        if (sellTotalText) sellTotalText.text = "";
-
-        if (glText) glText.text = "";
-        if (glPercentText) glPercentText.text = "";
     }
 }

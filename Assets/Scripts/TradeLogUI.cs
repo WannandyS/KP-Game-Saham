@@ -2,17 +2,18 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Linq;
 
 public class TradeLogUI : MonoBehaviour
 {
     [Header("UI References")]
-    public Transform rowContainer;          // The Vertical Layout Group holding transaction rows
-    public GameObject tradeRowPrefab;     // Prefab with TradeLogRowUI script
+    public Transform rowContainer;          // Vertical Layout Group untuk menampung baris
+    public GameObject tradeRowPrefab;     // Prefab dengan skrip TradeLogRowUI
 
     [Header("Day Navigation Controls")]
     public Button nextDayButton;
     public Button prevDayButton;
-    public TMP_Text dayIndicatorText;     // Shows "Day 1", "Day 2", etc.
+    public TMP_Text dayIndicatorText;     // Label "Day 1", "Day 2", dll.
 
     private int viewingDay = 1;
 
@@ -25,7 +26,6 @@ public class TradeLogUI : MonoBehaviour
 
         if (DaySimulationManager.Instance != null)
         {
-            // Always default to the current active simulation day when opening the log
             viewingDay = DaySimulationManager.Instance.currentDay;
             DaySimulationManager.Instance.OnDayChanged += HandleDaySimulationChanged;
         }
@@ -54,10 +54,6 @@ public class TradeLogUI : MonoBehaviour
 
     private void HandleDaySimulationChanged(int currentSimDay)
     {
-        // Optional: if you want the log to automatically follow the simulation when time advances, 
-        // uncomment the line below. Otherwise, it remembers what day you were inspecting.
-        // viewingDay = currentSimDay;
-        
         RefreshLog();
     }
 
@@ -65,14 +61,13 @@ public class TradeLogUI : MonoBehaviour
     {
         if (PortfolioManager.Instance == null || rowContainer == null || tradeRowPrefab == null) return;
 
-        // Ensure viewingDay doesn't exceed the current simulation day
         int currentSimDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
         if (viewingDay > currentSimDay)
         {
             viewingDay = currentSimDay;
         }
 
-        // Clear existing rows
+        // Hapus semua baris lama di UI
         foreach (Transform child in rowContainer)
         {
             Destroy(child.gameObject);
@@ -80,37 +75,97 @@ public class TradeLogUI : MonoBehaviour
 
         List<PortfolioManager.TransactionRecord> allHistory = PortfolioManager.Instance.GetTransactionHistory();
 
-        // Filter transactions for the day we are currently viewing
-        List<PortfolioManager.TransactionRecord> dayHistory = allHistory.FindAll(t => t.dayIndex == viewingDay);
+        // Filter transaksi untuk hari yang sedang dilihat dan dibalik agar transaksi TERBARU diproses lebih dulu
+        List<PortfolioManager.TransactionRecord> dayHistory = allHistory
+            .FindAll(t => t.dayIndex == viewingDay)
+            .AsEnumerable()
+            .Reverse()
+            .ToList();
 
-        foreach (var record in dayHistory)
+        // Pisahkan daftar transaksi Buy dan Sell pada hari tersebut
+        List<PortfolioManager.TransactionRecord> buyRecords = dayHistory.FindAll(t => t.isBuy);
+        List<PortfolioManager.TransactionRecord> sellRecords = dayHistory.FindAll(t => !t.isBuy);
+
+        // Pasangkan (Pair) Buy dan Sell secara rapat tanpa ada baris kosong yang melompat
+        while (buyRecords.Count > 0 || sellRecords.Count > 0)
         {
+            PortfolioManager.TransactionRecord buyToUse = null;
+            PortfolioManager.TransactionRecord sellToUse = null;
+
+            if (buyRecords.Count > 0)
+            {
+                buyToUse = buyRecords[0];
+                buyRecords.RemoveAt(0);
+
+                // Prioritas 1: Cari transaksi Sell dengan kode saham yang SAMA
+                sellToUse = sellRecords.FirstOrDefault(s => s.stockSymbol == buyToUse.stockSymbol);
+
+                if (sellToUse != null)
+                {
+                    sellRecords.Remove(sellToUse);
+                }
+                else if (sellRecords.Count > 0)
+                {
+                    // Prioritas 2: Jika kode saham beda, pasangkan dengan transaksi Sell pertama yang ada agar sebaris & rapat
+                    sellToUse = sellRecords[0];
+                    sellRecords.RemoveAt(0);
+                }
+            }
+            else if (sellRecords.Count > 0)
+            {
+                // Jika hanya tersisa transaksi Sell
+                sellToUse = sellRecords[0];
+                sellRecords.RemoveAt(0);
+            }
+
+            // Buat 1 Baris UI
             GameObject rowObj = Instantiate(tradeRowPrefab, rowContainer);
             TradeLogRowUI rowUI = rowObj.GetComponent<TradeLogRowUI>();
 
             if (rowUI != null)
             {
-                if (record.isBuy)
-                {
-                    rowUI.SetupBuyRow(record.lots, record.stockSymbol, record.pricePerShare, record.grossAmount, record.feeAmount, record.totalAmount);
-                }
-                else
-                {
-                    float gainLoss = record.totalAmount - (record.grossAmount * 0.997f); 
-                    float gainLossPercent = 0f; 
+                rowUI.InitEmptyRow();
 
-                    rowUI.SetupSellRow(record.lots, record.stockSymbol, record.pricePerShare, record.grossAmount, record.feeAmount, record.totalAmount, gainLoss, gainLossPercent);
+                // Isi data BUY jika ada
+                if (buyToUse != null)
+                {
+                    rowUI.SetupBuyColumns(
+                        buyToUse.lots, 
+                        buyToUse.stockSymbol, 
+                        buyToUse.pricePerShare, 
+                        buyToUse.grossAmount, 
+                        buyToUse.feeAmount, 
+                        buyToUse.totalAmount
+                    );
+                }
+
+                // Isi data SELL jika ada
+                if (sellToUse != null)
+                {
+                    float gainLoss = sellToUse.totalAmount - (sellToUse.grossAmount * 0.997f); 
+                    float gainLossPercent = 0f;
+
+                    rowUI.SetupSellColumns(
+                        sellToUse.lots, 
+                        sellToUse.stockSymbol, 
+                        sellToUse.pricePerShare, 
+                        sellToUse.grossAmount, 
+                        sellToUse.feeAmount, 
+                        sellToUse.totalAmount, 
+                        gainLoss, 
+                        gainLossPercent
+                    );
                 }
             }
         }
 
-        // Update Day Indicator Label
+        // Update Label Indikator Hari
         if (dayIndicatorText != null)
         {
             dayIndicatorText.text = $"Day {viewingDay}";
         }
 
-        // Manage Button Interactivity
+        // Update Status Interaktif Tombol Navigasi
         if (prevDayButton != null)
         {
             prevDayButton.interactable = (viewingDay > 1);
@@ -118,7 +173,6 @@ public class TradeLogUI : MonoBehaviour
 
         if (nextDayButton != null)
         {
-            // Capped at currentSimDay instead of totalDays
             nextDayButton.interactable = (viewingDay < currentSimDay);
         }
     }

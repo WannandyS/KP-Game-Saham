@@ -6,16 +6,15 @@ using System.Collections.Generic;
 public class TradeLogUI : MonoBehaviour
 {
     [Header("UI References")]
-    public Transform rowContainer;          // ContentContainer with Vertical Layout Group
+    public Transform rowContainer;          // The Vertical Layout Group holding transaction rows
     public GameObject tradeRowPrefab;     // Prefab with TradeLogRowUI script
 
-    [Header("Pagination Controls")]
-    public Button nextButton;
-    public Button prevButton;
-    public TMP_Text pageInfoText;
-    public int rowsPerPage = 8;
+    [Header("Day Navigation Controls")]
+    public Button nextDayButton;
+    public Button prevDayButton;
+    public TMP_Text dayIndicatorText;     // Shows "Day 1", "Day 2", etc.
 
-    private int currentPage = 0;
+    private int viewingDay = 1;
 
     private void OnEnable()
     {
@@ -23,15 +22,17 @@ public class TradeLogUI : MonoBehaviour
         {
             PortfolioManager.Instance.OnPortfolioUpdated += RefreshLog;
         }
+
         if (DaySimulationManager.Instance != null)
         {
-            DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
+            // Always default to the current active simulation day when opening the log
+            viewingDay = DaySimulationManager.Instance.currentDay;
+            DaySimulationManager.Instance.OnDayChanged += HandleDaySimulationChanged;
         }
 
-        if (nextButton != null) nextButton.onClick.AddListener(NextPage);
-        if (prevButton != null) prevButton.onClick.AddListener(PrevPage);
+        if (nextDayButton != null) nextDayButton.onClick.AddListener(NextDay);
+        if (prevDayButton != null) prevDayButton.onClick.AddListener(PrevDay);
 
-        currentPage = 0;
         RefreshLog();
     }
 
@@ -41,64 +42,49 @@ public class TradeLogUI : MonoBehaviour
         {
             PortfolioManager.Instance.OnPortfolioUpdated -= RefreshLog;
         }
+
         if (DaySimulationManager.Instance != null)
         {
-            DaySimulationManager.Instance.OnDayChanged -= HandleDayChanged;
+            DaySimulationManager.Instance.OnDayChanged -= HandleDaySimulationChanged;
         }
 
-        if (nextButton != null) nextButton.onClick.RemoveListener(NextPage);
-        if (prevButton != null) prevButton.onClick.RemoveListener(PrevPage);
+        if (nextDayButton != null) nextDayButton.onClick.RemoveListener(NextDay);
+        if (prevDayButton != null) prevDayButton.onClick.RemoveListener(PrevDay);
     }
 
-    private void HandleDayChanged(int day)
+    private void HandleDaySimulationChanged(int currentSimDay)
     {
+        // Optional: if you want the log to automatically follow the simulation when time advances, 
+        // uncomment the line below. Otherwise, it remembers what day you were inspecting.
+        // viewingDay = currentSimDay;
+        
         RefreshLog();
-    }
-
-    public void NextPage()
-    {
-        if (PortfolioManager.Instance == null) return;
-        int totalHistory = PortfolioManager.Instance.GetTransactionHistory().Count;
-        int maxPages = Mathf.CeilToInt((float)totalHistory / rowsPerPage);
-
-        if (currentPage < maxPages - 1)
-        {
-            currentPage++;
-            RefreshLog();
-        }
-    }
-
-    public void PrevPage()
-    {
-        if (currentPage > 0)
-        {
-            currentPage--;
-            RefreshLog();
-        }
     }
 
     public void RefreshLog()
     {
         if (PortfolioManager.Instance == null || rowContainer == null || tradeRowPrefab == null) return;
 
+        // Ensure viewingDay doesn't exceed the current simulation day
+        int currentSimDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
+        if (viewingDay > currentSimDay)
+        {
+            viewingDay = currentSimDay;
+        }
+
+        // Clear existing rows
         foreach (Transform child in rowContainer)
         {
             Destroy(child.gameObject);
         }
 
-        List<PortfolioManager.TransactionRecord> history = PortfolioManager.Instance.GetTransactionHistory();
-        int totalHistory = history.Count;
-        int maxPages = Mathf.Max(1, Mathf.CeilToInt((float)totalHistory / rowsPerPage));
-        
-        currentPage = Mathf.Clamp(currentPage, 0, maxPages - 1);
+        List<PortfolioManager.TransactionRecord> allHistory = PortfolioManager.Instance.GetTransactionHistory();
 
-        int startIndex = currentPage * rowsPerPage;
-        int endIndex = Mathf.Min(startIndex + rowsPerPage, totalHistory);
+        // Filter transactions for the day we are currently viewing
+        List<PortfolioManager.TransactionRecord> dayHistory = allHistory.FindAll(t => t.dayIndex == viewingDay);
 
-        // Display current page slice
-        for (int i = startIndex; i < endIndex; i++)
+        foreach (var record in dayHistory)
         {
-            var record = history[i];
             GameObject rowObj = Instantiate(tradeRowPrefab, rowContainer);
             TradeLogRowUI rowUI = rowObj.GetComponent<TradeLogRowUI>();
 
@@ -106,43 +92,53 @@ public class TradeLogUI : MonoBehaviour
             {
                 if (record.isBuy)
                 {
-                    rowUI.SetupBuyRow(
-                        record.lots,
-                        record.stockSymbol,
-                        record.pricePerShare,
-                        record.grossAmount,
-                        record.feeAmount,
-                        record.totalAmount
-                    );
+                    rowUI.SetupBuyRow(record.lots, record.stockSymbol, record.pricePerShare, record.grossAmount, record.feeAmount, record.totalAmount);
                 }
                 else
                 {
-                    // Calculate estimated gain/loss for sell records
-                    float costBasisPerShare = record.grossAmount / (record.lots * PortfolioManager.SHARES_PER_LOT); // approximate or track
                     float gainLoss = record.totalAmount - (record.grossAmount * 0.997f); 
-                    float gainLossPercent = record.grossAmount > 0 ? (gainLoss / record.grossAmount) * 100f : 0f;
+                    float gainLossPercent = 0f; 
 
-                    rowUI.SetupSellRow(
-                        record.lots,
-                        record.stockSymbol,
-                        record.pricePerShare,
-                        record.grossAmount,
-                        record.feeAmount,
-                        record.totalAmount,
-                        gainLoss,
-                        gainLossPercent
-                    );
+                    rowUI.SetupSellRow(record.lots, record.stockSymbol, record.pricePerShare, record.grossAmount, record.feeAmount, record.totalAmount, gainLoss, gainLossPercent);
                 }
             }
         }
 
-        // Update pagination UI text & buttons
-        if (pageInfoText != null)
+        // Update Day Indicator Label
+        if (dayIndicatorText != null)
         {
-            pageInfoText.text = $"Page {currentPage + 1} of {maxPages}";
+            dayIndicatorText.text = $"Day {viewingDay}";
         }
 
-        if (prevButton != null) prevButton.interactable = (currentPage > 0);
-        if (nextButton != null) nextButton.interactable = (currentPage < maxPages - 1);
+        // Manage Button Interactivity
+        if (prevDayButton != null)
+        {
+            prevDayButton.interactable = (viewingDay > 1);
+        }
+
+        if (nextDayButton != null)
+        {
+            // Capped at currentSimDay instead of totalDays
+            nextDayButton.interactable = (viewingDay < currentSimDay);
+        }
+    }
+
+    public void NextDay()
+    {
+        int currentSimDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : viewingDay + 1;
+        if (viewingDay < currentSimDay)
+        {
+            viewingDay++;
+            RefreshLog();
+        }
+    }
+
+    public void PrevDay()
+    {
+        if (viewingDay > 1)
+        {
+            viewingDay--;
+            RefreshLog();
+        }
     }
 }

@@ -53,77 +53,79 @@ public class PortfolioUI : MonoBehaviour
     }
 
     public void RefreshUI()
+{
+    if (PortfolioManager.Instance == null) return;
+
+    float cash = PortfolioManager.Instance.currentCash;
+    float totalHoldingsGrossValue = 0f;
+
+    // --- ADD THIS NULL CHECK ---
+    if (holdingsContainer != null)
     {
-        if (PortfolioManager.Instance == null) return;
-
-        float cash = PortfolioManager.Instance.currentCash;
-        float totalHoldingsGrossValue = 0f;
-
         foreach (Transform child in holdingsContainer)
         {
             Destroy(child.gameObject);
         }
+    }
 
-        foreach (var kvp in PortfolioManager.Instance.GetAllHoldings())
+    foreach (var kvp in PortfolioManager.Instance.GetAllHoldings())
+    {
+        var pos = kvp.Value;
+        string symbol = pos.stockSymbol;
+
+        GetMarketData(symbol, out float currentPrice, out float change24h);
+
+        if (currentPrice <= 0f) currentPrice = pos.AverageBuyPrice;
+
+        float grossValue = pos.totalShares * currentPrice;
+        float profitLoss = grossValue - pos.totalInvestedCost;
+        totalHoldingsGrossValue += grossValue;
+
+        // Only instantiate rows if holdingRowPrefab and holdingsContainer are assigned
+        if (holdingRowPrefab != null && holdingsContainer != null)
         {
-            var pos = kvp.Value;
-            string symbol = pos.stockSymbol;
+            GameObject rowObj = Instantiate(holdingRowPrefab, holdingsContainer);
+            PortfolioHoldingRow rowComponent = rowObj.GetComponent<PortfolioHoldingRow>();
 
-            GetMarketData(symbol, out float currentPrice, out float change24h);
-
-            if (currentPrice <= 0f) currentPrice = pos.AverageBuyPrice;
-
-            // Pure Gross Value - No projected sell fees included in portfolio view
-            float grossValue = pos.totalShares * currentPrice;
-            float profitLoss = grossValue - pos.totalInvestedCost;
-            totalHoldingsGrossValue += grossValue;
-
-            if (holdingRowPrefab != null && holdingsContainer != null)
+            if (rowComponent != null)
             {
-                GameObject rowObj = Instantiate(holdingRowPrefab, holdingsContainer);
-                PortfolioHoldingRow rowComponent = rowObj.GetComponent<PortfolioHoldingRow>();
-
-                if (rowComponent != null)
-                {
-                    // Pass TotalLots instead of totalShares if your UI is set up to display Lots
-                    rowComponent.SetupRow(
-                        symbol,
-                        pos.AverageBuyPrice,
-                        pos.totalInvestedCost,
-                        change24h,
-                        pos.TotalLots,
-                        currentPrice,
-                        grossValue,
-                        profitLoss
-                    );
-                }
+                rowComponent.SetupRow(
+                    symbol,
+                    pos.AverageBuyPrice,
+                    pos.totalInvestedCost,
+                    change24h,
+                    pos.TotalLots,
+                    currentPrice,
+                    grossValue,
+                    profitLoss
+                );
             }
         }
-
-        float netWorth = cash + totalHoldingsGrossValue;
-        float equity = totalHoldingsGrossValue;
-        float initialCash = PortfolioManager.Instance.startingCash;
-        float totalProfitLoss = netWorth - initialCash;
-        float profitLossPercentage = initialCash > 0f ? (totalProfitLoss / initialCash) * 100f : 0f;
-
-        if (cashText != null) cashText.text = $"{cash:N0}";
-        if (totalNetWorthText != null) totalNetWorthText.text = $"{netWorth:N0}";
-        if (totalHoldingsGrossValue != null) equityText.text = $"{totalHoldingsGrossValue:N0}";
-
-        if (totalProfitLossText != null)
-        {
-            string sign = totalProfitLoss >= 0 ? "+" : "";
-            string color = totalProfitLoss >= 0 ? "green" : "red";
-            totalProfitLossText.text = $"<color={color}>{sign}{totalProfitLoss:N0}</color>";
-        }
-
-        if (profitLossPercentageText != null)
-        {
-            string sign = profitLossPercentage >= 0 ? "+" : "";
-            string color = profitLossPercentage >= 0 ? "green" : "red";
-            profitLossPercentageText.text = $"<color={color}>{sign}{profitLossPercentage:F2}%</color>";
-        }
     }
+
+    float netWorth = cash + totalHoldingsGrossValue;
+    float initialCash = PortfolioManager.Instance.startingCash;
+    float totalProfitLoss = netWorth - initialCash;
+    float profitLossPercentage = initialCash > 0f ? (totalProfitLoss / initialCash) * 100f : 0f;
+
+    if (cashText != null) cashText.text = $"{cash:N0}";
+    if (totalNetWorthText != null) totalNetWorthText.text = $"{netWorth:N0}";
+    if (equityText != null) equityText.text = $"{totalHoldingsGrossValue:N0}";
+
+    if (totalProfitLossText != null)
+    {
+        string sign = totalProfitLoss >= 0 ? "+" : "";
+        string color = totalProfitLoss >= 0 ? "green" : "red";
+        totalProfitLossText.text = $"<color={color}>{sign}{totalProfitLoss:N0}</color>";
+    }
+
+    if (profitLossPercentageText != null)
+    {
+        string sign = profitLossPercentage >= 0 ? "+" : "";
+        string color = profitLossPercentage >= 0 ? "green" : "red";
+        profitLossPercentageText.text = $"<color={color}>{sign}{profitLossPercentage:F2}%</color>";
+    }
+}
 
     private void GetMarketData(string stockSymbol, out float latestPrice, out float change24h)
     {

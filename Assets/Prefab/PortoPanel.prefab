@@ -495,7 +495,7 @@ GameObject:
   - component: {fileID: 3352363222654255880}
   - component: {fileID: 5890212994366393949}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: PortoPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

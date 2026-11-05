@@ -10,19 +10,19 @@ public class PortfolioManager : MonoBehaviour
     public const int SHARES_PER_LOT = 100;
 
     [Header("Wallet & Capital")]
-    public float startingCash = 100000000f; // Cash awal
+    public float startingCash = 100000000f;
     public float currentCash { get; private set; }
 
     [Header("Trading Fees")]
-    public float buyFeeRate = 0.002f;  // 0.2% fee beli
-    public float sellFeeRate = 0.003f; // 0.3% fee jual
+    public float buyFeeRate = 0.002f;  // 0.2%
+    public float sellFeeRate = 0.003f; // 0.3%
 
     [Serializable]
     public class Position
     {
         public string stockSymbol;
         public int totalShares;
-        public float totalInvestedCost; // Termasuk Fee Beli
+        public float totalInvestedCost;
 
         public int TotalLots => totalShares / SHARES_PER_LOT;
         public float AverageBuyPrice => totalShares > 0 ? totalInvestedCost / totalShares : 0f;
@@ -33,11 +33,13 @@ public class PortfolioManager : MonoBehaviour
     {
         public string date;
         public int dayIndex;
-        public string datasetName;
+        public string stockSymbol;
         public bool isBuy;
-        public int shares;
+        public int lots;
         public float pricePerShare;
-        public float totalAmount;
+        public float grossAmount; // Value at the time (lots * shares_per_lot * price)
+        public float feeAmount;   // Fee included
+        public float totalAmount; // Total out-of-pocket (Buy) or Net received (Sell)
     }
 
     private readonly Dictionary<string, Position> holdings = new Dictionary<string, Position>();
@@ -72,8 +74,8 @@ public class PortfolioManager : MonoBehaviour
     {
         if (lotsToBuy <= 0 || pricePerShare <= 0f) return false;
 
-        int sharesToBuy = lotsToBuy * SHARES_PER_LOT;
-        float grossCost = sharesToBuy * pricePerShare;
+        int totalShares = lotsToBuy * SHARES_PER_LOT;
+        float grossCost = totalShares * pricePerShare;
         float fee = grossCost * buyFeeRate;
         float totalCostWithFee = grossCost + fee;
 
@@ -92,17 +94,19 @@ public class PortfolioManager : MonoBehaviour
         }
 
         Position pos = holdings[cleanName];
-        pos.totalShares += sharesToBuy;
+        pos.totalShares += totalShares;
         pos.totalInvestedCost += grossCost;
 
         transactionHistory.Add(new TransactionRecord
         {
             date = date,
             dayIndex = dayIndex,
-            datasetName = cleanName,
+            stockSymbol = cleanName,
             isBuy = true,
-            shares = sharesToBuy,
+            lots = lotsToBuy,
             pricePerShare = pricePerShare,
+            grossAmount = grossCost,
+            feeAmount = fee,
             totalAmount = totalCostWithFee
         });
 
@@ -143,10 +147,12 @@ public class PortfolioManager : MonoBehaviour
         {
             date = date,
             dayIndex = dayIndex,
-            datasetName = cleanName,
+            stockSymbol = cleanName,
             isBuy = false,
-            shares = sharesToSell,
+            lots = lotsToSell,
             pricePerShare = pricePerShare,
+            grossAmount = grossRevenue,
+            feeAmount = fee,
             totalAmount = netRevenue
         });
 

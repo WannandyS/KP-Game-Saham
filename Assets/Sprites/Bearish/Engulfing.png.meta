@@ -3,20 +3,20 @@ guid: cf1e317a43f4da8408738411c63d90d2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1417361314930368456
-    second: Group 16_0
+      213: 8846607816887596291
+    second: Engulfing_0
   - first:
-      213: 2489427412785703400
-    second: Group 16_1
+      213: -4404553568743158064
+    second: Engulfing_1
   - first:
-      213: -3176743234302013799
-    second: Group 16_2
+      213: 3451436758929196760
+    second: Engulfing_2
   - first:
-      213: -8354042951590964410
-    second: Group 16_3
+      213: -8748428956374489946
+    second: Engulfing_3
   - first:
-      213: -3354198655039152018
-    second: Group 16_4
+      213: 5253444275461044266
+    second: Engulfing_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 16_0
+      name: Engulfing_0
       rect:
         serializedVersion: 2
         x: 0
@@ -127,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 830e131c465845ce0800000000000000
-      internalID: -1417361314930368456
+      spriteID: 30577c820f675ca70800000000000000
+      internalID: 8846607816887596291
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 16_1
+      name: Engulfing_1
       rect:
         serializedVersion: 2
         x: 37
@@ -149,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8e92639da093c8220800000000000000
-      internalID: 2489427412785703400
+      spriteID: 0de82e49dd1efd2c0800000000000000
+      internalID: -4404553568743158064
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 16_2
+      name: Engulfing_2
       rect:
         serializedVersion: 2
         x: 63
@@ -171,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 99e8dc80cd0f9e3d0800000000000000
-      internalID: -3176743234302013799
+      spriteID: 8d643bc1277f5ef20800000000000000
+      internalID: 3451436758929196760
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 16_3
+      name: Engulfing_3
       rect:
         serializedVersion: 2
         x: 113
@@ -193,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6439018723a701c80800000000000000
-      internalID: -8354042951590964410
+      spriteID: 6a4ae802736579680800000000000000
+      internalID: -8748428956374489946
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 16_4
+      name: Engulfing_4
       rect:
         serializedVersion: 2
         x: 179
@@ -215,8 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e606c44381e7371d0800000000000000
-      internalID: -3354198655039152018
+      spriteID: a283a2e0cbbf7e840800000000000000
+      internalID: 5253444275461044266
       vertices: []
       indices: 
       edges: []
@@ -235,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 16_0: -1417361314930368456
-      Group 16_1: 2489427412785703400
-      Group 16_2: -3176743234302013799
-      Group 16_3: -8354042951590964410
-      Group 16_4: -3354198655039152018
+      Engulfing_0: 8846607816887596291
+      Engulfing_1: -4404553568743158064
+      Engulfing_2: 3451436758929196760
+      Engulfing_3: -8748428956374489946
+      Engulfing_4: 5253444275461044266
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

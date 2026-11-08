@@ -1132,7 +1132,7 @@ PrefabInstance:
       objectReference: {fileID: 2075894443}
     - target: {fileID: 2031146449547282521, guid: a49b4f916fac5ad42a9acb2cb8961a79, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: GameWatchlist
+      value: GamePortofolio
       objectReference: {fileID: 0}
     - target: {fileID: 3260231601947528154, guid: a49b4f916fac5ad42a9acb2cb8961a79, type: 3}
       propertyPath: m_Name

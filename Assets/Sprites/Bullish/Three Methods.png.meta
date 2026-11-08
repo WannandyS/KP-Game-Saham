@@ -3,20 +3,20 @@ guid: 7352a5a8602cb584a8d11c647b7f70d6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9005769944389503070
-    second: Group 7_0
+      213: -3707833143733962001
+    second: Three Methods_0
   - first:
-      213: -1960388936527809910
-    second: Group 7_1
+      213: -1060337292203837381
+    second: Three Methods_1
   - first:
-      213: -5356408208085125088
-    second: Group 7_2
+      213: -4047830179696405178
+    second: Three Methods_2
   - first:
-      213: 488253626289405536
-    second: Group 7_3
+      213: 3633822810047071373
+    second: Three Methods_3
   - first:
-      213: -4039527221422151076
-    second: Group 7_4
+      213: -3708048478381551693
+    second: Three Methods_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 7_0
+      name: Three Methods_0
       rect:
         serializedVersion: 2
         x: 0
@@ -127,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2a736cf33f3150380800000000000000
-      internalID: -9005769944389503070
+      spriteID: fea315596612b8cc0800000000000000
+      internalID: -3707833143733962001
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 7_1
+      name: Three Methods_1
       rect:
         serializedVersion: 2
         x: 59
@@ -149,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a8277a816ac4bc4e0800000000000000
-      internalID: -1960388936527809910
+      spriteID: b383714c9dce841f0800000000000000
+      internalID: -1060337292203837381
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 7_2
+      name: Three Methods_2
       rect:
         serializedVersion: 2
         x: 119
@@ -171,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 028791d3d173aa5b0800000000000000
-      internalID: -5356408208085125088
+      spriteID: 645171cd5e733d7c0800000000000000
+      internalID: -4047830179696405178
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 7_3
+      name: Three Methods_3
       rect:
         serializedVersion: 2
         x: 179
@@ -193,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 06eb6431610a6c600800000000000000
-      internalID: 488253626289405536
+      spriteID: d844199c79eed6230800000000000000
+      internalID: 3633822810047071373
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 7_4
+      name: Three Methods_4
       rect:
         serializedVersion: 2
         x: 239
@@ -215,8 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c5aac9af467b0f7c0800000000000000
-      internalID: -4039527221422151076
+      spriteID: 3bfc3241e8d5a8cc0800000000000000
+      internalID: -3708048478381551693
       vertices: []
       indices: 
       edges: []
@@ -235,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 7_0: -9005769944389503070
-      Group 7_1: -1960388936527809910
-      Group 7_2: -5356408208085125088
-      Group 7_3: 488253626289405536
-      Group 7_4: -4039527221422151076
+      Three Methods_0: -3707833143733962001
+      Three Methods_1: -1060337292203837381
+      Three Methods_2: -4047830179696405178
+      Three Methods_3: 3633822810047071373
+      Three Methods_4: -3708048478381551693
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

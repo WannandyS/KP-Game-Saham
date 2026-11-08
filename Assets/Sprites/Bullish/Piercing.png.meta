@@ -3,23 +3,26 @@ guid: 013432dec2b251346b954c7c44134c28
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -556663896244417668
-    second: Group 3_0
+      213: 1402521786453538064
+    second: Piercing_0
   - first:
-      213: -7082658115272840673
-    second: Group 3_1
+      213: -8937224400129019317
+    second: Piercing_1
   - first:
-      213: 1228409297129094648
-    second: Group 3_2
+      213: 4520653552921077257
+    second: Piercing_2
   - first:
-      213: -6502149291590768785
-    second: Group 3_3
+      213: 4262154365654026367
+    second: Piercing_3
   - first:
-      213: -6724558696562457890
-    second: Group 3_4
+      213: 1741172619979062820
+    second: Piercing_4
   - first:
-      213: 7063090476369010955
-    second: Group 3_5
+      213: 4980212175973305447
+    second: Piercing_5
+  - first:
+      213: -7610953714063121160
+    second: Piercing_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,13 +118,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 3_0
+      name: Piercing_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 105
-        width: 5
-        height: 6
+        y: 57
+        width: 9
+        height: 193
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -130,17 +133,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c7b011db2255648f0800000000000000
-      internalID: -556663896244417668
+      spriteID: 0153f474222c67310800000000000000
+      internalID: 1402521786453538064
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 3_1
+      name: Piercing_1
       rect:
         serializedVersion: 2
-        x: 10
+        x: 14
         y: 105
         width: 11
         height: 6
@@ -152,20 +155,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f1aef9d38f755bd90800000000000000
-      internalID: -7082658115272840673
+      spriteID: b423b5072c998f380800000000000000
+      internalID: -8937224400129019317
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 3_2
+      name: Piercing_2
       rect:
         serializedVersion: 2
-        x: 26
+        x: 30
         y: 9
         width: 42
-        height: 193
+        height: 194
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -174,17 +177,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8fdba225fbf2c0110800000000000000
-      internalID: 1228409297129094648
+      spriteID: 906e77674769cbe30800000000000000
+      internalID: 4520653552921077257
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 3_3
+      name: Piercing_3
       rect:
         serializedVersion: 2
-        x: 72
+        x: 76
         y: 0
         width: 43
         height: 151
@@ -196,17 +199,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f67ac2e4ba9b3c5a0800000000000000
-      internalID: -6502149291590768785
+      spriteID: f7840be40d6362b30800000000000000
+      internalID: 4262154365654026367
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 3_4
+      name: Piercing_4
       rect:
         serializedVersion: 2
-        x: 119
+        x: 123
         y: 105
         width: 11
         height: 6
@@ -218,20 +221,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ed281246e719da2a0800000000000000
-      internalID: -6724558696562457890
+      spriteID: 42efc72d543e92810800000000000000
+      internalID: 1741172619979062820
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 3_5
+      name: Piercing_5
       rect:
         serializedVersion: 2
-        x: 135
-        y: 105
-        width: 5
-        height: 6
+        x: 139
+        y: 5
+        width: 10
+        height: 194
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -240,8 +243,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b016b6ccd53250260800000000000000
-      internalID: 7063090476369010955
+      spriteID: 76cc6f676944d1540800000000000000
+      internalID: 4980212175973305447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Piercing_6
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 41
+        width: 5
+        height: 194
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f4e35febe5706690800000000000000
+      internalID: -7610953714063121160
       vertices: []
       indices: 
       edges: []
@@ -260,12 +285,13 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 3_0: -556663896244417668
-      Group 3_1: -7082658115272840673
-      Group 3_2: 1228409297129094648
-      Group 3_3: -6502149291590768785
-      Group 3_4: -6724558696562457890
-      Group 3_5: 7063090476369010955
+      Piercing_0: 1402521786453538064
+      Piercing_1: -8937224400129019317
+      Piercing_2: 4520653552921077257
+      Piercing_3: 4262154365654026367
+      Piercing_4: 1741172619979062820
+      Piercing_5: 4980212175973305447
+      Piercing_6: -7610953714063121160
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

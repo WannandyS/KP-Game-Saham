@@ -1,22 +1,22 @@
 fileFormatVersion: 2
-guid: 5fdda84c334e87b41b01364ea82c73b7
+guid: ce83493ae027cbf479f25b0702e0c0ff
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8453890923445766294
-    second: Group 12_0
+      213: -32151838589455612
+    second: Three Black Crows_0
   - first:
-      213: -5031817530743891726
-    second: Group 12_1
+      213: -1838801747997761071
+    second: Three Black Crows_1
   - first:
-      213: -7445849467835638180
-    second: Group 12_2
+      213: -6544575486514371829
+    second: Three Black Crows_2
   - first:
-      213: -6367345748321168094
-    second: Group 12_3
+      213: -8361706931872691956
+    second: Three Black Crows_3
   - first:
-      213: -3055238564467969689
-    second: Group 12_4
+      213: -2659384774124292515
+    second: Three Black Crows_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,13 +112,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 12_0
+      name: Three Black Crows_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 37
-        width: 39
-        height: 193
+        y: 109
+        width: 5
+        height: 149
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -127,20 +127,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 69842e51101425570800000000000000
-      internalID: 8453890923445766294
+      spriteID: 403fff9b216cd8ff0800000000000000
+      internalID: -32151838589455612
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 12_1
+      name: Three Black Crows_1
       rect:
         serializedVersion: 2
-        x: 59
-        y: 37
+        x: 39
+        y: 69
         width: 40
-        height: 108
+        height: 138
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,20 +149,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2f85d619d946b2ab0800000000000000
-      internalID: -5031817530743891726
+      spriteID: 1d1e9367d834b76e0800000000000000
+      internalID: -1838801747997761071
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 12_2
+      name: Three Black Crows_2
       rect:
         serializedVersion: 2
-        x: 119
-        y: 61
+        x: 99
+        y: 39
         width: 40
-        height: 108
+        height: 138
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -171,42 +171,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c5e10aadb570ba890800000000000000
-      internalID: -7445849467835638180
+      spriteID: b03e498054ffc25a0800000000000000
+      internalID: -6544575486514371829
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 12_3
+      name: Three Black Crows_3
       rect:
         serializedVersion: 2
-        x: 179
-        y: 85
-        width: 40
-        height: 108
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 225193d07c4a2a7a0800000000000000
-      internalID: -6367345748321168094
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Group 12_4
-      rect:
-        serializedVersion: 2
-        x: 239
+        x: 159
         y: 0
-        width: 39
-        height: 193
+        width: 40
+        height: 137
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -215,8 +193,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 761ffc486bc9995d0800000000000000
-      internalID: -3055238564467969689
+      spriteID: c098ec109df35fb80800000000000000
+      internalID: -8361706931872691956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Three Black Crows_4
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 41
+        width: 5
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d563d3153a7f71bd0800000000000000
+      internalID: -2659384774124292515
       vertices: []
       indices: 
       edges: []
@@ -235,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 12_0: 8453890923445766294
-      Group 12_1: -5031817530743891726
-      Group 12_2: -7445849467835638180
-      Group 12_3: -6367345748321168094
-      Group 12_4: -3055238564467969689
+      Three Black Crows_0: -32151838589455612
+      Three Black Crows_1: -1838801747997761071
+      Three Black Crows_2: -6544575486514371829
+      Three Black Crows_3: -8361706931872691956
+      Three Black Crows_4: -2659384774124292515
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

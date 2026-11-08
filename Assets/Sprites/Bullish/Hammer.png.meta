@@ -3,20 +3,20 @@ guid: e1fe34a3ecdcfa740a55fa926d59ba7c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2641698482785147981
-    second: Group 1_0
+      213: 5393448996881579246
+    second: Hammer_0
   - first:
-      213: -9081263467114537878
-    second: Group 1_1
+      213: -2512138695857015927
+    second: Hammer_1
   - first:
-      213: 304971421478580809
-    second: Group 1_2
+      213: -2226416280841244690
+    second: Hammer_2
   - first:
-      213: -3345504643224878737
-    second: Group 1_3
+      213: -5763565293700006746
+    second: Hammer_3
   - first:
-      213: 6751831120632496353
-    second: Group 1_4
+      213: 5856978609090855344
+    second: Hammer_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 1_0
+      name: Hammer_0
       rect:
         serializedVersion: 2
         x: 0
@@ -127,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d4cd81616c239a420800000000000000
-      internalID: 2641698482785147981
+      spriteID: eec3055794169da40800000000000000
+      internalID: 5393448996881579246
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 1_1
+      name: Hammer_1
       rect:
         serializedVersion: 2
         x: 37
@@ -149,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a6cd7e2cdfed8f180800000000000000
-      internalID: -9081263467114537878
+      spriteID: 983fdee7a27132dd0800000000000000
+      internalID: -2512138695857015927
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 1_2
+      name: Hammer_2
       rect:
         serializedVersion: 2
         x: 65
@@ -171,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 94270eb54e97b3400800000000000000
-      internalID: 304971421478580809
+      spriteID: eefaf4a403e2a11e0800000000000000
+      internalID: -2226416280841244690
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 1_3
+      name: Hammer_3
       rect:
         serializedVersion: 2
         x: 131
@@ -193,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f61492290416291d0800000000000000
-      internalID: -3345504643224878737
+      spriteID: 6acbd3de6e3b300b0800000000000000
+      internalID: -5763565293700006746
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 1_4
+      name: Hammer_4
       rect:
         serializedVersion: 2
         x: 169
@@ -215,8 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1e04ab8a1a253bd50800000000000000
-      internalID: 6751831120632496353
+      spriteID: 0b10ceb630b284150800000000000000
+      internalID: 5856978609090855344
       vertices: []
       indices: 
       edges: []
@@ -235,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 1_0: 2641698482785147981
-      Group 1_1: -9081263467114537878
-      Group 1_2: 304971421478580809
-      Group 1_3: -3345504643224878737
-      Group 1_4: 6751831120632496353
+      Hammer_0: 5393448996881579246
+      Hammer_1: -2512138695857015927
+      Hammer_2: -2226416280841244690
+      Hammer_3: -5763565293700006746
+      Hammer_4: 5856978609090855344
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

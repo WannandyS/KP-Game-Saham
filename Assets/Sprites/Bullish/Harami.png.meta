@@ -3,20 +3,20 @@ guid: c6d71d446f6262b429e70135ddf6906e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7175521830830924091
-    second: Group 2_0
+      213: 2096943957203338498
+    second: Harami_0
   - first:
-      213: -1563569370539148410
-    second: Group 2_1
+      213: -4564165169103086770
+    second: Harami_1
   - first:
-      213: -5729885095506951082
-    second: Group 2_2
+      213: 7137103994918909980
+    second: Harami_2
   - first:
-      213: 1393239696362459487
-    second: Group 2_3
+      213: 6430094885203645037
+    second: Harami_3
   - first:
-      213: -7100845443158553131
-    second: Group 2_4
+      213: 4412589153601961316
+    second: Harami_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 2_0
+      name: Harami_0
       rect:
         serializedVersion: 2
         x: 0
@@ -127,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b31ecbc6613949360800000000000000
-      internalID: 7175521830830924091
+      spriteID: 205c1034b67d91d10800000000000000
+      internalID: 2096943957203338498
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 2_1
+      name: Harami_1
       rect:
         serializedVersion: 2
         x: 37
@@ -149,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 68b355f01f51d4ae0800000000000000
-      internalID: -1563569370539148410
+      spriteID: e4b566fe5f3d8a0c0800000000000000
+      internalID: -4564165169103086770
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 2_2
+      name: Harami_2
       rect:
         serializedVersion: 2
         x: 65
@@ -171,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 654c0862ddb5b70b0800000000000000
-      internalID: -5729885095506951082
+      spriteID: c18b926f4461c0360800000000000000
+      internalID: 7137103994918909980
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 2_3
+      name: Harami_3
       rect:
         serializedVersion: 2
         x: 113
@@ -193,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f5158a44f18c55310800000000000000
-      internalID: 1393239696362459487
+      spriteID: d629e90ea394c3950800000000000000
+      internalID: 6430094885203645037
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 2_4
+      name: Harami_4
       rect:
         serializedVersion: 2
         x: 171
@@ -215,8 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5dd459bf0bab47d90800000000000000
-      internalID: -7100845443158553131
+      spriteID: 46dbf20d47aac3d30800000000000000
+      internalID: 4412589153601961316
       vertices: []
       indices: 
       edges: []
@@ -235,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 2_0: 7175521830830924091
-      Group 2_1: -1563569370539148410
-      Group 2_2: -5729885095506951082
-      Group 2_3: 1393239696362459487
-      Group 2_4: -7100845443158553131
+      Harami_0: 2096943957203338498
+      Harami_1: -4564165169103086770
+      Harami_2: 7137103994918909980
+      Harami_3: 6430094885203645037
+      Harami_4: 4412589153601961316
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

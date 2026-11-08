@@ -3,23 +3,29 @@ guid: 9890f09c7c309bb4e8102168fdec59d7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2056126039432432040
-    second: Group 18_0
+      213: 1285180264158589618
+    second: Dark Cloud Cover_0
   - first:
-      213: 3939024567600316905
-    second: Group 18_1
+      213: -6446368849950814307
+    second: Dark Cloud Cover_1
   - first:
-      213: 7766315694682136954
-    second: Group 18_2
+      213: -5277130226336495546
+    second: Dark Cloud Cover_2
   - first:
-      213: 3154926658090593411
-    second: Group 18_3
+      213: 2442112727676866456
+    second: Dark Cloud Cover_3
   - first:
-      213: 3803275129838173369
-    second: Group 18_4
+      213: 4021159159994812282
+    second: Dark Cloud Cover_4
   - first:
-      213: -5251853205622357874
-    second: Group 18_5
+      213: 6210371280871006621
+    second: Dark Cloud Cover_5
+  - first:
+      213: 8811136746850908875
+    second: Dark Cloud Cover_6
+  - first:
+      213: 212188229915708086
+    second: Dark Cloud Cover_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,12 +121,34 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 18_0
+      name: Dark Cloud Cover_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 95
+        y: 1
         width: 5
+        height: 194
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b2f38d14a0e5d110800000000000000
+      internalID: 1285180264158589618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dark Cloud Cover_1
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 143
+        width: 6
         height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -130,18 +158,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 856f23ec24c2773e0800000000000000
-      internalID: -2056126039432432040
+      spriteID: d9fc98f6fa5e986a0800000000000000
+      internalID: -6446368849950814307
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 18_1
+      name: Dark Cloud Cover_2
       rect:
         serializedVersion: 2
-        x: 10
-        y: 95
+        x: 18
+        y: 143
         width: 11
         height: 6
       alignment: 0
@@ -152,20 +180,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9e18a5179f93aa630800000000000000
-      internalID: 3939024567600316905
+      spriteID: 6488cb1c40ed3c6b0800000000000000
+      internalID: -5277130226336495546
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 18_2
+      name: Dark Cloud Cover_3
       rect:
         serializedVersion: 2
-        x: 25
-        y: 0
+        x: 33
+        y: 47
         width: 43
-        height: 193
+        height: 194
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -174,18 +202,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a71e1130afe77cb60800000000000000
-      internalID: 7766315694682136954
+      spriteID: 89fc3a2469024e120800000000000000
+      internalID: 2442112727676866456
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 18_3
+      name: Dark Cloud Cover_4
       rect:
         serializedVersion: 2
-        x: 72
-        y: 55
+        x: 80
+        y: 103
         width: 42
         height: 147
       alignment: 0
@@ -196,18 +224,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 38c66eb741d88cb20800000000000000
-      internalID: 3154926658090593411
+      spriteID: a778cc473f60ec730800000000000000
+      internalID: 4021159159994812282
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 18_4
+      name: Dark Cloud Cover_5
       rect:
         serializedVersion: 2
-        x: 119
-        y: 95
+        x: 127
+        y: 143
         width: 11
         height: 6
       alignment: 0
@@ -218,20 +246,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9bcf4197492f7c430800000000000000
-      internalID: 3803275129838173369
+      spriteID: d91aa97a6cbaf2650800000000000000
+      internalID: 6210371280871006621
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 18_5
+      name: Dark Cloud Cover_6
       rect:
         serializedVersion: 2
-        x: 135
-        y: 95
-        width: 5
-        height: 6
+        x: 143
+        y: 47
+        width: 10
+        height: 194
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -240,8 +268,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e800262c55bad17b0800000000000000
-      internalID: -5251853205622357874
+      spriteID: bca70771032774a70800000000000000
+      internalID: 8811136746850908875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dark Cloud Cover_7
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 0
+        width: 5
+        height: 193
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ba05a52218d1f200800000000000000
+      internalID: 212188229915708086
       vertices: []
       indices: 
       edges: []
@@ -260,12 +310,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 18_0: -2056126039432432040
-      Group 18_1: 3939024567600316905
-      Group 18_2: 7766315694682136954
-      Group 18_3: 3154926658090593411
-      Group 18_4: 3803275129838173369
-      Group 18_5: -5251853205622357874
+      Dark Cloud Cover_0: 1285180264158589618
+      Dark Cloud Cover_1: -6446368849950814307
+      Dark Cloud Cover_2: -5277130226336495546
+      Dark Cloud Cover_3: 2442112727676866456
+      Dark Cloud Cover_4: 4021159159994812282
+      Dark Cloud Cover_5: 6210371280871006621
+      Dark Cloud Cover_6: 8811136746850908875
+      Dark Cloud Cover_7: 212188229915708086
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

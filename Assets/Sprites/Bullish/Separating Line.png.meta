@@ -3,17 +3,17 @@ guid: 477b2de76c62fc2448f7b15d355c7d86
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4021081617144275761
-    second: Group 10_0
+      213: 1451188338620322630
+    second: Separating Line_0
   - first:
-      213: -6757243489050772841
-    second: Group 10_1
+      213: -6836701795901023216
+    second: Separating Line_1
   - first:
-      213: 6871445331616874749
-    second: Group 10_2
+      213: 4574023229464028771
+    second: Separating Line_2
   - first:
-      213: -5357478434968210342
-    second: Group 10_3
+      213: -3483036710449121999
+    second: Separating Line_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -109,7 +109,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 10_0
+      name: Separating Line_0
       rect:
         serializedVersion: 2
         x: 63
@@ -124,14 +124,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fcc1345e29f3238c0800000000000000
-      internalID: -4021081617144275761
+      spriteID: 64357a1fa18a32410800000000000000
+      internalID: 1451188338620322630
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 10_1
+      name: Separating Line_1
       rect:
         serializedVersion: 2
         x: 113
@@ -146,14 +146,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 79abe4e19d27932a0800000000000000
-      internalID: -6757243489050772841
+      spriteID: 01c5b0460f72f11a0800000000000000
+      internalID: -6836701795901023216
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 10_2
+      name: Separating Line_2
       rect:
         serializedVersion: 2
         x: 0
@@ -168,14 +168,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: df04a846f174c5f50800000000000000
-      internalID: 6871445331616874749
+      spriteID: 366a69a94e13a7f30800000000000000
+      internalID: 4574023229464028771
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 10_3
+      name: Separating Line_3
       rect:
         serializedVersion: 2
         x: 37
@@ -190,8 +190,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a5477ef9fb966a5b0800000000000000
-      internalID: -5357478434968210342
+      spriteID: 135f806d094c9afc0800000000000000
+      internalID: -3483036710449121999
       vertices: []
       indices: 
       edges: []
@@ -210,10 +210,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 10_0: -4021081617144275761
-      Group 10_1: -6757243489050772841
-      Group 10_2: 6871445331616874749
-      Group 10_3: -5357478434968210342
+      Separating Line_0: 1451188338620322630
+      Separating Line_1: -6836701795901023216
+      Separating Line_2: 4574023229464028771
+      Separating Line_3: -3483036710449121999
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

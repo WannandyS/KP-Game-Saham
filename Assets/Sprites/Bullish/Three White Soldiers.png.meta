@@ -3,20 +3,20 @@ guid: 74e03d4aef45bdf4881900b60f2480cb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5388035845342605213
-    second: Group 8_0
+      213: 7967443089672120525
+    second: Three White Soldiers_0
   - first:
-      213: -5806061854538643109
-    second: Group 8_1
+      213: -2981216028134058892
+    second: Three White Soldiers_1
   - first:
-      213: 4063333143052915349
-    second: Group 8_2
+      213: -8292490624247028106
+    second: Three White Soldiers_2
   - first:
-      213: 2707449342366226901
-    second: Group 8_3
+      213: -6505636116969341003
+    second: Three White Soldiers_3
   - first:
-      213: 8962090682511561810
-    second: Group 8_4
+      213: 3447972928586666752
+    second: Three White Soldiers_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 8_0
+      name: Three White Soldiers_0
       rect:
         serializedVersion: 2
         x: 0
@@ -127,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 360584912f9d935b0800000000000000
-      internalID: -5388035845342605213
+      spriteID: dc82c08d64b029e60800000000000000
+      internalID: 7967443089672120525
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 8_1
+      name: Three White Soldiers_1
       rect:
         serializedVersion: 2
         x: 31
@@ -149,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b5947405189bc6fa0800000000000000
-      internalID: -5806061854538643109
+      spriteID: 4745e5c41d790a6d0800000000000000
+      internalID: -2981216028134058892
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 8_2
+      name: Three White Soldiers_2
       rect:
         serializedVersion: 2
         x: 91
@@ -171,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5929db317fbd36830800000000000000
-      internalID: 4063333143052915349
+      spriteID: 676af7676b72bec80800000000000000
+      internalID: -8292490624247028106
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 8_3
+      name: Three White Soldiers_3
       rect:
         serializedVersion: 2
         x: 151
@@ -193,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5d99a1b05dac29520800000000000000
-      internalID: 2707449342366226901
+      spriteID: 5bf37128b6657b5a0800000000000000
+      internalID: -6505636116969341003
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 8_4
+      name: Three White Soldiers_4
       rect:
         serializedVersion: 2
         x: 221
@@ -215,8 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 25490f71efdbf5c70800000000000000
-      internalID: 8962090682511561810
+      spriteID: 00352934c19a9df20800000000000000
+      internalID: 3447972928586666752
       vertices: []
       indices: 
       edges: []
@@ -235,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 8_0: -5388035845342605213
-      Group 8_1: -5806061854538643109
-      Group 8_2: 4063333143052915349
-      Group 8_3: 2707449342366226901
-      Group 8_4: 8962090682511561810
+      Three White Soldiers_0: 7967443089672120525
+      Three White Soldiers_1: -2981216028134058892
+      Three White Soldiers_2: -8292490624247028106
+      Three White Soldiers_3: -6505636116969341003
+      Three White Soldiers_4: 3447972928586666752
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

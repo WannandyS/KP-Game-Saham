@@ -3,20 +3,20 @@ guid: d8dc321dd6a6cfb4cac880cfcbd29d02
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2524709661943058933
-    second: Group 6_0
+      213: 937191017361881716
+    second: Belt Hold_0
   - first:
-      213: -7619575802209691265
-    second: Group 6_1
+      213: -2642159482402931976
+    second: Belt Hold_1
   - first:
-      213: 7444132373151525296
-    second: Group 6_2
+      213: 8897742785002569295
+    second: Belt Hold_2
   - first:
-      213: 5928328515648772380
-    second: Group 6_3
+      213: 7334498925787690330
+    second: Belt Hold_3
   - first:
-      213: 2799937047039153760
-    second: Group 6_4
+      213: -5592003678149400559
+    second: Belt Hold_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 6_0
+      name: Belt Hold_0
       rect:
         serializedVersion: 2
         x: 0
@@ -127,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b0e23ee50fd66fcd0800000000000000
-      internalID: -2524709661943058933
+      spriteID: 47aba8cc342910d00800000000000000
+      internalID: 937191017361881716
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 6_1
+      name: Belt Hold_1
       rect:
         serializedVersion: 2
         x: 37
@@ -149,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f79112a9d24d14690800000000000000
-      internalID: -7619575802209691265
+      spriteID: 8fa717313f9255bd0800000000000000
+      internalID: -2642159482402931976
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 6_2
+      name: Belt Hold_2
       rect:
         serializedVersion: 2
         x: 65
@@ -171,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0b9aea2e3fede4760800000000000000
-      internalID: 7444132373151525296
+      spriteID: f4e7fd2bbe12b7b70800000000000000
+      internalID: 8897742785002569295
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 6_3
+      name: Belt Hold_3
       rect:
         serializedVersion: 2
         x: 117
@@ -193,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c1950171067a54250800000000000000
-      internalID: 5928328515648772380
+      spriteID: a553f05c9ef59c560800000000000000
+      internalID: 7334498925787690330
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 6_4
+      name: Belt Hold_4
       rect:
         serializedVersion: 2
         x: 183
@@ -215,8 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 066993ad8ef5bd620800000000000000
-      internalID: 2799937047039153760
+      spriteID: 1182a3d48463562b0800000000000000
+      internalID: -5592003678149400559
       vertices: []
       indices: 
       edges: []
@@ -235,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 6_0: -2524709661943058933
-      Group 6_1: -7619575802209691265
-      Group 6_2: 7444132373151525296
-      Group 6_3: 5928328515648772380
-      Group 6_4: 2799937047039153760
+      Belt Hold_0: 937191017361881716
+      Belt Hold_1: -2642159482402931976
+      Belt Hold_2: 8897742785002569295
+      Belt Hold_3: 7334498925787690330
+      Belt Hold_4: -5592003678149400559
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

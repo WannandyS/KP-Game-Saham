@@ -3,20 +3,20 @@ guid: 7825a508e7fe3874f93a789eab6cb6e4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2303288412884254021
-    second: Group 9_0
+      213: 6948025566559509088
+    second: Counterattack Line_0
   - first:
-      213: 3302650782227003775
-    second: Group 9_1
+      213: 5065391295598073746
+    second: Counterattack Line_1
   - first:
-      213: -7332239077464161194
-    second: Group 9_2
+      213: 6721898410675563461
+    second: Counterattack Line_2
   - first:
-      213: 3017252402870853620
-    second: Group 9_3
+      213: -6531929223066499183
+    second: Counterattack Line_3
   - first:
-      213: 7597407588161383011
-    second: Group 9_4
+      213: -6449211691057816152
+    second: Counterattack Line_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,7 +112,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Group 9_0
+      name: Counterattack Line_0
       rect:
         serializedVersion: 2
         x: 0
@@ -127,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bb2c2ce44631900e0800000000000000
-      internalID: -2303288412884254021
+      spriteID: 06a9c19c0785c6060800000000000000
+      internalID: 6948025566559509088
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 9_1
+      name: Counterattack Line_1
       rect:
         serializedVersion: 2
         x: 37
@@ -149,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f797ec3636f55dd20800000000000000
-      internalID: 3302650782227003775
+      spriteID: 2979a76bb82eb4640800000000000000
+      internalID: 5065391295598073746
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 9_2
+      name: Counterattack Line_2
       rect:
         serializedVersion: 2
         x: 63
@@ -171,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 654c28b2867ae3a90800000000000000
-      internalID: -7332239077464161194
+      spriteID: 5cb64988dfaf84d50800000000000000
+      internalID: 6721898410675563461
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 9_3
+      name: Counterattack Line_3
       rect:
         serializedVersion: 2
         x: 113
@@ -193,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4ff9fc6031f6fd920800000000000000
-      internalID: 3017252402870853620
+      spriteID: 197c021bafce955a0800000000000000
+      internalID: -6531929223066499183
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Group 9_4
+      name: Counterattack Line_4
       rect:
         serializedVersion: 2
         x: 183
@@ -215,8 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 36a673ad2f96f6960800000000000000
-      internalID: 7597407588161383011
+      spriteID: 8add339e22ccf76a0800000000000000
+      internalID: -6449211691057816152
       vertices: []
       indices: 
       edges: []
@@ -235,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Group 9_0: -2303288412884254021
-      Group 9_1: 3302650782227003775
-      Group 9_2: -7332239077464161194
-      Group 9_3: 3017252402870853620
-      Group 9_4: 7597407588161383011
+      Counterattack Line_0: 6948025566559509088
+      Counterattack Line_1: 5065391295598073746
+      Counterattack Line_2: 6721898410675563461
+      Counterattack Line_3: -6531929223066499183
+      Counterattack Line_4: -6449211691057816152
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

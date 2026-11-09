@@ -75,50 +75,44 @@ public class TradeLogUI : MonoBehaviour
 
         List<PortfolioManager.TransactionRecord> allHistory = PortfolioManager.Instance.GetTransactionHistory();
 
-        // Filter transaksi untuk hari yang sedang dilihat dan dibalik agar transaksi TERBARU diproses lebih dulu
+        // Ambil transaksi untuk hari yang sedang dilihat
         List<PortfolioManager.TransactionRecord> dayHistory = allHistory
             .FindAll(t => t.dayIndex == viewingDay)
-            .AsEnumerable()
-            .Reverse()
             .ToList();
 
-        // Pisahkan daftar transaksi Buy dan Sell pada hari tersebut
-        List<PortfolioManager.TransactionRecord> buyRecords = dayHistory.FindAll(t => t.isBuy);
-        List<PortfolioManager.TransactionRecord> sellRecords = dayHistory.FindAll(t => !t.isBuy);
+        List<PortfolioManager.TransactionRecord> buyRecords = new List<PortfolioManager.TransactionRecord>(dayHistory.FindAll(t => t.isBuy));
+        List<PortfolioManager.TransactionRecord> sellRecords = new List<PortfolioManager.TransactionRecord>(dayHistory.FindAll(t => !t.isBuy));
 
-        // Pasangkan (Pair) Buy dan Sell secara rapat tanpa ada baris kosong yang melompat
+        // Pasangkan secara akurat berdasarkan Ticker/Symbol yang sama
         while (buyRecords.Count > 0 || sellRecords.Count > 0)
         {
             PortfolioManager.TransactionRecord buyToUse = null;
             PortfolioManager.TransactionRecord sellToUse = null;
 
-            if (buyRecords.Count > 0)
+            if (sellRecords.Count > 0)
+            {
+                sellToUse = sellRecords[0];
+                sellRecords.RemoveAt(0);
+
+                // 1. Cari di buyRecords hari yang sama terlebih dahulu
+                buyToUse = buyRecords.FirstOrDefault(b => b.stockSymbol == sellToUse.stockSymbol);
+                if (buyToUse != null)
+                {
+                    buyRecords.Remove(buyToUse);
+                }
+                else
+                {
+                    // 2. Jika tidak ada di hari yang sama (misal beli kemarin, jual hari ini), 
+                    // cari di SELURUH riwayat transaksi (allHistory) untuk simbol yang sama sebelum hari ini!
+                    buyToUse = allHistory.FirstOrDefault(b => b.isBuy && b.stockSymbol == sellToUse.stockSymbol && b.dayIndex <= viewingDay);
+                }
+            }
+            else if (buyRecords.Count > 0)
             {
                 buyToUse = buyRecords[0];
                 buyRecords.RemoveAt(0);
-
-                // Prioritas 1: Cari transaksi Sell dengan kode saham yang SAMA
-                sellToUse = sellRecords.FirstOrDefault(s => s.stockSymbol == buyToUse.stockSymbol);
-
-                if (sellToUse != null)
-                {
-                    sellRecords.Remove(sellToUse);
-                }
-                else if (sellRecords.Count > 0)
-                {
-                    // Prioritas 2: Jika kode saham beda, pasangkan dengan transaksi Sell pertama yang ada agar sebaris & rapat
-                    sellToUse = sellRecords[0];
-                    sellRecords.RemoveAt(0);
-                }
-            }
-            else if (sellRecords.Count > 0)
-            {
-                // Jika hanya tersisa transaksi Sell
-                sellToUse = sellRecords[0];
-                sellRecords.RemoveAt(0);
             }
 
-            // Buat 1 Baris UI
             GameObject rowObj = Instantiate(tradeRowPrefab, rowContainer);
             TradeLogRowUI rowUI = rowObj.GetComponent<TradeLogRowUI>();
 
@@ -126,8 +120,8 @@ public class TradeLogUI : MonoBehaviour
             {
                 rowUI.InitEmptyRow();
 
-                // Isi data BUY jika ada
-                if (buyToUse != null)
+                // Isi data BUY jika transaksi buy terjadi pada hari ini yang sedang dilihat
+                if (buyToUse != null && buyToUse.dayIndex == viewingDay)
                 {
                     rowUI.SetupBuyColumns(
                         buyToUse.lots, 
@@ -139,11 +133,29 @@ public class TradeLogUI : MonoBehaviour
                     );
                 }
 
-                // Isi data SELL jika ada
+                // Isi data SELL jika ada dengan perhitungan P/L yang akurat
                 if (sellToUse != null)
                 {
-                    float gainLoss = sellToUse.totalAmount - (sellToUse.grossAmount * 0.997f); 
-                    float gainLossPercent = 0f;
+                    float totalSellRevenue = sellToUse.totalAmount; // Net revenue setelah sell fee
+                    float totalBuyCost = 0f;
+
+                    if (buyToUse != null)
+                    {
+                        int totalBuyShares = buyToUse.lots * PortfolioManager.SHARES_PER_LOT;
+                        float costPerShare = totalBuyShares > 0 ? buyToUse.totalAmount / totalBuyShares : 0f;
+                        int totalSellShares = sellToUse.lots * PortfolioManager.SHARES_PER_LOT;
+                        totalBuyCost = costPerShare * totalSellShares;
+                    }
+                    else
+                    {
+                        // Fallback mutlak jika tidak ada record buy sama sekali di seluruh history
+                        float estimatedGrossBuy = sellToUse.lots * PortfolioManager.SHARES_PER_LOT * sellToUse.pricePerShare;
+                        float estimatedBuyFee = estimatedGrossBuy * 0.002f;
+                        totalBuyCost = estimatedGrossBuy + estimatedBuyFee;
+                    }
+
+                    float gainLoss = totalSellRevenue - totalBuyCost;
+                    float gainLossPercent = totalBuyCost > 0f ? (gainLoss / totalBuyCost) * 100f : 0f;
 
                     rowUI.SetupSellColumns(
                         sellToUse.lots, 

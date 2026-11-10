@@ -1,21 +1,16 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 
 public class TradeLogUI : MonoBehaviour
 {
-    [Header("UI References")]
-    public Transform rowContainer;          // Vertical Layout Group untuk menampung baris
-    public GameObject tradeRowPrefab;     // Prefab dengan skrip TradeLogRowUI
+    [Header("Scroll Container")]
+    public Transform dayTableContainer;  
 
-    [Header("Day Navigation Controls")]
-    public Button nextDayButton;
-    public Button prevDayButton;
-    public TMP_Text dayIndicatorText;     // Label "Day 1", "Day 2", dll.
-
-    private int viewingDay = 1;
+    [Header("Prefabs")]
+    public GameObject dayTablePrefab;   
+    public GameObject tradeRowPrefab;     
 
     private void OnEnable()
     {
@@ -26,12 +21,8 @@ public class TradeLogUI : MonoBehaviour
 
         if (DaySimulationManager.Instance != null)
         {
-            viewingDay = DaySimulationManager.Instance.currentDay;
             DaySimulationManager.Instance.OnDayChanged += HandleDaySimulationChanged;
         }
-
-        if (nextDayButton != null) nextDayButton.onClick.AddListener(NextDay);
-        if (prevDayButton != null) prevDayButton.onClick.AddListener(PrevDay);
 
         RefreshLog();
     }
@@ -47,9 +38,6 @@ public class TradeLogUI : MonoBehaviour
         {
             DaySimulationManager.Instance.OnDayChanged -= HandleDaySimulationChanged;
         }
-
-        if (nextDayButton != null) nextDayButton.onClick.RemoveListener(NextDay);
-        if (prevDayButton != null) prevDayButton.onClick.RemoveListener(PrevDay);
     }
 
     private void HandleDaySimulationChanged(int currentSimDay)
@@ -59,152 +47,133 @@ public class TradeLogUI : MonoBehaviour
 
     public void RefreshLog()
     {
-        if (PortfolioManager.Instance == null || rowContainer == null || tradeRowPrefab == null) return;
+        if (PortfolioManager.Instance == null || dayTableContainer == null || dayTablePrefab == null || tradeRowPrefab == null) return;
 
-        int currentSimDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
-        if (viewingDay > currentSimDay)
-        {
-            viewingDay = currentSimDay;
-        }
-
-        // Hapus semua baris lama di UI
-        foreach (Transform child in rowContainer)
+        foreach (Transform child in dayTableContainer)
         {
             Destroy(child.gameObject);
         }
 
         List<PortfolioManager.TransactionRecord> allHistory = PortfolioManager.Instance.GetTransactionHistory();
 
-        // Ambil transaksi untuk hari yang sedang dilihat
-        List<PortfolioManager.TransactionRecord> dayHistory = allHistory
-            .FindAll(t => t.dayIndex == viewingDay)
-            .ToList();
+        if (allHistory == null || allHistory.Count == 0) return;
 
-        List<PortfolioManager.TransactionRecord> buyRecords = new List<PortfolioManager.TransactionRecord>(dayHistory.FindAll(t => t.isBuy));
-        List<PortfolioManager.TransactionRecord> sellRecords = new List<PortfolioManager.TransactionRecord>(dayHistory.FindAll(t => !t.isBuy));
+        var groupedByDay = allHistory
+            .GroupBy(t => t.dayIndex)
+            .OrderByDescending(g => g.Key); 
 
-        // Pasangkan secara akurat berdasarkan Ticker/Symbol yang sama
-        while (buyRecords.Count > 0 || sellRecords.Count > 0)
+        foreach (var dayGroup in groupedByDay)
         {
-            PortfolioManager.TransactionRecord buyToUse = null;
-            PortfolioManager.TransactionRecord sellToUse = null;
+            int dayNumber = dayGroup.Key;
+            List<PortfolioManager.TransactionRecord> dayHistory = dayGroup.ToList();
 
-            if (sellRecords.Count > 0)
+            GameObject dayTableObj = Instantiate(dayTablePrefab, dayTableContainer);
+            
+            TMP_Text dayHeader = dayTableObj.GetComponentInChildren<TMP_Text>();
+            if (dayHeader != null)
             {
-                sellToUse = sellRecords[0];
-                sellRecords.RemoveAt(0);
-
-                // 1. Cari di buyRecords hari yang sama terlebih dahulu
-                buyToUse = buyRecords.FirstOrDefault(b => b.stockSymbol == sellToUse.stockSymbol);
-                if (buyToUse != null)
-                {
-                    buyRecords.Remove(buyToUse);
-                }
-                else
-                {
-                    // 2. Jika tidak ada di hari yang sama (misal beli kemarin, jual hari ini), 
-                    // cari di SELURUH riwayat transaksi (allHistory) untuk simbol yang sama sebelum hari ini!
-                    buyToUse = allHistory.FirstOrDefault(b => b.isBuy && b.stockSymbol == sellToUse.stockSymbol && b.dayIndex <= viewingDay);
-                }
-            }
-            else if (buyRecords.Count > 0)
-            {
-                buyToUse = buyRecords[0];
-                buyRecords.RemoveAt(0);
+                dayHeader.text = $"Day {dayNumber}";
             }
 
-            GameObject rowObj = Instantiate(tradeRowPrefab, rowContainer);
-            TradeLogRowUI rowUI = rowObj.GetComponent<TradeLogRowUI>();
+            Transform rowContainer = FindRowContainerInTable(dayTableObj);
+            if (rowContainer == null) rowContainer = dayTableObj.transform;
 
-            if (rowUI != null)
+            List<PortfolioManager.TransactionRecord> buyRecords = new List<PortfolioManager.TransactionRecord>(dayHistory.FindAll(t => t.isBuy));
+            List<PortfolioManager.TransactionRecord> sellRecords = new List<PortfolioManager.TransactionRecord>(dayHistory.FindAll(t => !t.isBuy));
+
+            while (buyRecords.Count > 0 || sellRecords.Count > 0)
             {
-                rowUI.InitEmptyRow();
+                PortfolioManager.TransactionRecord buyToUse = null;
+                PortfolioManager.TransactionRecord sellToUse = null;
 
-                // Isi data BUY jika transaksi buy terjadi pada hari ini yang sedang dilihat
-                if (buyToUse != null && buyToUse.dayIndex == viewingDay)
+                if (sellRecords.Count > 0)
                 {
-                    rowUI.SetupBuyColumns(
-                        buyToUse.lots, 
-                        buyToUse.stockSymbol, 
-                        buyToUse.pricePerShare, 
-                        buyToUse.grossAmount, 
-                        buyToUse.feeAmount, 
-                        buyToUse.totalAmount
-                    );
-                }
+                    sellToUse = sellRecords[0];
+                    sellRecords.RemoveAt(0);
 
-                // Isi data SELL jika ada dengan perhitungan P/L yang akurat
-                if (sellToUse != null)
-                {
-                    float totalSellRevenue = sellToUse.totalAmount; // Net revenue setelah sell fee
-                    float totalBuyCost = 0f;
-
+                    buyToUse = buyRecords.FirstOrDefault(b => b.stockSymbol == sellToUse.stockSymbol);
                     if (buyToUse != null)
                     {
-                        int totalBuyShares = buyToUse.lots * PortfolioManager.SHARES_PER_LOT;
-                        float costPerShare = totalBuyShares > 0 ? buyToUse.totalAmount / totalBuyShares : 0f;
-                        int totalSellShares = sellToUse.lots * PortfolioManager.SHARES_PER_LOT;
-                        totalBuyCost = costPerShare * totalSellShares;
+                        buyRecords.Remove(buyToUse);
                     }
                     else
                     {
-                        // Fallback mutlak jika tidak ada record buy sama sekali di seluruh history
-                        float estimatedGrossBuy = sellToUse.lots * PortfolioManager.SHARES_PER_LOT * sellToUse.pricePerShare;
-                        float estimatedBuyFee = estimatedGrossBuy * 0.002f;
-                        totalBuyCost = estimatedGrossBuy + estimatedBuyFee;
+                        buyToUse = allHistory.FirstOrDefault(b => b.isBuy && b.stockSymbol == sellToUse.stockSymbol && b.dayIndex <= dayNumber);
+                    }
+                }
+                else if (buyRecords.Count > 0)
+                {
+                    buyToUse = buyRecords[0];
+                    buyRecords.RemoveAt(0);
+                }
+
+                GameObject rowObj = Instantiate(tradeRowPrefab, rowContainer);
+                TradeLogRowUI rowUI = rowObj.GetComponent<TradeLogRowUI>();
+
+                if (rowUI != null)
+                {
+                    rowUI.InitEmptyRow();
+
+                    if (buyToUse != null && buyToUse.dayIndex == dayNumber)
+                    {
+                        rowUI.SetupBuyColumns(
+                            buyToUse.lots,
+                            buyToUse.stockSymbol,
+                            buyToUse.pricePerShare,
+                            buyToUse.grossAmount,
+                            buyToUse.feeAmount,
+                            buyToUse.totalAmount
+                        );
                     }
 
-                    float gainLoss = totalSellRevenue - totalBuyCost;
-                    float gainLossPercent = totalBuyCost > 0f ? (gainLoss / totalBuyCost) * 100f : 0f;
+                    if (sellToUse != null)
+                    {
+                        float totalSellRevenue = sellToUse.totalAmount;
+                        float totalBuyCost = 0f;
 
-                    rowUI.SetupSellColumns(
-                        sellToUse.lots, 
-                        sellToUse.stockSymbol, 
-                        sellToUse.pricePerShare, 
-                        sellToUse.grossAmount, 
-                        sellToUse.feeAmount, 
-                        sellToUse.totalAmount, 
-                        gainLoss, 
-                        gainLossPercent
-                    );
+                        if (buyToUse != null)
+                        {
+                            int totalBuyShares = buyToUse.lots * PortfolioManager.SHARES_PER_LOT;
+                            float costPerShare = totalBuyShares > 0 ? buyToUse.totalAmount / totalBuyShares : 0f;
+                            int totalSellShares = sellToUse.lots * PortfolioManager.SHARES_PER_LOT;
+                            totalBuyCost = costPerShare * totalSellShares;
+                        }
+                        else
+                        {
+                            float estimatedGrossBuy = sellToUse.lots * PortfolioManager.SHARES_PER_LOT * sellToUse.pricePerShare;
+                            float estimatedBuyFee = estimatedGrossBuy * 0.002f;
+                            totalBuyCost = estimatedGrossBuy + estimatedBuyFee;
+                        }
+
+                        float gainLoss = totalSellRevenue - totalBuyCost;
+                        float gainLossPercent = totalBuyCost > 0f ? (gainLoss / totalBuyCost) * 100f : 0f;
+
+                        rowUI.SetupSellColumns(
+                            sellToUse.lots,
+                            sellToUse.stockSymbol,
+                            sellToUse.pricePerShare,
+                            sellToUse.grossAmount,
+                            sellToUse.feeAmount,
+                            sellToUse.totalAmount,
+                            gainLoss,
+                            gainLossPercent
+                        );
+                    }
                 }
             }
         }
 
-        // Update Label Indikator Hari
-        if (dayIndicatorText != null)
+        Canvas.ForceUpdateCanvases();
+        if (dayTableContainer is RectTransform rectTransform)
         {
-            dayIndicatorText.text = $"Day {viewingDay}";
-        }
-
-        // Update Status Interaktif Tombol Navigasi
-        if (prevDayButton != null)
-        {
-            prevDayButton.interactable = (viewingDay > 1);
-        }
-
-        if (nextDayButton != null)
-        {
-            nextDayButton.interactable = (viewingDay < currentSimDay);
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
         }
     }
 
-    public void NextDay()
+    private Transform FindRowContainerInTable(GameObject dayTableObj)
     {
-        int currentSimDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : viewingDay + 1;
-        if (viewingDay < currentSimDay)
-        {
-            viewingDay++;
-            RefreshLog();
-        }
-    }
-
-    public void PrevDay()
-    {
-        if (viewingDay > 1)
-        {
-            viewingDay--;
-            RefreshLog();
-        }
+        Transform container = dayTableObj.transform.Find("RowContainer");
+        if (container == null) container = dayTableObj.transform.Find("Panel");
+        return container != null ? container : dayTableObj.transform;
     }
 }

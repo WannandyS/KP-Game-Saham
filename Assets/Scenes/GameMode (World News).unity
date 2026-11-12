@@ -621,6 +621,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DaySimulationManager
   currentDay: 1
   totalDays: 236
+  clickCooldown: 0.25
 --- !u!4 &308330691
 Transform:
   m_ObjectHideFlags: 0
@@ -660,6 +661,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewsRowUI
   titleText: {fileID: 763491867}
   descriptionText: {fileID: 1761198916}
+  dateText: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1059,6 +1061,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewsRowUI
   titleText: {fileID: 1752728767}
   descriptionText: {fileID: 226800472}
+  dateText: {fileID: 0}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -1742,6 +1745,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewsRowUI
   titleText: {fileID: 1835278064}
   descriptionText: {fileID: 1260463901}
+  dateText: {fileID: 0}
 --- !u!1 &1373313002
 GameObject:
   m_ObjectHideFlags: 0
@@ -2714,7 +2718,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewsManager
   priceCsvAsset: {fileID: 4900000, guid: 14cc80aaf7aeabe478f89f21649cffc8, type: 3}
-  newsCsvAsset: {fileID: 4900000, guid: 4df8860adab1151449a00bcb71bd440c, type: 3}
+  allNewsCsvAssets: []
   newsRows:
   - {fileID: 566612728}
   - {fileID: 2061962320}
@@ -2760,6 +2764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewsRowUI
   titleText: {fileID: 934930238}
   descriptionText: {fileID: 1977753446}
+  dateText: {fileID: 0}
 --- !u!1001 &455078924973141513
 PrefabInstance:
   m_ObjectHideFlags: 0

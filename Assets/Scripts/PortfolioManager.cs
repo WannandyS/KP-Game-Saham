@@ -40,6 +40,7 @@ public class PortfolioManager : MonoBehaviour
         public float grossAmount; // Value at the time (lots * shares_per_lot * price)
         public float feeAmount;   // Fee included
         public float totalAmount; // Total out-of-pocket (Buy) or Net received (Sell)
+        public float costBasisPerShare; // Track average buy price for sells
     }
 
     private readonly Dictionary<string, Position> holdings = new Dictionary<string, Position>();
@@ -129,7 +130,7 @@ public class PortfolioManager : MonoBehaviour
 
         Position pos = holdings[cleanName];
         
-        float costBasisPerShare = pos.AverageBuyPrice;
+        float costBasisPerShare = pos.AverageBuyPrice; // Captures the exact portfolio average buy price right now!
         float grossRevenue = sharesToSell * pricePerShare;
         float fee = grossRevenue * sellFeeRate;
         float netRevenue = grossRevenue - fee;
@@ -153,7 +154,8 @@ public class PortfolioManager : MonoBehaviour
             pricePerShare = pricePerShare,
             grossAmount = grossRevenue,
             feeAmount = fee,
-            totalAmount = netRevenue
+            totalAmount = netRevenue,
+            costBasisPerShare = costBasisPerShare 
         });
 
         OnPortfolioUpdated?.Invoke();

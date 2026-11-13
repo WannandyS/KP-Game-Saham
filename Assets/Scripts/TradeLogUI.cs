@@ -128,10 +128,19 @@ public class TradeLogUI : MonoBehaviour
 
                     if (sellToUse != null)
                     {
-                        float totalSellRevenue = sellToUse.totalAmount;
+                        float totalSellRevenue = sellToUse.totalAmount; // Net revenue setelah sell fee
                         float totalBuyCost = 0f;
 
-                        if (buyToUse != null)
+                        // Use the exact portfolio average buy price recorded at the time of sale if available
+                        if (sellToUse.costBasisPerShare > 0f)
+                        {
+                            int totalSellShares = sellToUse.lots * PortfolioManager.SHARES_PER_LOT;
+                            float grossBuyCost = totalSellShares * sellToUse.costBasisPerShare;
+                            float buyFeeRate = PortfolioManager.Instance != null ? PortfolioManager.Instance.buyFeeRate : 0.002f;
+                            float proportionalBuyFee = grossBuyCost * buyFeeRate;
+                            totalBuyCost = grossBuyCost + proportionalBuyFee;
+                        }
+                        else if (buyToUse != null)
                         {
                             int totalBuyShares = buyToUse.lots * PortfolioManager.SHARES_PER_LOT;
                             float costPerShare = totalBuyShares > 0 ? buyToUse.totalAmount / totalBuyShares : 0f;

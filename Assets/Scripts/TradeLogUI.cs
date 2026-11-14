@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +59,7 @@ public class TradeLogUI : MonoBehaviour
 
         if (allHistory == null || allHistory.Count == 0) return;
 
+        // Kelompokkan per hari, hari terbaru di paling atas
         var groupedByDay = allHistory
             .GroupBy(t => t.dayIndex)
             .OrderByDescending(g => g.Key); 
@@ -69,14 +71,16 @@ public class TradeLogUI : MonoBehaviour
 
             GameObject dayTableObj = Instantiate(dayTablePrefab, dayTableContainer);
             
-            TMP_Text dayHeader = dayTableObj.GetComponentInChildren<TMP_Text>();
+            TMP_Text dayHeader = FindDayHeaderText(dayTableObj);
             if (dayHeader != null)
             {
                 dayHeader.text = $"Day {dayNumber}";
             }
 
             Transform rowContainer = FindRowContainerInTable(dayTableObj);
-            if (rowContainer == null) rowContainer = dayTableObj.transform;
+
+            // Balik urutan transaksi di hari ini agar transaksi terbaru selalu muncul di baris paling atas Panel
+            dayHistory.Reverse();
 
             List<PortfolioManager.TransactionRecord> buyRecords = new List<PortfolioManager.TransactionRecord>(dayHistory.FindAll(t => t.isBuy));
             List<PortfolioManager.TransactionRecord> sellRecords = new List<PortfolioManager.TransactionRecord>(dayHistory.FindAll(t => !t.isBuy));
@@ -98,7 +102,7 @@ public class TradeLogUI : MonoBehaviour
                     }
                     else
                     {
-                        buyToUse = allHistory.FirstOrDefault(b => b.isBuy && b.stockSymbol == sellToUse.stockSymbol && b.dayIndex <= dayNumber);
+                        buyToUse = allHistory.LastOrDefault(b => b.isBuy && b.stockSymbol == sellToUse.stockSymbol && b.dayIndex <= dayNumber);
                     }
                 }
                 else if (buyRecords.Count > 0)
@@ -107,6 +111,7 @@ public class TradeLogUI : MonoBehaviour
                     buyRecords.RemoveAt(0);
                 }
 
+                // Semua transaksi pada hari yang sama dimasukkan ke rowContainer (Panel) yang sama
                 GameObject rowObj = Instantiate(tradeRowPrefab, rowContainer);
                 TradeLogRowUI rowUI = rowObj.GetComponent<TradeLogRowUI>();
 
@@ -128,10 +133,9 @@ public class TradeLogUI : MonoBehaviour
 
                     if (sellToUse != null)
                     {
-                        float totalSellRevenue = sellToUse.totalAmount; // Net revenue setelah sell fee
+                        float totalSellRevenue = sellToUse.totalAmount;
                         float totalBuyCost = 0f;
 
-                        // Use the exact portfolio average buy price recorded at the time of sale if available
                         if (sellToUse.costBasisPerShare > 0f)
                         {
                             int totalSellShares = sellToUse.lots * PortfolioManager.SHARES_PER_LOT;
@@ -170,19 +174,48 @@ public class TradeLogUI : MonoBehaviour
                     }
                 }
             }
+
+            // Rebuild layout rowContainer terlebih dahulu agar ukuran tiap baris valid sebelum BuildBorders()
+            if (rowContainer is RectTransform rowContainerRect)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(rowContainerRect);
+            }
+
+            TableBorder tableBorder = dayTableObj.GetComponent<TableBorder>();
+            if (tableBorder != null)
+            {
+                tableBorder.BuildBorders();
+            }
         }
 
         Canvas.ForceUpdateCanvases();
         if (dayTableContainer is RectTransform rectTransform)
         {
-            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
+            rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, 0f);
         }
+    }
+
+    private TMP_Text FindDayHeaderText(GameObject dayTableObj)
+    {
+        Transform target = dayTableObj.transform.Find("DayHistory");
+        if (target != null) return target.GetComponent<TMP_Text>();
+
+        Transform headerArea = dayTableObj.transform.Find("Header");
+        if (headerArea == null) headerArea = dayTableObj.transform.Find("HeaderArea");
+        if (headerArea != null)
+        {
+            Transform nestedTarget = headerArea.Find("DayHistory");
+            if (nestedTarget != null) return nestedTarget.GetComponent<TMP_Text>();
+        }
+
+        return dayTableObj.GetComponentInChildren<TMP_Text>();
     }
 
     private Transform FindRowContainerInTable(GameObject dayTableObj)
     {
-        Transform container = dayTableObj.transform.Find("RowContainer");
-        if (container == null) container = dayTableObj.transform.Find("Panel");
+        Transform container = dayTableObj.transform.Find("Panel");
+        if (container == null) container = dayTableObj.transform.Find("RowContainer");
         return container != null ? container : dayTableObj.transform;
     }
 }

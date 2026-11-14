@@ -40,7 +40,6 @@ public class TableBorder : MonoBehaviour
         int rowCount = panelTrans != null ? panelTrans.childCount : 0;
         float targetWidth = tableRect.rect.width > 1f ? tableRect.rect.width : tableRect.sizeDelta.x;
 
-        // 1. Baca Spacing & Padding asli langsung dari VerticalLayoutGroup milik Panel
         float actualSpacing = rowSpacing;
         float actualPadTop = panelTopBottomPad * 0.5f;
         float actualPadBottom = panelTopBottomPad * 0.5f;
@@ -56,8 +55,6 @@ public class TableBorder : MonoBehaviour
             }
         }
 
-        // 2. Pastikan lebar setiap baris LogPanel terjaga (tidak 0 saat Control Child Size Width dimatikan)
-        //    dan jumlahkan tinggi aktual seluruh baris transaksi
         float sumRowsHeight = 0f;
         if (panelTrans != null && rowCount > 0)
         {
@@ -84,7 +81,6 @@ public class TableBorder : MonoBehaviour
             sumRowsHeight = fallbackRowHeight;
         }
 
-        // 3. Hitung tinggi total area Panel secara presisi berdasarkan isi baris aktual
         float totalSpacing = rowCount > 1 ? (rowCount - 1) * actualSpacing : 0f;
         float rowsAreaHeight = actualPadTop + sumRowsHeight + totalSpacing + actualPadBottom;
 
@@ -96,8 +92,6 @@ public class TableBorder : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(panelRect);
         }
 
-        // 4. Hitung posisi pasti bagian bawah konten (baris terakhir + bottomLineGap)
-        //    agar garis bawah kotak menempel rapat dan tidak menyisakan ruang kosong berlebih
         float contentBottomFromTop = headerHeight + actualPadTop + sumRowsHeight + totalSpacing + bottomLineGap;
         float totalTableHeight = contentBottomFromTop + tableBottomMargin;
 
@@ -108,14 +102,12 @@ public class TableBorder : MonoBehaviour
         le.minHeight = totalTableHeight;
         le.preferredHeight = totalTableHeight;
 
-        // 5. Hapus overlay garis lama jika di-refresh ulang
         Transform old = transform.Find("AutoBorderOverlay");
         if (old != null)
         {
             DestroyImmediate(old.gameObject);
         }
 
-        // 6. Buat wadah kotak tabel yang membungkus tepat dari boxTopY hingga garis bawah baris terakhir
         GameObject overlayObj = new GameObject("AutoBorderOverlay", typeof(RectTransform));
         overlayObj.transform.SetParent(this.transform, false);
 
@@ -125,17 +117,14 @@ public class TableBorder : MonoBehaviour
         borderContainer.offsetMin = new Vector2(leftRightMargin, tableBottomMargin);
         borderContainer.offsetMax = new Vector2(-leftRightMargin, -boxTopY);
 
-        // 7. Gambar Bingkai Luar (Kiri, Kanan, Atas, Bawah)
         CreateLine("Border_Left",   new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0.5f), Vector2.zero, lineThickness, 0f);
         CreateLine("Border_Right",  new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(1f, 0.5f), Vector2.zero, lineThickness, 0f);
         CreateLine("Border_Top",    new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, 0f, lineThickness);
         CreateLine("Border_Bottom", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f), Vector2.zero, 0f, lineThickness);
 
-        // 8. Gambar Garis Horizontal Header
         CreateLine("Header_MidLine",    new Vector2(0f, 1f), new Vector2(sellGLDividerX, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -midHeaderLineY), 0f, lineThickness);
         CreateLine("Header_BottomLine", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -bottomHeaderLineY), 0f, lineThickness);
 
-        // 9. Gambar 3 Garis Vertikal Pemisah Kolom
         CreateLine("Col_BuySell",   new Vector2(buySellDividerX, 0f),   new Vector2(buySellDividerX, 1f),   new Vector2(0.5f, 0.5f), Vector2.zero, lineThickness, 0f);
         CreateLine("Col_SellGL",    new Vector2(sellGLDividerX, 0f),    new Vector2(sellGLDividerX, 1f),    new Vector2(0.5f, 0.5f), Vector2.zero, lineThickness, 0f);
         CreateLine("Col_GLPercent", new Vector2(glPercentDividerX, 0f), new Vector2(glPercentDividerX, 1f), new Vector2(0.5f, 0.5f), Vector2.zero, lineThickness, 0f);

@@ -1,10 +1,32 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 using System.Globalization;
 
 public class PortfolioUI : MonoBehaviour
 {
+    public enum SortColumn
+    {
+        Name,
+        Price,
+        Value,
+        AverageBuyPrice,
+        Volume,
+        TransactionTotal,
+        GainsLoss,
+        ChangePercent
+    }
+
+    [Serializable]
+    public struct ColumnHeaderUI
+    {
+        public SortColumn columnType;
+        public TMP_Text headerText;
+        [HideInInspector] public string originalText;
+    }
+
     [Header("Account Summary")]
     public TMP_Text cashText;
     public TMP_Text totalNetWorthText;
@@ -16,8 +38,33 @@ public class PortfolioUI : MonoBehaviour
     public Transform holdingsContainer;
     public GameObject holdingRowPrefab;
 
+    [Header("Sorting State & UI")]
+    public SortColumn currentSortColumn = SortColumn.Name;
+    public bool isAscending = true;
+    public ColumnHeaderUI[] columnHeaders;
+
+    private readonly string arrowUp = " ▲";
+    private readonly string arrowDown = " ▼";
+
     [Header("Dataset References for Pricing Lookup")]
     public List<TextAsset> csvDatasets = new List<TextAsset>();
+
+    private List<PortfolioItemData> currentPortfolioData = new List<PortfolioItemData>();
+
+    private void Awake()
+    {
+        // Store original header texts before appending sorting arrows
+        if (columnHeaders != null)
+        {
+            for (int i = 0; i < columnHeaders.Length; i++)
+            {
+                if (columnHeaders[i].headerText != null)
+                {
+                    columnHeaders[i].originalText = columnHeaders[i].headerText.text;
+                }
+            }
+        }
+    }
 
     private void OnEnable()
     {
@@ -53,79 +100,191 @@ public class PortfolioUI : MonoBehaviour
     }
 
     public void RefreshUI()
-{
-    if (PortfolioManager.Instance == null) return;
-
-    float cash = PortfolioManager.Instance.currentCash;
-    float totalHoldingsGrossValue = 0f;
-
-    // --- ADD THIS NULL CHECK ---
-    if (holdingsContainer != null)
     {
-        foreach (Transform child in holdingsContainer)
+        if (PortfolioManager.Instance == null) return;
+
+        float cash = PortfolioManager.Instance.currentCash;
+        float totalHoldingsGrossValue = 0f;
+
+        currentPortfolioData.Clear();
+
+        foreach (var kvp in PortfolioManager.Instance.GetAllHoldings())
         {
-            Destroy(child.gameObject);
+            var pos = kvp.Value;
+            string symbol = pos.stockSymbol;
+
+            GetMarketData(symbol, out float currentPrice, out float change24h);
+
+            if (currentPrice <= 0f) currentPrice = pos.AverageBuyPrice;
+
+            float grossValue = pos.totalShares * currentPrice;
+            float profitLoss = grossValue - pos.totalInvestedCost;
+            float profitLossPercent = pos.totalInvestedCost > 0f ? (profitLoss / pos.totalInvestedCost) * 100f : 0f;
+            totalHoldingsGrossValue += grossValue;
+
+            currentPortfolioData.Add(new PortfolioItemData
+            {
+                symbol = symbol,
+                averageBuyPrice = pos.AverageBuyPrice,
+                totalInvested = pos.totalInvestedCost,
+                totalShares = pos.totalShares,
+                currentPrice = currentPrice,
+                totalValue = grossValue,
+                profitLoss = profitLoss,
+                profitLossPercent = profitLossPercent,
+                change24h = change24h
+            });
+        }
+
+        // Apply sorting and build UI rows
+        ApplySort();
+        RebuildRowUI();
+        UpdateHeaderVisuals();
+
+        // Update Account Summary Header
+        float netWorth = cash + totalHoldingsGrossValue;
+        float initialCash = PortfolioManager.Instance.startingCash;
+        float totalProfitLoss = netWorth - initialCash;
+        float profitLossPercentage = initialCash > 0f ? (totalProfitLoss / initialCash) * 100f : 0f;
+
+        if (cashText != null) cashText.text = $"{cash:N0}";
+        if (totalNetWorthText != null) totalNetWorthText.text = $"{netWorth:N0}";
+        if (equityText != null) equityText.text = $"{totalHoldingsGrossValue:N0}";
+
+        if (totalProfitLossText != null)
+        {
+            string sign = totalProfitLoss >= 0 ? "+" : "";
+            string color = totalProfitLoss >= 0 ? "green" : "red";
+            totalProfitLossText.text = $"<color={color}>{sign}{totalProfitLoss:N0}</color>";
+        }
+
+        if (profitLossPercentageText != null)
+        {
+            string sign = profitLossPercentage >= 0 ? "+" : "";
+            string color = profitLossPercentage >= 0 ? "green" : "red";
+            profitLossPercentageText.text = $"<color={color}>{sign}{profitLossPercentage:F2}%</color>";
         }
     }
 
-    foreach (var kvp in PortfolioManager.Instance.GetAllHoldings())
+    /// <summary>
+    /// Called from OnClick() of Column Header buttons in UI
+    /// </summary>
+    public void OnColumnHeaderClicked(int columnIndex)
     {
-        var pos = kvp.Value;
-        string symbol = pos.stockSymbol;
+        SortColumn clickedColumn = (SortColumn)columnIndex;
 
-        GetMarketData(symbol, out float currentPrice, out float change24h);
-
-        if (currentPrice <= 0f) currentPrice = pos.AverageBuyPrice;
-
-        float grossValue = pos.totalShares * currentPrice;
-        float profitLoss = grossValue - pos.totalInvestedCost;
-        totalHoldingsGrossValue += grossValue;
-
-        // Only instantiate rows if holdingRowPrefab and holdingsContainer are assigned
-        if (holdingRowPrefab != null && holdingsContainer != null)
+        if (currentSortColumn == clickedColumn)
         {
-            GameObject rowObj = Instantiate(holdingRowPrefab, holdingsContainer);
-            PortfolioHoldingRow rowComponent = rowObj.GetComponent<PortfolioHoldingRow>();
+            isAscending = !isAscending;
+        }
+        else
+        {
+            currentSortColumn = clickedColumn;
+            isAscending = clickedColumn == SortColumn.Name; // Default ascending for Name, descending for numbers if preferred
+        }
 
-            if (rowComponent != null)
+        ApplySort();
+        RebuildRowUI();
+        UpdateHeaderVisuals();
+    }
+
+    private void ApplySort()
+    {
+        switch (currentSortColumn)
+        {
+            case SortColumn.Name:
+                currentPortfolioData = isAscending
+                    ? currentPortfolioData.OrderBy(s => s.symbol).ToList()
+                    : currentPortfolioData.OrderByDescending(s => s.symbol).ToList();
+                break;
+            case SortColumn.Price:
+                currentPortfolioData = isAscending
+                    ? currentPortfolioData.OrderBy(s => s.currentPrice).ToList()
+                    : currentPortfolioData.OrderByDescending(s => s.currentPrice).ToList();
+                break;
+            case SortColumn.Value:
+                currentPortfolioData = isAscending
+                    ? currentPortfolioData.OrderBy(s => s.totalValue).ToList()
+                    : currentPortfolioData.OrderByDescending(s => s.totalValue).ToList();
+                break;
+            case SortColumn.AverageBuyPrice:
+                currentPortfolioData = isAscending
+                    ? currentPortfolioData.OrderBy(s => s.averageBuyPrice).ToList()
+                    : currentPortfolioData.OrderByDescending(s => s.averageBuyPrice).ToList();
+                break;
+            case SortColumn.Volume:
+                currentPortfolioData = isAscending
+                    ? currentPortfolioData.OrderBy(s => s.totalShares).ToList()
+                    : currentPortfolioData.OrderByDescending(s => s.totalShares).ToList();
+                break;
+            case SortColumn.TransactionTotal:
+                currentPortfolioData = isAscending
+                    ? currentPortfolioData.OrderBy(s => s.totalInvested).ToList()
+                    : currentPortfolioData.OrderByDescending(s => s.totalInvested).ToList();
+                break;
+            case SortColumn.GainsLoss:
+                currentPortfolioData = isAscending
+                    ? currentPortfolioData.OrderBy(s => s.profitLoss).ToList()
+                    : currentPortfolioData.OrderByDescending(s => s.profitLoss).ToList();
+                break;
+            case SortColumn.ChangePercent:
+                currentPortfolioData = isAscending
+                    ? currentPortfolioData.OrderBy(s => s.profitLossPercent).ToList()
+                    : currentPortfolioData.OrderByDescending(s => s.profitLossPercent).ToList();
+                break;
+        }
+    }
+
+    private void UpdateHeaderVisuals()
+    {
+        if (columnHeaders == null) return;
+
+        for (int i = 0; i < columnHeaders.Length; i++)
+        {
+            if (columnHeaders[i].headerText == null) continue;
+
+            columnHeaders[i].headerText.text = columnHeaders[i].originalText;
+
+            if (columnHeaders[i].columnType == currentSortColumn)
             {
-                rowComponent.SetupRow(
-                    symbol,
-                    pos.AverageBuyPrice,
-                    pos.totalInvestedCost,
-                    change24h,
-                    pos.TotalLots,
-                    currentPrice,
-                    grossValue,
-                    profitLoss
-                );
+                string arrow = isAscending ? arrowUp : arrowDown;
+                columnHeaders[i].headerText.text = columnHeaders[i].originalText + arrow;
             }
         }
     }
 
-    float netWorth = cash + totalHoldingsGrossValue;
-    float initialCash = PortfolioManager.Instance.startingCash;
-    float totalProfitLoss = netWorth - initialCash;
-    float profitLossPercentage = initialCash > 0f ? (totalProfitLoss / initialCash) * 100f : 0f;
-
-    if (cashText != null) cashText.text = $"{cash:N0}";
-    if (totalNetWorthText != null) totalNetWorthText.text = $"{netWorth:N0}";
-    if (equityText != null) equityText.text = $"{totalHoldingsGrossValue:N0}";
-
-    if (totalProfitLossText != null)
+    private void RebuildRowUI()
     {
-        string sign = totalProfitLoss >= 0 ? "+" : "";
-        string color = totalProfitLoss >= 0 ? "green" : "red";
-        totalProfitLossText.text = $"<color={color}>{sign}{totalProfitLoss:N0}</color>";
-    }
+        if (holdingsContainer == null) return;
 
-    if (profitLossPercentageText != null)
-    {
-        string sign = profitLossPercentage >= 0 ? "+" : "";
-        string color = profitLossPercentage >= 0 ? "green" : "red";
-        profitLossPercentageText.text = $"<color={color}>{sign}{profitLossPercentage:F2}%</color>";
+        foreach (Transform child in holdingsContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (var data in currentPortfolioData)
+        {
+            if (holdingRowPrefab != null)
+            {
+                GameObject rowObj = Instantiate(holdingRowPrefab, holdingsContainer);
+                PortfolioHoldingRow rowComponent = rowObj.GetComponent<PortfolioHoldingRow>();
+
+                if (rowComponent != null)
+                {
+                    rowComponent.SetupRow(
+                        data.symbol,
+                        data.averageBuyPrice,
+                        data.totalInvested,
+                        data.change24h,
+                        data.totalShares / PortfolioManager.SHARES_PER_LOT, // Lots owned
+                        data.currentPrice,
+                        data.totalValue,
+                        data.profitLoss
+                    );
+                }
+            }
+        }
     }
-}
 
     private void GetMarketData(string stockSymbol, out float latestPrice, out float change24h)
     {
@@ -169,7 +328,7 @@ public class PortfolioUI : MonoBehaviour
                 if (currentDayLimit > 1)
                 {
                     float prevPrice = closes[currentDayLimit - 2];
-                    change24h = latestPrice;
+                    change24h = ((latestPrice - prevPrice) / prevPrice) * 100f;
                 }
             }
         }
@@ -183,5 +342,18 @@ public class PortfolioUI : MonoBehaviour
                 return i;
         }
         return -1;
+    }
+
+    private class PortfolioItemData
+    {
+        public string symbol;
+        public float averageBuyPrice;
+        public float totalInvested;
+        public int totalShares;
+        public float currentPrice;
+        public float totalValue;
+        public float profitLoss;
+        public float profitLossPercent;
+        public float change24h;
     }
 }

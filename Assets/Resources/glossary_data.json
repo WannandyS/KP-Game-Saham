@@ -1,0 +1,452 @@
+{
+  "entries": [
+    {
+      "termId": "DOJI",
+      "displayTitle": "Doji",
+      "matchKeywords": [
+        "Doji"
+      ],
+      "definition": "Sesi dimana harga Open dan Close berada di Harga yang sama"
+    },
+    {
+      "termId": "DOWNTREND",
+      "displayTitle": "Downtrend",
+      "matchKeywords": [
+        "Downtrend"
+      ],
+      "definition": "Kondisi pasar yang sedang menurun yang ditunjukkan penurunan harga"
+    },
+    {
+      "termId": "UPTREND",
+      "displayTitle": "Uptrend",
+      "matchKeywords": [
+        "Uptrend"
+      ],
+      "definition": "Kondisi pasar yang sedang naik yang ditunjukkan kenaikan harga"
+    },
+    {
+      "termId": "VOLUME",
+      "displayTitle": "Volume",
+      "matchKeywords": [
+        "Volume"
+      ],
+      "definition": "Total semua saham yang ditransaksikan dalam suatu periode"
+    },
+    {
+      "termId": "CONTINUATION",
+      "displayTitle": "Continuation / Kontinuasi",
+      "matchKeywords": [
+        "Continuation",
+        "Kontinuasi",
+        "Continuation / Kontinuasi"
+      ],
+      "definition": "Tren pasar yang sedang melanjutkan tren sebelumnya"
+    },
+    {
+      "termId": "REVERSAL",
+      "displayTitle": "Reversal / Pembalikan",
+      "matchKeywords": [
+        "Reversal",
+        "Pembalikan",
+        "Reversal / Pembalikan"
+      ],
+      "definition": "Tren pasar yang bergerak ke arah sebaliknya dari tren sebelumnya"
+    },
+    {
+      "termId": "RALLY",
+      "displayTitle": "Rally",
+      "matchKeywords": [
+        "Rally"
+      ],
+      "definition": "Pergerakan naik harga saham"
+    },
+    {
+      "termId": "SELLOFF",
+      "displayTitle": "Selloff",
+      "matchKeywords": [
+        "Selloff",
+        "Sell-off"
+      ],
+      "definition": "Pergerakan turun harga saham"
+    },
+    {
+      "termId": "REACTION",
+      "displayTitle": "Reaction",
+      "matchKeywords": [
+        "Reaction"
+      ],
+      "definition": "Pergerakan Harga yang sebaliknya dengan tren yang ada"
+    },
+    {
+      "termId": "TREN",
+      "displayTitle": "Tren",
+      "matchKeywords": [
+        "Tren",
+        "Trend"
+      ],
+      "definition": "Arah yang dituju harga di pasar (Naik atau Turun)"
+    },
+    {
+      "termId": "WHITE_CANDLE",
+      "displayTitle": "White Candle",
+      "matchKeywords": [
+        "White Candle"
+      ],
+      "definition": "Pola candlestick dengan badan berwarna putih yang menandakan pergerakan harga naik, di mana harga penutupan (Close) berada di atas harga pembukaan (Open)."
+    },
+    {
+      "termId": "BLACK_CANDLE",
+      "displayTitle": "Black Candle",
+      "matchKeywords": [
+        "Black Candle"
+      ],
+      "definition": "Pola candlestick dengan badan berwarna hitam yang menandakan pergerakan harga turun, di mana harga penutupan (Close) lebih rendah daripada harga pembukaan (Open)."
+    },
+    {
+      "termId": "SHADOW",
+      "displayTitle": "Shadow",
+      "matchKeywords": [
+        "Shadow",
+        "Upper Shadow",
+        "Lower Shadow"
+      ],
+      "definition": "Garis di luar badan candlestick yang mencerminkan harga tertinggi (upper shadow) dan harga terendah (lower shadow) dalam satu sesi."
+    },
+    {
+      "termId": "WHITE_MARUBOZU",
+      "displayTitle": "White Marubozu",
+      "matchKeywords": [
+        "White Marubozu"
+      ],
+      "definition": "Pola candlestick berwarna putih tanpa shadow atas maupun bawah, yang menunjukkan harga ditutup di titik tertinggi sebagai cerminan minat beli yang besar."
+    },
+    {
+      "termId": "BLACK_MARUBOZU",
+      "displayTitle": "Black Marubozu",
+      "matchKeywords": [
+        "Black Marubozu"
+      ],
+      "definition": "Pola candlestick berwarna hitam tanpa shadow, yang menunjukkan harga ditutup di titik terendah sebagai cerminan tekanan jual yang besar."
+    },
+    {
+      "termId": "HAMMER",
+      "displayTitle": "Hammer",
+      "matchKeywords": [
+        "Hammer",
+        "Hanging Man"
+      ],
+      "definition": "Pola candlestick berwarna hijau dengan sebuah body kecil dengan shadow menurun yang panjang dengan shadow naik yang sangat pendek atau tidak ada. Hammer seringkali menandakan pembalikan arah dari tren menurun menjadi naik jika terletak di bagian bawah dan sebaliknya jika terdapat hammer di tren yang naik (Biasanya disebut sebagai pola Hanging Man) maka biasanya menandakan adanya pembalikan arah tren ke menurun."
+    },
+    {
+      "termId": "ENGULFING",
+      "displayTitle": "Engulfing",
+      "matchKeywords": [
+        "Engulfing",
+        "Bullish Engulfing",
+        "Bearish Engulfing"
+      ],
+      "definition": "Pola candlestick yang menunjukkan dua candlestick dengan warna yang berbeda dimana candlestick body sebuah candlestick baru harus lebih besar dari yang sebelumnya dan tampak pola uptrend atau downtrend yang jelas. Engulfing biasanya menandakan pembalikan mayor baik dari tren naik maupun turun tergantung body hijau-merah atau merah-hijau."
+    },
+    {
+      "termId": "DARK_CLOUD_COVER",
+      "displayTitle": "Dark Cloud Cover",
+      "matchKeywords": [
+        "Dark Cloud Cover"
+      ],
+      "definition": "Pola candlestick yang menunjukkan dua candlestick dengan warna hijau-merah dengan candle pertama yang berwarna hijau dan candle kedua yang berwarna merah dengan bentuk candle hijau yang kuat yang diikuti candle merah yang memiliki open lebih tinggi namun close lebih rendah dari candle hijau sebelumnya. Pola Dark Cloud Cover biasanya menunjukkan pembalikan dari tren naik karena seringkali menjadi titik paling tinggi."
+    },
+    {
+      "termId": "PIERCING",
+      "displayTitle": "Piercing",
+      "matchKeywords": [
+        "Piercing",
+        "Piercing Line",
+        "Piercing Pattern"
+      ],
+      "definition": "Pola candlestick yang menunjukkan dua candlestick dengan warna merah-hijau dengan candle pertama yang berwarna merah dan candle kedua yang berwarna hijau dengan bentuk candle merah yang kuat yang diikuti candle hijau yang memiliki close lebih tinggi namun open lebih rendah dari candle hijau sebelumnya. Pola Piercing biasanya menunjukkan pembalikan dari tren menurun."
+    },
+    {
+      "termId": "HARAMI",
+      "displayTitle": "Harami",
+      "matchKeywords": [
+        "Harami",
+        "Pola Harami"
+      ],
+      "definition": "Pola Harami merupakan pola candlestick yang menunjukkan candlestick sebelumnya yang memiliki body yang jauh lebih besar dari yang setelahnya yang lebih kecil ataupun berbentuk seperti doji yang menandakan sebuah pembalikan."
+    },
+    {
+      "termId": "BELT_HOLD_LINE",
+      "displayTitle": "Belt Hold Line",
+      "matchKeywords": [
+        "Belt Hold Line"
+      ],
+      "definition": "Pola candlestick individu yang memiliki body yang panjang serta memiliki harga close dan open yang mendekati titik tertinggi dan terendah. Belt Hold Line berwarna merah biasanya menunjukkan pembalikan tren yang naik menjadi menurun dan sebaliknya, Belt Hold Line berwarna hijau menunjukkan pembalikan tren yang menurun menjadi naik."
+    },
+    {
+      "termId": "COUNTERATTACK_LINE",
+      "displayTitle": "Counterattack Line",
+      "matchKeywords": [
+        "Counterattack Line"
+      ],
+      "definition": "Pola counterattack line menunjukkan pola candlestick yang memiliki harga close yang sama dengan candlestick terdekat dengan warna sebaliknya. Pola ini biasanya menunjukkan pembalikan arah tren dari turun ke naik ataupun sebaliknya."
+    },
+    {
+      "termId": "THREE_METHODS",
+      "displayTitle": "Three Methods",
+      "matchKeywords": [
+        "Three Methods",
+        "Rising Three Methods",
+        "Falling Three Methods"
+      ],
+      "definition": "Pola Candlestick yang menunjukkan candle yang panjang yang kemudian diikuti dua hingga tiga candle dengan warna yang berlawanan yang berurutan dan kemudian diikuti dengan candle panjang yang mirip dengan candle pertama yang biasanya memiliki harga open di atas harga close candle sebelumnya. Pola ini menunjukkan kelanjutan tren baik menurun ataupun naik."
+    },
+    {
+      "termId": "THREE_BLACK_CROWS",
+      "displayTitle": "Three Black Crows",
+      "matchKeywords": [
+        "Three Black Crows"
+      ],
+      "definition": "Pola Candlestick yang menunjukkan tiga candle berwarna merah yang berurutan dengan close yang mendekati harga low secara berurutan dengan harga open yang berada di kisaran body candle sebelumnya. Pola ini biasanya menunjukkan tren pasar yang sedang menurun."
+    },
+    {
+      "termId": "THREE_WHITE_SOLDIERS",
+      "displayTitle": "Three White Soldiers",
+      "matchKeywords": [
+        "Three White Soldiers"
+      ],
+      "definition": "Pola Candlestick yang menunjukkan tiga candle berwarna hijau yang berurutan dengan close yang mendekati harga high secara berurutan dengan harga open yang berada di kisaran body selanjutnya. Pola ini biasanya menandakan pembalikan tren yang sedang turun menjadi naik, namun pelemahan di candle kedua dan ketiga bisa menandakan pelemahan harga."
+    },
+    {
+      "termId": "WINDOW",
+      "displayTitle": "Window",
+      "matchKeywords": [
+        "Window",
+        "Pola Window"
+      ],
+      "definition": "Pola window merupakan pola yang menunjukkan vakum dari antara harga high dan low dari candle sebelumnya dan yang saat ini dengan warna candle hijau. Sebaliknya juga dapat dilihat jika candle sebelumnya dan saat ini memiliki vakum dari antara harga low candle sebelumnya dan high candle saat ini dengan warna candle hijau. Pola ini dapat dilihat dalam tren yang menunjukkan keberlanjutan tren tersebut."
+    },
+    {
+      "termId": "SEPARATING_LINE",
+      "displayTitle": "Separating Line",
+      "matchKeywords": [
+        "Separating Line"
+      ],
+      "definition": "Pola separating line menunjukkan pola candlestick yang memiliki harga open yang sama dengan candlestick terdekat dengan warna sebaliknya. Pola ini biasanya menunjukkan kelanjutan tren yang menurun atau naik sesuai dengan bentuk yang tampak."
+    },
+    {
+      "termId": "SAHAM",
+      "displayTitle": "Saham",
+      "matchKeywords": [
+        "Saham",
+        "Scrip",
+        "Scripless"
+      ],
+      "definition": "Saham adalah sebuah unit kepemilikan sebuah perusahaan. Membeli sebuah saham berarti anda membeli sebagian kecil dari perusahaan yang bersangkutan. Sebuah saham biasanya memiliki dua bentuk utama yaitu Scrip / surat saham dan Scripless / saham digital. Semakin besar kepemilikan saham, semakin besar juga kepemilikan anda atas perusahaan yang bersangkutan."
+    },
+    {
+      "termId": "EMITEN",
+      "displayTitle": "Emiten",
+      "matchKeywords": [
+        "Emiten"
+      ],
+      "definition": "Emiten merupakan perusahaan yang menawarkan saham bagi investor dan masyarakat umum di pasar modal."
+    },
+    {
+      "termId": "PASAR_SAHAM",
+      "displayTitle": "Pasar Saham",
+      "matchKeywords": [
+        "Pasar Saham",
+        "Bursa Saham",
+        "Bursa Efek"
+      ],
+      "definition": "Pasar saham merupakan tempat jual beli saham untuk para investor yang telah diregulasi dan berfungsi sebagai pusat pembelian dan penjualan saham untuk berbagai perusahaan. Pasar saham biasanya dapat diakses melalui aplikasi trading ataupun melalui seorang broker yang kemudian akan membuka akun di pasar saham agar dapat bertransaksi dengan akun lainnya."
+    },
+    {
+      "termId": "CANDLESTICK",
+      "displayTitle": "Candlestick",
+      "matchKeywords": [
+        "Candlestick"
+      ],
+      "definition": "Sebuah candlestick merupakan simbol yang melambangkan harga open, close, high dan low sebuah perusahaan dalam interval waktu tertentu."
+    },
+    {
+      "termId": "CAPITAL_GAIN",
+      "displayTitle": "Capital Gain",
+      "matchKeywords": [
+        "Capital Gain"
+      ],
+      "definition": "Capital Gain merupakan istilah untuk keuntungan yang didapat dalam trading dengan menjual saham pada harga yang lebih tinggi dibandingkan dengan harga pembelian / entry point."
+    },
+    {
+      "termId": "CAPITAL_LOSS",
+      "displayTitle": "Capital Loss",
+      "matchKeywords": [
+        "Capital Loss"
+      ],
+      "definition": "Capital Loss merupakan istilah untuk kerugian yang dialami ketika menjual saham pada harga yang lebih rendah dibandingkan dengan harga pembelian / entry point."
+    },
+    {
+      "termId": "BROKER",
+      "displayTitle": "Broker",
+      "matchKeywords": [
+        "Broker",
+        "Pialang"
+      ],
+      "definition": "Broker merupakan seseorang/sebuah pihak yang bertindak sebagai jembatan antara investor dengan pasar saham yang bertugas untuk membeli dan menjual saham. Broker tertentu juga dapat memberikan nasihat, rekomendasi dan analisis pasar saham untuk mempermudah investor untuk melakukan transaksi."
+    },
+    {
+      "termId": "BULL_MARKET",
+      "displayTitle": "Bull Market",
+      "matchKeywords": [
+        "Bull Market",
+        "Bullish"
+      ],
+      "definition": "Bull Market merupakan istilah untuk pasar yang sedang mengalami kenaikan yang berlanjut. Bull Market biasanya dapat dilihat dengan kenaikan harga yang berkelanjutan dan stabil serta sentimen pasar yang positif."
+    },
+    {
+      "termId": "BEAR_MARKET",
+      "displayTitle": "Bear Market",
+      "matchKeywords": [
+        "Bear Market",
+        "Bearish"
+      ],
+      "definition": "Bear Market merupakan istilah untuk pasar yang sedang mengalami penurunan yang berlanjut. Bear Market diindikasikan dengan sentimen yang pesimistik dan penurunan harga yang berkelanjutan."
+    },
+    {
+      "termId": "INDEKS",
+      "displayTitle": "Indeks",
+      "matchKeywords": [
+        "Indeks",
+        "Indeks Saham"
+      ],
+      "definition": "Indeks saham merupakan ukuran statistik yang mencerminkan pergerakan harga dari sekumpulan saham pilihan yang dikelompokkan berdasarkan kriteria atau metodologi tertentu. Indeks dapat digunakan sebagai acuan untuk melihat kondisi pasar secara keseluruhan."
+    },
+    {
+      "termId": "MARKET_CAP",
+      "displayTitle": "Market Cap",
+      "matchKeywords": [
+        "Market Cap",
+        "Market Capitalization",
+        "Kapitalisasi Pasar"
+      ],
+      "definition": "Market Cap merupakan total dari nilai sebuah perusahaan. Market Cap dapat dihitung dengan mengalikan harga saham dengan jumlah saham yang berada dalam sebuah perusahaan. Misalkan sebuah perusahaan yang memiliki 1 Miliar saham dengan harga saham berupa Rp230, maka perusahaan tersebut memiliki Market Cap sebesar Rp230 Miliar."
+    },
+    {
+      "termId": "ENTRY_POINT",
+      "displayTitle": "Entry Point",
+      "matchKeywords": [
+        "Entry Point",
+        "Entry Price"
+      ],
+      "definition": "Entry Point merupakan harga sebuah saham ketika anda melakukan pembelian. Entry Point juga dikenal sebagai Entry Price."
+    },
+    {
+      "termId": "EXIT_POINT",
+      "displayTitle": "Exit Point",
+      "matchKeywords": [
+        "Exit Point",
+        "Exit Price"
+      ],
+      "definition": "Exit Point merupakan harga sebuah saham ketika anda melakukan penjualan. Exit Point juga dikenal sebagai Exit Price."
+    },
+    {
+      "termId": "SEKTOR",
+      "displayTitle": "Sektor",
+      "matchKeywords": [
+        "Sektor"
+      ],
+      "definition": "Sebuah sektor merupakan sebuah bidang bisnis yang ditempati oleh sekelompok perusahaan seperti teknologi, perbankan, dan bidang lainnya."
+    },
+    {
+      "termId": "PORTOFOLIO",
+      "displayTitle": "Portofolio",
+      "matchKeywords": [
+        "Portofolio",
+        "Portfolio"
+      ],
+      "definition": "Sebuah portofolio merupakan koleksi atau jejak rekam semua saham yang anda miliki. Portofolio juga menjadi tempat bagi investor untuk melihat perkembangan dan perubahan yang terjadi pada saham yang anda miliki."
+    },
+    {
+      "termId": "KODE_SAHAM",
+      "displayTitle": "Kode Saham (Ticker)",
+      "matchKeywords": [
+        "Kode Saham",
+        "Ticker",
+        "Kode Saham (Ticker)"
+      ],
+      "definition": "Kode saham / ticker merupakan kode unik yang dimiliki saham perusahaan di bursa. Biasanya sebuah kode saham terdiri dari 4 huruf kapital."
+    },
+    {
+      "termId": "DIVERSIFIKASI",
+      "displayTitle": "Diversifikasi",
+      "matchKeywords": [
+        "Diversifikasi"
+      ],
+      "definition": "Diversifikasi merupakan istilah untuk penyebaran investasi ke berbagai perusahaan untuk mengurangi ketergantungan terhadap satu perusahaan. Diversifikasi dapat membantu meringankan beban investasi suatu perusahaan tertentu sehingga nilai investasi tidak seketika turun ketika nilai satu perusahaan turun."
+    },
+    {
+      "termId": "DIVIDEN",
+      "displayTitle": "Dividen",
+      "matchKeywords": [
+        "Dividen",
+        "Cum-Date",
+        "Ex-Date",
+        "Rec-Date",
+        "Payment Date"
+      ],
+      "definition": "Dividen merupakan pembagian laba atau keuntungan bersih sebuah perusahaan kepada para investor berdasarkan hasil dari RUPS (Rapat Umum Pemegang Saham). Pembagian dividen memiliki beberapa jadwal penting seperti Cum-Date yang merupakan batas terakhir pembelian saham agar berhak mendapatkan dividen, Ex-Date yang merupakan hari pertama saham diperdagangkan tanpa hak mendapat dividen, Rec-Date yang merupakan tanggal pencatatan pemegang saham yang berhak mendapatkan dividen dan Payment Date atau tanggal pembagian dividen ke rekening investor."
+    },
+    {
+      "termId": "RUPS",
+      "displayTitle": "RUPS",
+      "matchKeywords": [
+        "RUPS",
+        "Rapat Umum Pemegang Saham",
+        "RUPSLB",
+        "RUPST"
+      ],
+      "definition": "RUPS (Rapat Umum Pemegang Saham) merupakan organ kekuasaan paling tinggi dalam sebuah perseroan dengan wewenang penting di luar wewenang direksi atau komisaris. Fungsi utama RUPS adalah untuk menentukan arah perusahaan, mengevaluasi kinerja, mengesahkan laporan, mengatur laba, dan melakukan aksi korporasi. RUPS biasanya dibagi menjadi RUPSLB (Rapat Umum Pemegang Saham Luar Biasa), yang biasanya dilakukan ketika terdapat kebutuhan mendesak seperti pergantian dewan direksi atau komisaris, atau perubahan struktur, dan RUPST (Rapat Umum Pemegang Saham Tahunan), yang biasanya membahas laporan keuangan, kinerja, penunjukan auditor, dan pembagian dividen."
+    },
+    {
+      "termId": "BUYBACK",
+      "displayTitle": "Buyback",
+      "matchKeywords": [
+        "Buyback"
+      ],
+      "definition": "Buyback merupakan istilah untuk pembelian kembali saham perusahaan oleh perusahaan tersebut. Buyback biasanya dilakukan untuk menstabilkan atau meningkatkan harga saham dan menyampaikan keyakinan manajemen bahwa nilai saham akan naik ke depannya."
+    },
+    {
+      "termId": "RUMOR",
+      "displayTitle": "Rumor",
+      "matchKeywords": [
+        "Rumor"
+      ],
+      "definition": "Rumor merupakan jenis berita yang informasinya belum bisa diverifikasi dan belum tentu benar. Rumor dapat meningkatkan harga saham, namun juga membawa risiko karena belum tentu benar dan dapat mengakibatkan penurunan dramatis."
+    },
+    {
+      "termId": "AKSI_KORPORASI",
+      "displayTitle": "Aksi Korporasi",
+      "matchKeywords": [
+        "Aksi Korporasi",
+        "Corporate Action"
+      ],
+      "definition": "Aksi korporasi merupakan keputusan atau kebijakan penting yang diambil oleh manajemen atau direksi. Aksi korporasi dapat mempengaruhi harga saham sebuah perusahaan secara signifikan tergantung pada sentimen berita aksi korporasi tersebut. Contoh aksi korporasi dapat berupa merger, pembagian dividen, pelaksanaan buyback saham dan penyelenggaraan RUPS."
+    },
+    {
+      "termId": "MERGER",
+      "displayTitle": "Merger",
+      "matchKeywords": [
+        "Merger"
+      ],
+      "definition": "Merger merupakan tindakan penggabungan usaha dari dua perusahaan berbeda untuk menjadi satu entitas perusahaan. Merger dapat bersifat horizontal seperti antara dua perusahaan di bidang yang serupa atau vertikal seperti antara sebuah distributor dan produsen. Merger biasanya dilakukan oleh dua atau lebih perusahaan yang saling setuju untuk menggabungkan usaha mereka untuk mencapai tujuan bersama seperti memperluas jangkauan pasar, memperluas lini produk atau layanan, mengurangi kompetisi atau memperkuat finansial satu sama lain."
+    },
+    {
+      "termId": "AKUISISI",
+      "displayTitle": "Akuisisi",
+      "matchKeywords": [
+        "Akuisisi"
+      ],
+      "definition": "Akuisisi merujuk pada aksi sebuah perusahaan yang lebih kuat secara finansial membeli sebuah perusahaan lain melalui tunai atau saham yang kemudian akan diambil alih oleh perusahaan yang melakukan akuisisi tersebut dan perusahaan yang dibeli akan diserap atau berhenti beroperasi atas nama lamanya."
+    }
+  ]
+}

@@ -155,8 +155,8 @@ public class CandlestickChart : MonoBehaviour
 
         if (DaySimulationManager.Instance != null)
         {
-            DaySimulationManager.Instance.totalDays = allCandles.Count;
-            HandleDayChanged(DaySimulationManager.Instance.currentDay);
+            DaySimulationManager.Instance.totalDatasetDays = allCandles.Count;
+            HandleDayChanged(DaySimulationManager.Instance.CurrentDatasetDay);
         }
         else
         {
@@ -234,7 +234,11 @@ public class CandlestickChart : MonoBehaviour
     {
         displayedCandles.Clear();
 
-        int targetIndex = Mathf.Min(currentSimDay, allCandles.Count);
+        int datasetDay = DaySimulationManager.Instance != null
+            ? DaySimulationManager.Instance.CurrentDatasetDay
+            : currentSimDay;
+
+        int targetIndex = Mathf.Min(datasetDay, allCandles.Count);
         int startIndex = Mathf.Max(0, targetIndex - maxCandles);
 
         for (int i = startIndex; i < targetIndex; i++)
@@ -247,37 +251,12 @@ public class CandlestickChart : MonoBehaviour
             RedrawChart();
         }
 
-        if (displayedCandles.Count > 0)
+        if (tradeController != null && displayedCandles.Count > 0)
         {
             CandleData latest = displayedCandles[displayedCandles.Count - 1];
-            
-            // Prioritaskan Ticker dari SelectedStockData agar cocok dengan pilihan pemain
-            string activeTicker = !string.IsNullOrEmpty(SelectedStockData.StockTicker) 
-                ? SelectedStockData.StockTicker 
-                : (currentCsvFile != null ? currentCsvFile.name : "Stock");
-
-            // Format Header Baru (Penanggalan (YYYY-MM-DD) dihilangkan)
-            string currentDayInfo = $"<b>{activeTicker} - Day {latest.dayIndex}</b> |  " +
-                                    $"O: {FormatPrice(latest.open)}  |  " +
-                                    $"H: {FormatPrice(latest.high)}  |  " +
-                                    $"L: {FormatPrice(latest.low)}  |  " +
-                                    $"C: {FormatPrice(latest.close)}  |  " +
-                                    $"Vol: {latest.volume:#,##0}";
-
-            if (ChartTooltip.Instance != null)
-            {
-                ChartTooltip.Instance.SetDefaultText(currentDayInfo);
-            }
-
-            if (tradeController == null)
-            {
-                tradeController = FindAnyObjectByType<TradeController>();
-            }
-
-            if (tradeController != null)
-            {
-                tradeController.SetMarketPrice(activeTicker, latest.date, latest.dayIndex, latest.close);
-            }
+            string datasetName = currentCsvFile != null ? currentCsvFile.name : "Stock";
+            int activeSimDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : latest.dayIndex;
+            tradeController.SetMarketPrice(datasetName, latest.date, activeSimDay, latest.close);
         }
     }
 

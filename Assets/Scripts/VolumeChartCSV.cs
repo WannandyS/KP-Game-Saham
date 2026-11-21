@@ -173,12 +173,24 @@ public class VolumeChartCSV : MonoBehaviour
     {
         displayedVolume.Clear();
 
-        int targetIndex = Mathf.Min(currentSimDay, allVolume.Count);
-        int startIndex = Mathf.Max(0, targetIndex - maxBars);
+        int datasetDay = DaySimulationManager.Instance != null
+            ? DaySimulationManager.Instance.CurrentDatasetDay
+            : currentSimDay;
+
+        int startDatasetDay = DaySimulationManager.Instance != null
+            ? DaySimulationManager.Instance.startDatasetDay
+            : 1;
+
+        int targetIndex = Mathf.Min(datasetDay, allVolume.Count);
+        int minAllowedIndex = Mathf.Max(0, startDatasetDay - 1);
+        int startIndex = Mathf.Max(minAllowedIndex, targetIndex - maxBars);
 
         for (int i = startIndex; i < targetIndex; i++)
         {
-            displayedVolume.Add(allVolume[i]);
+            VolumeData raw = allVolume[i];
+            // Display spoofed day number (1-indexed from startDatasetDay) so tooltips match Day 1, Day 2, etc.
+            int spoofedDayNumber = Mathf.Max(1, i - startDatasetDay + 2);
+            displayedVolume.Add(new VolumeData(raw.date, raw.volume, spoofedDayNumber));
         }
 
         if (chartArea != null)
@@ -191,7 +203,7 @@ public class VolumeChartCSV : MonoBehaviour
     {
         ClearChart();
 
-        if (chartArea == null || chartArea.rect.width <= 0 || chartArea.rect.height <= 0 || displayedVolume.Count == 0) 
+        if (chartArea == null || chartArea.rect.width <= 0 || chartArea.rect.height <= 0 || displayedVolume.Count == 0)
             return;
 
         float maxVolume = float.MinValue;

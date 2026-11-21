@@ -15,7 +15,6 @@ public class DayIndicator : MonoBehaviour
         if (DaySimulationManager.Instance != null)
         {
             DaySimulationManager.Instance.OnDayChanged += HandleDayChanged;
-
             HandleDayChanged(DaySimulationManager.Instance.currentDay);
         }
     }
@@ -28,11 +27,12 @@ public class DayIndicator : MonoBehaviour
         }
     }
 
-    private void HandleDayChanged(int currentDay)
+    private void HandleDayChanged(int spoofedDay)
     {
         if (dayText != null)
         {
-            dayText.text = $"Day {currentDay}";
+            int cap = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.maxTradingDays : 50;
+            dayText.text = $"Day {spoofedDay} / {cap}";
         }
     }
 }

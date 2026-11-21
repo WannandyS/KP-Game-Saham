@@ -115,6 +115,57 @@ public class PortfolioManager : MonoBehaviour
         return true;
     }
 
+    // Add inside PortfolioManager class:
+    public void RestoreState(
+        float restoredStartingCash,
+        float restoredCurrentCash,
+        List<SaveSystemManager.SavedPositionData> savedHoldings,
+        List<SaveSystemManager.SavedTransactionData> savedTransactions)
+    {
+        startingCash = restoredStartingCash;
+        currentCash = restoredCurrentCash;
+
+        holdings.Clear();
+        if (savedHoldings != null)
+        {
+            foreach (var item in savedHoldings)
+            {
+                string cleanName = CleanTicker(item.stockSymbol);
+                if (string.IsNullOrEmpty(cleanName) || item.totalShares <= 0) continue;
+
+                holdings[cleanName] = new Position
+                {
+                    stockSymbol = cleanName,
+                    totalShares = item.totalShares,
+                    totalInvestedCost = item.totalInvestedCost
+                };
+            }
+        }
+
+        transactionHistory.Clear();
+        if (savedTransactions != null)
+        {
+            foreach (var tx in savedTransactions)
+            {
+                transactionHistory.Add(new TransactionRecord
+                {
+                    date = tx.date,
+                    dayIndex = tx.dayIndex,
+                    stockSymbol = CleanTicker(tx.stockSymbol),
+                    isBuy = tx.isBuy,
+                    lots = tx.lots,
+                    pricePerShare = tx.pricePerShare,
+                    grossAmount = tx.grossAmount,
+                    feeAmount = tx.feeAmount,
+                    totalAmount = tx.totalAmount,
+                    costBasisPerShare = tx.costBasisPerShare
+                });
+            }
+        }
+
+        OnPortfolioUpdated?.Invoke();
+    }
+
     public bool ExecuteSell(string stockSymbol, string date, int dayIndex, int lotsToSell, float pricePerShare)
     {
         if (lotsToSell <= 0 || pricePerShare <= 0f) return false;

@@ -23,7 +23,7 @@ public class MarketOverviewController : MonoBehaviour
     {
         public SortColumn columnType;
         public TMP_Text headerText;
-        [HideInInspector] public string originalText; // Menyimpan teks dasar (misal: "SAHAM")
+        [HideInInspector] public string originalText;
     }
 
     [Header("CSV Data Settings")]
@@ -41,9 +41,8 @@ public class MarketOverviewController : MonoBehaviour
     [Header("Sorting State & UI")]
     public SortColumn currentSortColumn = SortColumn.Name;
     public bool isAscending = true;
-    public ColumnHeaderUI[] columnHeaders; // Array penampung referensi header kolom
+    public ColumnHeaderUI[] columnHeaders;
 
-    // Indikator panah visual sorting
     private readonly string arrowUp = " ▲";
     private readonly string arrowDown = " ▼";
 
@@ -57,7 +56,6 @@ public class MarketOverviewController : MonoBehaviour
 
     private void Awake()
     {
-        // Menyimpan teks asli header sebelum ditambahkan panah indikator
         if (columnHeaders != null)
         {
             for (int i = 0; i < columnHeaders.Length; i++)
@@ -103,22 +101,26 @@ public class MarketOverviewController : MonoBehaviour
 
         if (DaySimulationManager.Instance != null)
         {
-            UpdateMarketOverview(DaySimulationManager.Instance.currentDay);
+            UpdateMarketOverview(DaySimulationManager.Instance.currentDay, DaySimulationManager.Instance.CurrentDatasetDay);
         }
         else
         {
-            UpdateMarketOverview(currentDayIndex);
+            UpdateMarketOverview(currentDayIndex, currentDayIndex);
         }
     }
 
-    private void HandleDayChanged(int newDay)
+    private void HandleDayChanged(int spoofedDay)
     {
-        UpdateMarketOverview(newDay);
+        int datasetDay = DaySimulationManager.Instance != null
+            ? DaySimulationManager.Instance.CurrentDatasetDay
+            : spoofedDay;
+
+        UpdateMarketOverview(spoofedDay, datasetDay);
     }
 
-    public void UpdateMarketOverview(int dayIndex)
+    public void UpdateMarketOverview(int spoofedDay, int datasetDay)
     {
-        currentDayIndex = Mathf.Max(1, dayIndex);
+        currentDayIndex = Mathf.Max(1, spoofedDay);
         if (dayHeaderLabel != null)
         {
             dayHeaderLabel.text = $"Day {currentDayIndex}";
@@ -128,12 +130,13 @@ public class MarketOverviewController : MonoBehaviour
 
         if (csvFiles != null)
         {
+            int resolvedDatasetDay = Mathf.Max(1, datasetDay);
             foreach (TextAsset csvAsset in csvFiles)
             {
                 if (csvAsset == null) continue;
 
-                string stockSymbol = csvAsset.name; // Nama file CSV sebagai Ticker
-                StockRowData data = ParseCSVForDay(csvAsset.text, stockSymbol, currentDayIndex);
+                string stockSymbol = csvAsset.name;
+                StockRowData data = ParseCSVForDay(csvAsset.text, stockSymbol, resolvedDatasetDay);
 
                 if (data != null)
                 {
@@ -147,9 +150,6 @@ public class MarketOverviewController : MonoBehaviour
         UpdateHeaderVisuals();
     }
 
-    /// <summary>
-    /// Dipanggil dari OnClick() tombol Header Kolom di UI
-    /// </summary>
     public void OnColumnHeaderClicked(int columnIndex)
     {
         SortColumn clickedColumn = (SortColumn)columnIndex;
@@ -214,10 +214,8 @@ public class MarketOverviewController : MonoBehaviour
         {
             if (columnHeaders[i].headerText == null) continue;
 
-            // Reset teks ke teks asli tanpa panah
             columnHeaders[i].headerText.text = columnHeaders[i].originalText;
 
-            // Tambahkan panah indikator jika kolom sedang aktif di-sort
             if (columnHeaders[i].columnType == currentSortColumn)
             {
                 string arrow = isAscending ? arrowUp : arrowDown;
@@ -246,22 +244,21 @@ public class MarketOverviewController : MonoBehaviour
         string[] lines = csvContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         if (lines.Length <= 1) return null;
 
-        // Baris 0 adalah Header: Date,Adj Close,Close,High,Low,Open,Volume,Market Cap
-        if (day >= lines.Length) day = lines.Length - 1;
+        int maxRowIndex = lines.Length - 1;
+        int rowIndex = Mathf.Clamp(day, 1, maxRowIndex);
 
-        string[] currentCols = lines[day].Split(',');
+        string[] currentCols = lines[rowIndex].Split(',');
         if (currentCols.Length < 7) return null;
 
-        // Gunakan CultureInfo.InvariantCulture untuk mengantisipasi desimal
         float currentClose = float.Parse(currentCols[2], CultureInfo.InvariantCulture);
         float currentVolume = float.Parse(currentCols[6], CultureInfo.InvariantCulture);
 
         float closePercentChange = 0f;
-        if (day > 1)
+        if (rowIndex > 1)
         {
-            string[] prevCols = lines[day - 1].Split(',');
+            string[] prevCols = lines[rowIndex - 1].Split(',');
             float prevClose = float.Parse(prevCols[2], CultureInfo.InvariantCulture);
-            if (prevClose > 0)
+            if (prevClose > 0f)
             {
                 closePercentChange = ((currentClose - prevClose) / prevClose) * 100f;
             }
@@ -269,7 +266,6 @@ public class MarketOverviewController : MonoBehaviour
 
         float calculatedValue = currentClose * currentVolume;
 
-        // DIBUAT DYNAMIC: Membaca Market Cap dari kolom ke-8 (index 7) jika tersedia di CSV
         float calculatedMarketCap = 0f;
         if (currentCols.Length >= 8 && float.TryParse(currentCols[7], NumberStyles.Any, CultureInfo.InvariantCulture, out float parsedMarketCap))
         {
@@ -277,7 +273,6 @@ public class MarketOverviewController : MonoBehaviour
         }
         else
         {
-            // Fallback jika CSV lama tidak memiliki kolom Market Cap
             calculatedMarketCap = currentClose * defaultTotalShares;
         }
 
@@ -347,7 +342,7 @@ public class MarketOverviewController : MonoBehaviour
         }
         else
         {
-            UpdateMarketOverview(currentDayIndex + 1);
+            UpdateMarketOverview(currentDayIndex + 1, currentDayIndex + 1);
         }
     }
 
@@ -359,7 +354,7 @@ public class MarketOverviewController : MonoBehaviour
         }
         else
         {
-            UpdateMarketOverview(currentDayIndex - 1);
+            UpdateMarketOverview(currentDayIndex - 1, currentDayIndex - 1);
         }
     }
 }

@@ -79,4 +79,9 @@ public class SceneManagement : MonoBehaviour
     {
         SceneManager.LoadScene("GameMode (Detail Perusahaan)");
     }
+
+    public void Login()
+    {
+        SceneManager.LoadScene("Login");
+    }
 }

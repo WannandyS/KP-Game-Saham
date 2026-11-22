@@ -112,10 +112,16 @@ public class PortfolioManager : MonoBehaviour
         });
 
         OnPortfolioUpdated?.Invoke();
+
+        // Otomatis simpan perubahan modal & saham ke slot save aktif
+        if (SaveSystemManager.Instance != null && !string.IsNullOrEmpty(SaveSystemManager.Instance.ActiveSaveId))
+        {
+            SaveSystemManager.Instance.SaveActiveGame();
+        }
+
         return true;
     }
 
-    // Add inside PortfolioManager class:
     public void RestoreState(
         float restoredStartingCash,
         float restoredCurrentCash,
@@ -210,6 +216,13 @@ public class PortfolioManager : MonoBehaviour
         });
 
         OnPortfolioUpdated?.Invoke();
+
+        // Otomatis simpan perubahan modal & saham ke slot save aktif
+        if (SaveSystemManager.Instance != null && !string.IsNullOrEmpty(SaveSystemManager.Instance.ActiveSaveId))
+        {
+            SaveSystemManager.Instance.SaveActiveGame();
+        }
+
         return true;
     }
 

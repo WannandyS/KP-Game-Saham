@@ -68,6 +68,9 @@ public class SaveSystemManager : MonoBehaviour
     }
 
     public string CurrentLoggedInUser { get; private set; }
+    public string ActiveSaveId { get; private set; }
+    public string ActiveSaveName { get; private set; }
+
     public event Action<string> OnAccountChanged;
     public event Action<string> OnSaveSystemMessage;
 
@@ -75,6 +78,7 @@ public class SaveSystemManager : MonoBehaviour
     private string AccountsFilePath => Path.Combine(RootSaveFolder, "accounts.json");
 
     private AccountDatabase accountDb = new AccountDatabase();
+    private bool isHookedToManagers = false;
 
     private void Awake()
     {
@@ -89,6 +93,44 @@ public class SaveSystemManager : MonoBehaviour
 
         Directory.CreateDirectory(RootSaveFolder);
         LoadAccountsDatabase();
+    }
+
+    private void Start()
+    {
+        HookAutoSaveEvents();
+    }
+
+    private void OnEnable()
+    {
+        HookAutoSaveEvents();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this && DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleAutoSaveOnDayChanged;
+        }
+    }
+
+    public void HookAutoSaveEvents()
+    {
+        if (isHookedToManagers) return;
+
+        if (DaySimulationManager.Instance != null)
+        {
+            DaySimulationManager.Instance.OnDayChanged -= HandleAutoSaveOnDayChanged;
+            DaySimulationManager.Instance.OnDayChanged += HandleAutoSaveOnDayChanged;
+            isHookedToManagers = true;
+        }
+    }
+
+    private void HandleAutoSaveOnDayChanged(int newDay)
+    {
+        if (!string.IsNullOrEmpty(CurrentLoggedInUser) && !string.IsNullOrEmpty(ActiveSaveId))
+        {
+            SaveActiveGame();
+        }
     }
 
     private string NormalizeUsername(string rawUsername)
@@ -176,6 +218,8 @@ public class SaveSystemManager : MonoBehaviour
         SaveAccountsDatabase();
 
         CurrentLoggedInUser = normUser;
+        ActiveSaveId = null;
+        ActiveSaveName = null;
         OnAccountChanged?.Invoke(CurrentLoggedInUser);
         Notify($"Registered and logged in as '{normUser}'.");
         return true;
@@ -200,6 +244,8 @@ public class SaveSystemManager : MonoBehaviour
         }
 
         CurrentLoggedInUser = account.username;
+        ActiveSaveId = null;
+        ActiveSaveName = null;
         OnAccountChanged?.Invoke(CurrentLoggedInUser);
         Notify($"Logged in as '{CurrentLoggedInUser}'.");
         return true;
@@ -208,6 +254,8 @@ public class SaveSystemManager : MonoBehaviour
     public void Logout()
     {
         CurrentLoggedInUser = null;
+        ActiveSaveId = null;
+        ActiveSaveName = null;
         OnAccountChanged?.Invoke(null);
         Notify("Logged out.");
     }
@@ -237,10 +285,15 @@ public class SaveSystemManager : MonoBehaviour
         return results;
     }
 
-    /// <summary>
-    /// Creates a new save slot or overwrites an existing saveId for the logged-in player.
-    /// Pass null or empty existingSaveId to create a new save slot.
-    /// </summary>
+    public bool SaveActiveGame()
+    {
+        if (string.IsNullOrEmpty(ActiveSaveId))
+        {
+            return SaveGame(ActiveSaveName, null);
+        }
+        return SaveGame(ActiveSaveName, ActiveSaveId);
+    }
+
     public bool SaveGame(string saveName, string existingSaveId = null)
     {
         if (string.IsNullOrEmpty(CurrentLoggedInUser))
@@ -262,10 +315,14 @@ public class SaveSystemManager : MonoBehaviour
             ? $"save_{DateTime.UtcNow:yyyyMMdd_HHmmss}_{Guid.NewGuid().ToString("N").Substring(0, 6)}"
             : existingSaveId;
 
+        string finalSaveName = string.IsNullOrWhiteSpace(saveName)
+            ? $"Save ({DateTime.Now:MMM dd HH:mm})"
+            : saveName.Trim();
+
         var saveData = new PlayerSaveGameData
         {
             saveId = saveId,
-            saveName = string.IsNullOrWhiteSpace(saveName) ? $"Save ({DateTime.Now:MMM dd HH:mm})" : saveName.Trim(),
+            saveName = finalSaveName,
             ownerUsername = CurrentLoggedInUser,
             savedAtUtc = DateTime.UtcNow.ToString("o"),
             spoofedDay = DaySimulationManager.Instance.currentDay,
@@ -312,7 +369,11 @@ public class SaveSystemManager : MonoBehaviour
             SaveAccountsDatabase();
         }
 
-        Notify($"Saved '{saveData.saveName}' for '{CurrentLoggedInUser}'.");
+        ActiveSaveId = saveId;
+        ActiveSaveName = finalSaveName;
+        HookAutoSaveEvents();
+
+        Notify($"Saved '{saveData.saveName}' (Day {saveData.spoofedDay}, Cash: {saveData.currentCash:N0}) for '{CurrentLoggedInUser}'.");
         return true;
     }
 
@@ -334,7 +395,6 @@ public class SaveSystemManager : MonoBehaviour
         string json = File.ReadAllText(path);
         var saveData = JsonUtility.FromJson<PlayerSaveGameData>(json);
 
-        // Strict ownership check so no save file can be loaded outside its owner's session
         if (saveData == null || saveData.ownerUsername != CurrentLoggedInUser)
         {
             Notify("Access denied: save belongs to another account.");
@@ -357,7 +417,11 @@ public class SaveSystemManager : MonoBehaviour
             DaySimulationManager.Instance.LoadDayState(saveData.spoofedDay, saveData.startDatasetDay);
         }
 
-        Notify($"Loaded '{saveData.saveName}' (Spoofed Day {saveData.spoofedDay}, Dataset Day {saveData.startDatasetDay + saveData.spoofedDay - 1}).");
+        ActiveSaveId = saveData.saveId;
+        ActiveSaveName = saveData.saveName;
+        HookAutoSaveEvents();
+
+        Notify($"Loaded '{saveData.saveName}' (Day {saveData.spoofedDay}/{saveData.maxTradingDays}, Cash: {saveData.currentCash:N0}).");
         return true;
     }
 

@@ -24,8 +24,8 @@ public class LoginSceneUI : MonoBehaviour
     public GameObject saveSlotRowPrefab;
 
     [Header("Scene Navigation")]
-    [Tooltip("Name of the main trading / market scene to load after starting or loading a save.")]
-    public string tradingSceneName = "MarketOverview";
+    [Tooltip("Nama scene Main Menu tujuan setelah membuat atau memuat save.")]
+    public string tradingSceneName = "Main Menu";
 
     private void Start()
     {
@@ -163,8 +163,8 @@ public class LoginSceneUI : MonoBehaviour
             ? newSaveNameInput.text.Trim()
             : null;
 
-        // Immediately create an initial save file for this new run
-        SaveSystemManager.Instance.SaveGame(saveLabel);
+        // Buat slot save baru (ActiveSaveId otomatis disetel di dalam SaveGame)
+        SaveSystemManager.Instance.SaveGame(saveLabel, null);
 
         LoadTradingScene();
     }
@@ -184,15 +184,30 @@ public class LoginSceneUI : MonoBehaviour
         foreach (var save in saves)
         {
             GameObject row = Instantiate(saveSlotRowPrefab, saveSlotsContainer);
+            row.SetActive(true);
 
-            // Expects a TMP_Text for save info and a Button to load the save
-            TMP_Text label = row.GetComponentInChildren<TMP_Text>();
-            if (label != null)
+            Button loadBtn = row.GetComponentInChildren<Button>(true);
+            TMP_Text[] allTexts = row.GetComponentsInChildren<TMP_Text>(true);
+            List<TMP_Text> columnTexts = new List<TMP_Text>();
+
+            foreach (var txt in allTexts)
             {
-                label.text = $"{save.saveName} — Day {save.spoofedDay}/{save.maxTradingDays} | Cash: {save.currentCash:N0}";
+                if (loadBtn != null && txt.transform.IsChildOf(loadBtn.transform))
+                    continue;
+                columnTexts.Add(txt);
             }
 
-            Button loadBtn = row.GetComponentInChildren<Button>();
+            if (columnTexts.Count >= 3)
+            {
+                columnTexts[0].text = save.saveName;
+                columnTexts[1].text = $"Day {save.spoofedDay}/{save.maxTradingDays}";
+                columnTexts[2].text = $"Rp {save.currentCash:N0}";
+            }
+            else if (columnTexts.Count > 0)
+            {
+                columnTexts[0].text = $"{save.saveName} — Day {save.spoofedDay}/{save.maxTradingDays} | Cash: {save.currentCash:N0}";
+            }
+
             if (loadBtn != null)
             {
                 string capturedSaveId = save.saveId;

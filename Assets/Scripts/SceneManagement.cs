@@ -84,4 +84,9 @@ public class SceneManagement : MonoBehaviour
     {
         SceneManager.LoadScene("Login");
     }
+
+    public void MainMenu()
+    {
+        SceneManager.LoadScene("Main Menu");
+    }
 }

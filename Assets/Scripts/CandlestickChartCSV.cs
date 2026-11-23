@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -17,9 +16,10 @@ public class CandlestickChart : MonoBehaviour
         public float low;
         public float close;
         public float volume;
-        public int dayIndex;
+        public int datasetDayIndex; 
+        public int spoofedDayIndex; 
 
-        public CandleData(string date, float open, float high, float low, float close, float volume, int dayIndex)
+        public CandleData(string date, float open, float high, float low, float close, float volume, int datasetDayIndex, int spoofedDayIndex = 0)
         {
             this.date = date;
             this.open = open;
@@ -27,7 +27,8 @@ public class CandlestickChart : MonoBehaviour
             this.low = low;
             this.close = close;
             this.volume = volume;
-            this.dayIndex = dayIndex;
+            this.datasetDayIndex = datasetDayIndex;
+            this.spoofedDayIndex = spoofedDayIndex > 0 ? spoofedDayIndex : datasetDayIndex;
         }
     }
 
@@ -92,15 +93,16 @@ public class CandlestickChart : MonoBehaviour
     private void OnEnable()
     {
         SubscribeToDayManager();
-        
+
         if (allCandles.Count == 0 && currentCsvFile != null)
         {
             LoadCSV();
         }
 
-        if (allCandles.Count > 0 && DaySimulationManager.Instance != null)
+        if (allCandles.Count > 0)
         {
-            HandleDayChanged(DaySimulationManager.Instance.currentDay);
+            int spoofedDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
+            HandleDayChanged(spoofedDay);
         }
     }
 
@@ -132,10 +134,12 @@ public class CandlestickChart : MonoBehaviour
         if (allCandles.Count == 0 && currentCsvFile != null)
         {
             LoadCSV();
-            if (DaySimulationManager.Instance != null)
-            {
-                HandleDayChanged(DaySimulationManager.Instance.currentDay);
-            }
+        }
+
+        if (allCandles.Count > 0)
+        {
+            int spoofedDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
+            HandleDayChanged(spoofedDay);
         }
     }
 
@@ -144,8 +148,8 @@ public class CandlestickChart : MonoBehaviour
         currentCsvFile = newCsv;
         LoadCSV();
 
-        int currentDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
-        HandleDayChanged(currentDay);
+        int spoofedDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : 1;
+        HandleDayChanged(spoofedDay);
     }
 
     public void LoadNewDataset(TextAsset newCsv)
@@ -153,15 +157,14 @@ public class CandlestickChart : MonoBehaviour
         currentCsvFile = newCsv;
         LoadCSV();
 
+        int spoofedDay = 1;
         if (DaySimulationManager.Instance != null)
         {
             DaySimulationManager.Instance.totalDatasetDays = allCandles.Count;
-            HandleDayChanged(DaySimulationManager.Instance.CurrentDatasetDay);
+            spoofedDay = DaySimulationManager.Instance.currentDay;
         }
-        else
-        {
-            HandleDayChanged(allCandles.Count);
-        }
+
+        HandleDayChanged(spoofedDay);
     }
 
     private void LoadCSV()
@@ -185,7 +188,7 @@ public class CandlestickChart : MonoBehaviour
         int closeIndex = FindColumnIndex(headers, "Close");
         int volumeIndex = FindColumnIndex(headers, "Volume");
 
-        int currentDayCounter = 1;
+        int currentDatasetDay = 1;
 
         for (int i = 1; i < lines.Length; i++)
         {
@@ -211,8 +214,8 @@ public class CandlestickChart : MonoBehaviour
                 TryParseFloat(values[volumeIndex], out volume);
             }
 
-            allCandles.Add(new CandleData(date, open, high, low, close, volume, currentDayCounter));
-            currentDayCounter++;
+            allCandles.Add(new CandleData(date, open, high, low, close, volume, currentDatasetDay, currentDatasetDay));
+            currentDatasetDay++;
         }
     }
 
@@ -222,28 +225,48 @@ public class CandlestickChart : MonoBehaviour
         date = "Day 0";
         closePrice = 0f;
         if (Instance == null || Instance.displayedCandles.Count == 0) return false;
-        
+
         CandleData latest = Instance.displayedCandles[Instance.displayedCandles.Count - 1];
         assetName = Instance.currentCsvFile != null ? Instance.currentCsvFile.name : "Dataset";
-        date = latest.date;
+        date = $"Day {latest.spoofedDayIndex}";
         closePrice = latest.close;
         return true;
     }
 
-    private void HandleDayChanged(int currentSimDay)
+    private void HandleDayChanged(int currentSpoofedDay)
     {
         displayedCandles.Clear();
 
+        int startDatasetDay = DaySimulationManager.Instance != null
+            ? Mathf.Max(1, DaySimulationManager.Instance.startDatasetDay)
+            : 1;
+
+        int activeSpoofedDay = Mathf.Max(1, currentSpoofedDay);
+
         int datasetDay = DaySimulationManager.Instance != null
             ? DaySimulationManager.Instance.CurrentDatasetDay
-            : currentSimDay;
+            : activeSpoofedDay;
 
-        int targetIndex = Mathf.Min(datasetDay, allCandles.Count);
-        int startIndex = Mathf.Max(0, targetIndex - maxCandles);
+        int targetIndex = Mathf.Clamp(datasetDay, 1, allCandles.Count);
+        // Prevent showing candles earlier than the randomized startDatasetDay of this run
+        int minRunIndex = Mathf.Clamp(startDatasetDay - 1, 0, targetIndex - 1);
+        int startIndex = Mathf.Max(minRunIndex, targetIndex - maxCandles);
 
         for (int i = startIndex; i < targetIndex; i++)
         {
-            displayedCandles.Add(allCandles[i]);
+            CandleData source = allCandles[i];
+            int candleSpoofedDay = (source.datasetDayIndex - startDatasetDay) + 1;
+
+            displayedCandles.Add(new CandleData(
+                source.date,
+                source.open,
+                source.high,
+                source.low,
+                source.close,
+                source.volume,
+                source.datasetDayIndex,
+                candleSpoofedDay
+            ));
         }
 
         if (chartArea != null)
@@ -255,8 +278,8 @@ public class CandlestickChart : MonoBehaviour
         {
             CandleData latest = displayedCandles[displayedCandles.Count - 1];
             string datasetName = currentCsvFile != null ? currentCsvFile.name : "Stock";
-            int activeSimDay = DaySimulationManager.Instance != null ? DaySimulationManager.Instance.currentDay : latest.dayIndex;
-            tradeController.SetMarketPrice(datasetName, latest.date, activeSimDay, latest.close);
+            // Pass spoofed day (latest.spoofedDayIndex) so trade/log records match the player's spoofed day
+            tradeController.SetMarketPrice(datasetName, $"Day {latest.spoofedDayIndex}", latest.spoofedDayIndex, latest.close);
         }
     }
 
@@ -264,7 +287,7 @@ public class CandlestickChart : MonoBehaviour
     {
         ClearChart();
 
-        if (chartArea == null || chartArea.rect.width <= 0 || chartArea.rect.height <= 0 || displayedCandles.Count == 0) 
+        if (chartArea == null || chartArea.rect.width <= 0 || chartArea.rect.height <= 0 || displayedCandles.Count == 0)
             return;
 
         float highestPrice = float.MinValue;
@@ -318,7 +341,7 @@ public class CandlestickChart : MonoBehaviour
             float x = (i * slotWidth) + (slotWidth * 0.5f);
 
             DrawCandle(candle, x, candleWidth);
-            CreateFooterLabel(candle.dayIndex, x, slotWidth);
+            CreateFooterLabel(candle.spoofedDayIndex, x, slotWidth);
         }
     }
 
@@ -335,7 +358,7 @@ public class CandlestickChart : MonoBehaviour
         float wickBottom = Mathf.Min(highY, lowY);
         float wickHeight = Mathf.Max(wickTop - wickBottom, 1f);
 
-        string tooltipText = $"<b>Day {candle.dayIndex}</b> |  " +
+        string tooltipText = $"<b>Day {candle.spoofedDayIndex}</b> |  " +
                     $"O: {FormatPrice(candle.open)}  |  " +
                     $"H: {FormatPrice(candle.high)}  |  " +
                     $"L: {FormatPrice(candle.low)}  |  " +
